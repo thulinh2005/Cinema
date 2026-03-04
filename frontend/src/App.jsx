@@ -1,20 +1,28 @@
+import { Routes, Route } from "react-router-dom"
+import { Toaster } from "sonner"
 
-import { BrowserRouter, Routes, Route } from "react-router-dom"
-import Homepage from "./pages/Homepage"
 import Login from "./pages/Login"
-import NotFound from "./pages/NotFound"
+import Homepage from "./pages/Homepage"
+import ProtectedRoute from "./components/ProtectedRoute"
 
 function App() {
   return (
-    <BrowserRouter>
+    <>
+      <Toaster richColors position="top-right" />
+
       <Routes>
-        <Route path="/" element={<Homepage />} />
         <Route path="/login" element={<Login />} />
 
-        {/* Route bắt tất cả đường dẫn sai */}
-        <Route path="*" element={<NotFound />} />
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <Homepage />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
-    </BrowserRouter>
+    </>
   )
 }
 
