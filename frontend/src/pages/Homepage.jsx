@@ -32,7 +32,7 @@ export default function Homepage() {
                         <div className="flex items-center gap-2">
                             <SidebarTrigger className="-ml-1" />
                             <Separator orientation="vertical" className="mr-2 h-4" />
-                            <h1 className="text-sm font-semibold text-slate-700">Trang chủ / Bảng điều khiển</h1>
+                            <h1 className="text-sm font-semibold text-slate-700"></h1>
                         </div>
 
                         {/* Thông tin user và nút Đăng xuất */}
