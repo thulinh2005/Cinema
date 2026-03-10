@@ -1,4 +1,5 @@
 import * as React from "react"
+import { Link } from "react-router-dom" // Import Link để chuyển trang mượt
 import {
     Projector,
     Users,
@@ -27,7 +28,7 @@ const data = {
     navMain: [
         { title: "Phim", url: "/movies", icon: Film },
         { title: "Suất chiếu", url: "/showtimes", icon: Calendar },
-        { title: "Phòng chiếu", url: "/rooms", icon: Projector },
+        { title: "Phòng chiếu", url: "/admin/rooms", icon: Projector },
         { title: "Sản phẩm", url: "/products", icon: Popcorn },
         { title: "Vé", url: "/tickets", icon: Ticket },
         { title: "Hóa đơn", url: "/invoices", icon: FileText },
@@ -44,14 +45,15 @@ export function AppSidebar({ ...props }) {
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
-                            <a href="/">
+                            {/* Dùng Link thay cho thẻ a */}
+                            <Link to="/">
                                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
                                     <House className="size-4" />
                                 </div>
                                 <div className="grid flex-1 text-left text-sm leading-tight">
                                     <span className="truncate font-semibold">Trang chủ</span>
                                 </div>
-                            </a>
+                            </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                 </SidebarMenu>
@@ -63,10 +65,11 @@ export function AppSidebar({ ...props }) {
                         {data.navMain.map((item) => (
                             <SidebarMenuItem key={item.title}>
                                 <SidebarMenuButton asChild tooltip={item.title}>
-                                    <a href={item.url} className="flex items-center gap-3">
+                                    {/* Dùng Link to={...} giúp app không bị load lại trang */}
+                                    <Link to={item.url} className="flex items-center gap-3">
                                         <item.icon className="size-4" />
                                         <span className="font-medium">{item.title}</span>
-                                    </a>
+                                    </Link>
                                 </SidebarMenuButton>
                             </SidebarMenuItem>
                         ))}
