@@ -24,9 +24,9 @@ export default function Homepage() {
 
                 <SidebarInset>
                     {/* Header cố định */}
-                    <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4 bg-white justify-between">
+                    <header className="sticky top-0 z-10 flex h-14 shrink-0 items-center justify-between border-b bg-white/80 px-4 backdrop-blur-md">
                         <div className="flex items-center gap-2">
-                            <SidebarTrigger className="-ml-1" />
+                            <SidebarTrigger className="-ml-1 text-slate-500 hover:text-slate-900" />
                             <Separator orientation="vertical" className="mr-2 h-4" />
                         </div>
 
@@ -34,7 +34,7 @@ export default function Homepage() {
                             <span className="text-sm font-medium">Chào, {user?.ten_dang_nhap}</span>
                             <button
                                 onClick={handleLogout}
-                                className="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1.5 rounded-md transition-colors"
+                                className="bg-red-50 hover:bg-red-100 text-red-600 text-xs px-3 py-1.5 rounded-md transition-all font-medium border border-red-100"
                             >
                                 Đăng xuất
                             </button>
@@ -42,7 +42,7 @@ export default function Homepage() {
                     </header>
 
                     {/* Vùng nội dung động - Nơi Rooms.jsx hoặc SeatMap.jsx hiển thị */}
-                    <main className="flex-1 overflow-y-auto bg-slate-50 p-6">
+                    <main className="flex-1 overflow-y-auto bg-slate-50 p-2">
                         <div className="min-h-full rounded-xl bg-white border shadow-sm p-4">
                             {/* Outlet là nơi "hứng" nội dung của các Route con */}
                             <Outlet />
