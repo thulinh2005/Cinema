@@ -27,10 +27,30 @@ const Room = {
     },
 
     getSeats: (roomId, callback) => {
-        const sql = "SELECT * FROM ghe WHERE ma_phong = ? ORDER BY so_ghe ASC";
+        const sql = `
+            SELECT g.*, p.ten_phong 
+            FROM ghe g 
+            JOIN phong_chieu p ON g.ma_phong = p.ma_phong 
+            WHERE g.ma_phong = ? 
+            ORDER BY 
+                LEFT(g.so_ghe, 1) ASC,
+                LENGTH(g.so_ghe) ASC, 
+                g.so_ghe ASC
+        `;
         db.query(sql, [roomId], callback);
     },
-
+    updateSeatsBulk: (seatData, callback) => {
+        // seatData: [[ma_phong, so_ghe, loai_ghe, trang_thai, ma_ghe], ...]
+        const sql = `
+        INSERT INTO ghe (ma_phong, so_ghe, loai_ghe, trang_thai, ma_ghe) 
+        VALUES ? 
+        ON DUPLICATE KEY UPDATE 
+        so_ghe = VALUES(so_ghe),
+        loai_ghe = VALUES(loai_ghe), 
+        trang_thai = VALUES(trang_thai)
+    `;
+        db.query(sql, [seatData], callback);
+    },
     createSeatsBulk: (seatData, callback) => {
         const sql = "INSERT INTO ghe (ma_phong, so_ghe, loai_ghe, trang_thai) VALUES ?";
         db.query(sql, [seatData], callback);
