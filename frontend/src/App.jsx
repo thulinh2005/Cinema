@@ -1,12 +1,12 @@
 import { Routes, Route } from "react-router-dom"
 import { Toaster } from "sonner"
-
 import Login from "./pages/Login"
 import Homepage from "./pages/Homepage"
 import Rooms from "./pages/Rooms"
 import SeatMap from "./pages/SeatMap"
 import ProtectedRoute from "./components/ProtectedRoute"
 import NotFound from "./pages/NotFound"
+import Customers from "./pages/Customers"
 
 function App() {
   return (
@@ -29,6 +29,7 @@ function App() {
           {/* Các trang con sẽ hiển thị tại vị trí <Outlet /> trong Homepage */}
           <Route path="admin/rooms" element={<Rooms />} />
           <Route path="admin/rooms/:id/seats" element={<SeatMap />} />
+          <Route path="/admin/customers" element={<Customers />} />
 
           {/* Em có thể thêm các trang khác ở đây sau này */}
           {/* <Route path="movies" element={<Movies />} /> */}
