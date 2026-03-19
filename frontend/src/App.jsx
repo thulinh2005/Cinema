@@ -5,6 +5,7 @@ import Login from "./pages/Login"
 import Homepage from "./pages/Homepage"
 import Rooms from "./pages/Rooms"
 import SeatMap from "./pages/SeatMap"
+import Movies from "./pages/Movies"
 import ProtectedRoute from "./components/ProtectedRoute"
 import NotFound from "./pages/NotFound"
 
@@ -15,7 +16,7 @@ function App() {
 
       <Routes>
         {/* Public Route */}
-        <Route path="/login" element={<Login />} />
+        <Route path="/login" element={<Login />} /> 
 
         {/* Cấu trúc Route lồng nhau (Nested Routes) */}
         <Route
@@ -31,7 +32,7 @@ function App() {
           <Route path="admin/rooms/:id/seats" element={<SeatMap />} />
 
           {/* Em có thể thêm các trang khác ở đây sau này */}
-          {/* <Route path="movies" element={<Movies />} /> */}
+           <Route path="movies" element={<Movies />} />
         </Route>
 
         <Route path="*" element={<NotFound />} />
