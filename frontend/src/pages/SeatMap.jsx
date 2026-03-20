@@ -218,6 +218,13 @@ const SeatMap = () => {
                         </div>
                     ))}
                 </div>
+                <div className="mt-20 flex flex-wrap justify-center gap-8 border-t border-slate-100 pt-10">
+                    <LegendBox color="bg-white" border="border-slate-200" label="Standard" />
+                    <LegendBox color="bg-amber-100" border="border-amber-400" label="VIP" />
+                    <LegendBox color="bg-pink-100" border="border-pink-400" label="Sweetbox" />
+                    <LegendBox color="bg-slate-200" border="border-slate-400" label="Bảo trì" icon={<AlertCircle size={12} />} />
+                    <LegendBox color="bg-red-50" border="border-red-200" label="Khóa" icon={<Lock size={12} />} />
+                </div>
             </div>
         </div>
     );
