@@ -47,52 +47,31 @@ const SeatMap = () => {
 
     const seatRows = groupSeatsByRow();
 
-    // frontend/src/pages/SeatMap.jsx
-
-    // 1. Hàm thêm ghế: Chuyển ghế cuối cùng lên vị trí mới
-    // frontend/src/pages/SeatMap.jsx
-
     const handleAddNewSeat = (rowLabel) => {
-        // 1. Kiểm tra xem còn ghế nào trong danh sách không
-        if (seats.length === 0) {
-            toast.error("Không còn ghế nào để điều động!");
-            return;
-        }
+        if (seats.length === 0) return toast.error("Hết ghế để điều động!");
 
-        // 2. Xác định tên ghế mới (ví dụ: A12)
-        const seatsInRow = seatRows[rowLabel] || [];
-        const nextNumber = seatsInRow.length + 1;
-        const newSeatName = `${rowLabel}${nextNumber}`;
+        // 1. Xác định tên ghế mới (ví dụ: A12)
+        const currentInRow = seats.filter(s => s.so_ghe.startsWith(rowLabel));
+        const newName = `${rowLabel}${currentInRow.length + 1}`;
 
-        // 3. Kiểm tra xem tên ghế mới này đã tồn tại ở đâu đó trong sơ đồ chưa
-        if (seats.find(s => s.so_ghe === newSeatName)) {
-            toast.error(`Ghế ${newSeatName} đã tồn tại!`);
-            return;
-        }
+        if (seats.find(s => s.so_ghe === newName)) return toast.error("Ghế đã tồn tại!");
 
         setSeats(prev => {
-            // 4. Tạo bản sao của mảng hiện tại
             const updatedArray = [...prev];
+            const seatToMove = updatedArray.pop(); // Lấy ghế cuối cùng ra khỏi mảng
 
-            // 5. LẤY GHẾ CUỐI CÙNG RA (Hàm pop sẽ xóa nó khỏi updatedArray và trả về đối tượng ghế đó)
-            const seatToMove = updatedArray.pop();
-
-            // 6. "Thay tên đổi họ" cho ghế đó
             const transformedSeat = {
                 ...seatToMove,
-                so_ghe: newSeatName,
+                so_ghe: newName,
                 loai_ghe: 'STANDARD',
                 trang_thai: 'Hoạt động'
             };
 
-            // 7. Trả về mảng mới gồm những ghế còn lại + ghế vừa được đổi tên
-            // Hàm groupSeatsByRow ở trên sẽ tự động gom nó vào đúng hàng khi render
+            // Trả về mảng mới. Hàm groupSeatsByRow sẽ tự xếp nó vào đúng hàng
             return [...updatedArray, transformedSeat];
         });
-
-        toast.info(`Đã điều động ghế cuối cùng lên vị trí ${newSeatName}`);
+        toast.info(`Đã chuyển ghế cuối cùng thành ${newName}`);
     };
-
     // 2. Hàm Lưu: Đồng bộ mượt mà
     const handleSave = async () => {
         try {
@@ -115,6 +94,26 @@ const SeatMap = () => {
         } catch (error) {
             toast.error("Lỗi khi lưu sơ đồ");
         }
+    };
+    const handleRemoveSeat = (ma_ghe) => {
+        const seatToRemove = seats.find(s => s.ma_ghe === ma_ghe);
+        if (!seatToRemove) return;
+
+        // Xác định tên ghế cuối cùng hiện tại trong DB (ví dụ J10) để tính tên ghế trả về
+        // Đơn giản nhất là ta chỉ cần đổi tên nó thành một ký hiệu "GHẾ TRỐNG" hoặc hàng cuối cùng tiếp theo
+        const lastRowLabel = 'J'; // Giả sử hàng J là cuối
+
+        setSeats(prev => {
+            const otherSeats = prev.filter(s => s.ma_ghe !== ma_ghe);
+            const restoredSeat = {
+                ...seatToRemove,
+                so_ghe: `${lastRowLabel}${Date.now() % 100}`, // Đổi tên tạm để đẩy xuống cuối
+                loai_ghe: 'STANDARD',
+                trang_thai: 'Hoạt động'
+            };
+            return [...otherSeats, restoredSeat];
+        });
+        toast.warning("Đã đưa ghế về vị trí cuối phòng");
     };
 
     const updateSeatDetail = (ma_ghe, field, value) => {
@@ -204,6 +203,14 @@ const SeatMap = () => {
                                                         </div>
                                                     </div>
                                                 </div>
+                                                <Button
+                                                    variant="destructive"
+                                                    size="sm"
+                                                    className="w-full mt-4 h-8 text-[10px]"
+                                                    onClick={() => handleRemoveSeat(seat.ma_ghe)}
+                                                >
+                                                    Xóa ghế khỏi hàng
+                                                </Button>
                                             </PopoverContent>
                                         )}
                                     </Popover>

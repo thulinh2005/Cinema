@@ -235,7 +235,7 @@ const Rooms = () => {
 
             {/* SỬ DỤNG TABLE COMPONENT CỦA SHADCN - Đã tối ưu layout */}
             <div className="rounded-xl border bg-white shadow-sm overflow-hidden">
-                <Table className="table-fixed w-full"> {/* Thêm table-fixed để kiểm soát độ rộng cột */}
+                <Table className="table-fixed w-full">
                     <TableHeader className="bg-slate-50/50">
                         <TableRow>
                             <TableHead className="w-[60px] text-center font-bold text-slate-700">STT</TableHead>
@@ -252,80 +252,38 @@ const Rooms = () => {
                         {rooms.length > 0 ? (
                             rooms.map((room, index) => (
                                 <TableRow key={room.ma_phong} className="hover:bg-slate-50/50 transition-colors border-slate-100">
-                                    <TableCell className="text-center font-medium text-slate-500">
-                                        {index + 1}
-                                    </TableCell>
-                                    <TableCell className="font-mono text-xs text-slate-500 truncate">
-                                        #{room.ma_phong}
-                                    </TableCell>
-                                    <TableCell className="font-semibold text-slate-800 truncate">
-                                        {room.ten_phong}
-                                    </TableCell>
-                                    <TableCell className="text-center font-medium">
-                                        {room.so_ghe}
-                                    </TableCell>
+                                    <TableCell className="text-center font-medium text-slate-500">{index + 1}</TableCell>
+                                    <TableCell className="font-mono text-xs text-slate-500 truncate">#{room.ma_phong}</TableCell>
+                                    <TableCell className="font-semibold text-slate-800 truncate">{room.ten_phong}</TableCell>
+                                    <TableCell className="text-center font-medium">{room.so_ghe}</TableCell>
                                     <TableCell>
-                                        <Badge
-                                            variant="secondary"
-                                            className={`rounded-md px-2 py-0.5 text-[11px] font-bold border-none whitespace-nowrap ${room.loai_phong === 'IMAX' ? 'bg-purple-100 text-purple-700' :
-                                                room.loai_phong === '3D' ? 'bg-blue-100 text-blue-700' :
-                                                    room.loai_phong === '2D' ? 'bg-emerald-100 text-emerald-700' :
-                                                        room.loai_phong === 'SCREENX' ? 'bg-amber-100 text-amber-700' :
-                                                            room.loai_phong === '4DX' ? 'bg-red-100 text-red-700' :
-                                                                'bg-slate-100 text-slate-600'
-                                                }`}
-                                        >
+                                        <Badge variant="secondary" className={`rounded-md px-2 py-0.5 text-[11px] font-bold border-none whitespace-nowrap ${room.loai_phong === 'IMAX' ? 'bg-purple-100 text-purple-700' :
+                                            room.loai_phong === '3D' ? 'bg-blue-100 text-blue-700' :
+                                                room.loai_phong === '2D' ? 'bg-emerald-100 text-emerald-700' :
+                                                    room.loai_phong === 'SCREENX' ? 'bg-amber-100 text-amber-700' :
+                                                        room.loai_phong === '4DX' ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-600'
+                                            }`}>
                                             {room.loai_phong}
                                         </Badge>
                                     </TableCell>
-
                                     <TableCell className="text-center">
-                                        <Badge
-                                            variant="secondary"
-                                            className={`rounded-md px-2 py-0.5 text-[11px] font-bold border-none whitespace-nowrap ${room.trang_thai === 'Hoạt động'
-                                                ? 'bg-emerald-100 text-emerald-700'  // Xanh lá đậm chất "Active"
-                                                : room.trang_thai === 'Bảo trì'
-                                                    ? 'bg-amber-100 text-amber-700'      // Vàng cam cho "Maintenance"
-                                                    : 'bg-red-100 text-red-700'          // Đỏ cho "Không hoạt động"
-                                                }`}
-                                        >
+                                        <Badge variant="secondary" className={`rounded-md px-2 py-0.5 text-[11px] font-bold border-none whitespace-nowrap ${room.trang_thai === 'Hoạt động' ? 'bg-emerald-100 text-emerald-700' :
+                                            room.trang_thai === 'Bảo trì' ? 'bg-amber-100 text-amber-700' : 'bg-red-100 text-red-700'
+                                            }`}>
                                             {room.trang_thai}
                                         </Badge>
                                     </TableCell>
-
                                     <TableCell className="text-center">
-                                        <Button
-                                            variant="ghost"
-                                            size="icon"
-                                            onClick={() => navigate(`/admin/rooms/${room.ma_phong}/seats`)}
-                                            className="h-8 w-8 hover:bg-blue-50"
-                                            title="Chi tiết ghế"
-                                        >
+                                        <Button variant="ghost" size="icon" onClick={() => navigate(`/admin/rooms/${room.ma_phong}/seats`)} className="h-8 w-8 hover:bg-blue-50" title="Chi tiết ghế">
                                             <Eye className="h-4 w-4 text-blue-600" />
                                         </Button>
                                     </TableCell>
-
                                     <TableCell className="text-right pr-6">
                                         <div className="flex justify-end gap-1">
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                className="h-8 w-8 hover:bg-amber-50"
-                                                title="Sửa"
-                                                onClick={() => handleEditClick(room)}
-                                            >
+                                            <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-amber-50" title="Sửa" onClick={() => handleEditClick(room)}>
                                                 <Pencil className="h-4 w-4 text-amber-500" />
                                             </Button>
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                className="h-8 w-8 hover:bg-red-50"
-                                                title="Xóa"
-                                                onClick={() => {
-                                                    setRoomToDelete(room.ma_phong); // Lưu ID lại
-                                                    setIsDeleteDialogOpen(true); // Mở popup
-                                                }}
-                                            >
+                                            <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-red-50" title="Xóa" onClick={() => { setRoomToDelete(room.ma_phong); setIsDeleteDialogOpen(true); }}>
                                                 <Trash2 className="h-4 w-4 text-red-500" />
                                             </Button>
                                         </div>
@@ -334,7 +292,8 @@ const Rooms = () => {
                             ))
                         ) : (
                             <TableRow>
-                                <TableCell colSpan={7} className="h-24 text-center text-slate-500">
+                                {/* Sửa từ 7 thành 8 ở đây */}
+                                <TableCell colSpan={8} className="h-24 text-center text-slate-500 italic">
                                     Không tìm thấy phòng chiếu nào.
                                 </TableCell>
                             </TableRow>
