@@ -33,7 +33,7 @@ const data = {
         { title: "Vé", url: "/tickets", icon: Ticket },
         { title: "Hóa đơn", url: "/invoices", icon: FileText },
         { title: "Nhân viên", url: "/staff", icon: Users },
-        { title: "Khách hàng", url: "/customers", icon: UserRound },
+        { title: "Khách hàng", url: "/admin/customers", icon: UserRound },
         { title: "Thống kê", url: "/statistics", icon: ChartSpline },
     ],
 }
