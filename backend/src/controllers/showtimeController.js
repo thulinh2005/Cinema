@@ -1,0 +1,158 @@
+const Showtime = require("../models/showtimeModel");
+
+// LẤY DANH SÁCH SUẤT CHIẾU
+exports.getShowtime = (req, res) => {
+  const {
+    page = 1,
+    limit = 10,
+    ngay_chieu = "",
+    trang_thai = "",
+    ma_phong = "",
+  } = req.query;
+
+  Showtime.count(ngay_chieu, trang_thai, ma_phong, (err, countResult) => {
+    if (err) return res.status(500).json({ message: "Lỗi server", err });
+
+    const total = countResult[0].total;
+
+    Showtime.getAll(
+      page,
+      limit,
+      ngay_chieu,
+      trang_thai,
+      ma_phong,
+      (err, data) => {
+        if (err) return res.status(500).json({ message: "Lỗi server", err });
+
+        res.json({
+          data,
+          total,
+          page: Number(page),
+          limit: Number(limit),
+          totalPages: Math.ceil(total / limit),
+        });
+      }
+    );
+  });
+};
+
+// CHI TIẾT SUẤT CHIẾU
+exports.getByIdShowtime = (req, res) => {
+  const { id } = req.params;
+
+  Showtime.getById(id, (err, result) => {
+    if (err) return res.status(500).json({ message: "Lỗi server", err });
+
+    if (!result || result.length === 0) {
+      return res.status(404).json({
+        message: "Không tìm thấy suất chiếu",
+      });
+    }
+
+    res.json(result[0]);
+  });
+};
+
+// THÊM SUẤT CHIẾU
+exports.createShowtime = (req, res) => {
+  try {
+    const data = req.body;
+
+    if (!data.ma_phim || !data.ma_phong || !data.ngay_chieu || !data.gio_chieu || !data.gio_ket_thuc) {
+      return res.status(400).json({
+        message: "Thiếu thông tin bắt buộc",
+      });
+    }
+
+    Showtime.create(data, (err, result) => {
+      if (err) {
+        return res.status(500).json({ message: "Lỗi server", err });
+      }
+
+      res.status(201).json({
+        message: "Thêm suất chiếu thành công",
+        id: result.insertId,
+      });
+    });
+  } catch (err) {
+    res.status(500).json({ message: "Lỗi server", err });
+  }
+};
+
+// CẬP NHẬT SUẤT CHIẾU
+exports.updateShowtime = (req, res) => {
+  try {
+    const { id } = req.params;
+    const data = req.body;
+
+    Showtime.update(id, data, (err, result) => {
+      if (err) return res.status(500).json({ message: "Lỗi server", err });
+
+      if (result.affectedRows === 0) {
+        return res.status(404).json({
+          message: "Không tìm thấy suất chiếu",
+        });
+      }
+
+      res.json({ message: "Cập nhật suất chiếu thành công" });
+    });
+  } catch (err) {
+    res.status(500).json({ message: "Lỗi server", err });
+  }
+};
+
+// XÓA SUẤT CHIẾU
+exports.deleteShowtime = (req, res) => {
+  const { id } = req.params;
+
+  Showtime.delete(id, (err, result) => {
+    if (err) return res.status(500).json({ message: "Lỗi server", err });
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({
+        message: "Không tìm thấy suất chiếu",
+      });
+    }
+
+    res.json({ message: "Xóa suất chiếu thành công" });
+  });
+};
+
+// TỰ ĐỘNG CẬP NHẬT TRẠNG THÁI
+exports.updateStatusShowtime = (req, res) => {
+  try {
+    Showtime.updateStatusAuto((err, result) => {
+      if (err) return res.status(500).json({ message: "Lỗi server", err });
+
+      res.json({
+        message: "Cập nhật trạng thái suất chiếu thành công",
+        affectedRows: result.affectedRows,
+      });
+    });
+  } catch (err) {
+    res.status(500).json({ message: "Lỗi server", err });
+  }
+};
+
+// KIỂM TRA GHẾ TRỐNG
+exports.getAvailableSeatsShowtime = (req, res) => {
+  const { id } = req.params;
+
+  Showtime.getAvailableSeats(id, (err, result) => {
+    if (err) return res.status(500).json({ message: "Lỗi server", err });
+
+    if (!result || result.length === 0) {
+      return res.status(404).json({
+        message: "Không tìm thấy suất chiếu",
+      });
+    }
+
+    res.json({
+      ma_suat_chieu: id,
+      tong_ghe: result[0].tong_ghe,
+      ghe_da_dat: result[0].ghe_da_dat,
+      ghe_trong: result[0].ghe_trong,
+      tyle_trong: ((result[0].ghe_trong / result[0].tong_ghe) * 100).toFixed(2) + "%",
+    });
+  });
+};

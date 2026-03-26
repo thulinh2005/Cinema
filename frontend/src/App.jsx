@@ -5,6 +5,7 @@ import Homepage from "./pages/Homepage"
 import Rooms from "./pages/Rooms"
 import SeatMap from "./pages/SeatMap"
 import Movies from "./pages/Movies"
+import Showtimes from "./pages/Showtimes"
 import Product from "./pages/Product"
 import ProtectedRoute from "./components/ProtectedRoute"
 import NotFound from "./pages/NotFound"
@@ -34,8 +35,9 @@ function App() {
           <Route path="/admin/customers" element={<Customers />} />
 
           {/* Em có thể thêm các trang khác ở đây sau này */}
-           <Route path="movies" element={<Movies />} />
-           <Route path="products" element={<Product />} />
+          <Route path="movies" element={<Movies />} />
+          <Route path="showtimes" element={<Showtimes />} />
+          <Route path="products" element={<Product />} />
         </Route>
 
         <Route path="*" element={<NotFound />} />
