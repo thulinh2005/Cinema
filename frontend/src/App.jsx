@@ -7,6 +7,7 @@ import SeatMap from "./pages/SeatMap"
 import ProtectedRoute from "./components/ProtectedRoute"
 import NotFound from "./pages/NotFound"
 import Customers from "./pages/Customers"
+import Invoices from "./pages/Invoices"
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
           <Route path="admin/rooms" element={<Rooms />} />
           <Route path="admin/rooms/:id/seats" element={<SeatMap />} />
           <Route path="/admin/customers" element={<Customers />} />
+          <Route path="/admin/invoices" element={<Invoices />} />
 
           {/* Em có thể thêm các trang khác ở đây sau này */}
           {/* <Route path="movies" element={<Movies />} /> */}

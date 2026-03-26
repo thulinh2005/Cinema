@@ -21,6 +21,8 @@ const CustomerFormModal = ({ customer, isOpen, onClose, mode, reload }) => {
     ngay_sinh: "",
     gioi_tinh: "Nam",
     dia_chi: "",
+    hang_thanh_vien: "Standard",
+    trang_thai: "Hoạt động",
   });
 
   const [errors, setErrors] = useState({});
@@ -36,6 +38,8 @@ const CustomerFormModal = ({ customer, isOpen, onClose, mode, reload }) => {
           ngay_sinh: formatDateForInput(customer.ngay_sinh),
           gioi_tinh: customer.gioi_tinh || "Nam",
           dia_chi: customer.dia_chi || "",
+          hang_thanh_vien: customer.hang_thanh_vien || "Standard",
+          trang_thai: customer.trang_thai || "Hoạt động",
         });
       } else {
         setForm({
@@ -46,6 +50,8 @@ const CustomerFormModal = ({ customer, isOpen, onClose, mode, reload }) => {
           ngay_sinh: "",
           gioi_tinh: "Nam",
           dia_chi: "",
+          hang_thanh_vien: "Standard",
+          trang_thai: "Hoạt động",
         });
       }
       setErrors({});
@@ -54,9 +60,17 @@ const CustomerFormModal = ({ customer, isOpen, onClose, mode, reload }) => {
 
   const formatDateForInput = (dateValue) => {
     if (!dateValue) return "";
-    const date = new Date(dateValue);
-    if (Number.isNaN(date.getTime())) return "";
-    return date.toISOString().split("T")[0];
+    
+    // Attempt to safely parse date keeping the correct day
+    const dateObj = new Date(dateValue);
+    if (!isNaN(dateObj.getTime())) {
+      const year = dateObj.getFullYear();
+      const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+      const day = String(dateObj.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    }
+    
+    return dateValue.split("T")[0];
   };
 
   const handleChange = (field, value) => {

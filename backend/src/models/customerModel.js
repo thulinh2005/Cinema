@@ -3,7 +3,16 @@ const db = require("../config/db");
 const Customer = {
   // LẤY DANH SÁCH + SEARCH + FILTER + PAGINATION
   getAll: (search, page, limit, trang_thai, hang_thanh_vien, callback) => {
-    let sql = "SELECT * FROM khach_hang WHERE 1=1";
+    let sql = `
+      SELECT 
+        ma_kh, ten_kh, email, so_dien_thoai, 
+        DATE_FORMAT(ngay_sinh, '%Y-%m-%d') AS ngay_sinh, 
+        gioi_tinh, dia_chi, 
+        DATE_FORMAT(ngay_dang_ky, '%Y-%m-%d %H:%i:%s') AS ngay_dang_ky, 
+        hang_thanh_vien, diem_tich_luy, trang_thai
+      FROM khach_hang 
+      WHERE 1=1
+    `;
     let params = [];
 
     if (search) {
@@ -46,6 +55,19 @@ const Customer = {
     if (hang_thanh_vien) {
       sql += " AND hang_thanh_vien = ?";
       params.push(hang_thanh_vien);
+    }
+
+    db.query(sql, params, callback);
+  },
+
+  // KIỂM TRA TRÙNG EMAIL HOẶC SỐ ĐIỆN THOẠI
+  checkEmailPhone: (email, so_dien_thoai, excludeId, callback) => {
+    let sql = "SELECT email, so_dien_thoai FROM khach_hang WHERE (email = ? OR so_dien_thoai = ?)";
+    let params = [email, so_dien_thoai];
+
+    if (excludeId) {
+      sql += " AND ma_kh != ?";
+      params.push(excludeId);
     }
 
     db.query(sql, params, callback);
@@ -121,7 +143,16 @@ const Customer = {
 
   // CHI TIẾT
   getById: (id, callback) => {
-    const sql = "SELECT * FROM khach_hang WHERE ma_kh = ?";
+    const sql = `
+      SELECT 
+        ma_kh, ten_kh, email, so_dien_thoai, 
+        DATE_FORMAT(ngay_sinh, '%Y-%m-%d') AS ngay_sinh, 
+        gioi_tinh, dia_chi, 
+        DATE_FORMAT(ngay_dang_ky, '%Y-%m-%d %H:%i:%s') AS ngay_dang_ky, 
+        hang_thanh_vien, diem_tich_luy, trang_thai
+      FROM khach_hang 
+      WHERE ma_kh = ?
+    `;
     db.query(sql, [id], callback);
   },
 };
