@@ -7,5 +7,4 @@ router.get("/", controller.getEmployees);
 router.post("/", controller.createEmployee);
 router.put("/:id", controller.updateEmployee);
 router.delete("/:id", controller.deleteEmployee);
-
 module.exports = router;
