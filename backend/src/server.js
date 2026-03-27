@@ -7,6 +7,8 @@ require("./config/db");
 
 const authRoutes = require("./routes/authRoutes");
 const roomRoutes = require("./routes/roomRoutes");
+const employeeRoutes = require("./routes/employeeRoutes");
+const ticketRoutes = require("./routes/ticketRoutes");
 
 const app = express();
 
@@ -14,7 +16,9 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/api", authRoutes);
-app.use("/api", roomRoutes)
+app.use("/api", roomRoutes);
+app.use("/api/employees", employeeRoutes);
+app.use("/api/tickets", ticketRoutes)
 
 app.get("/", (req, res) => {
     res.send("Server dang chay...");

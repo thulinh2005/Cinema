@@ -4,9 +4,12 @@ import { Toaster } from "sonner"
 import Login from "./pages/Login"
 import Homepage from "./pages/Homepage"
 import Rooms from "./pages/Rooms"
+import Employee from "./pages/Employee"
+
 import SeatMap from "./pages/SeatMap"
 import ProtectedRoute from "./components/ProtectedRoute"
 import NotFound from "./pages/NotFound"
+
 
 function App() {
   return (
@@ -29,6 +32,8 @@ function App() {
           {/* Các trang con sẽ hiển thị tại vị trí <Outlet /> trong Homepage */}
           <Route path="admin/rooms" element={<Rooms />} />
           <Route path="admin/rooms/:id/seats" element={<SeatMap />} />
+          <Route path="admin/employee" element={<Employee />} />
+          <Route path="admin/employee/:id/seats" element={<SeatMap />} />
 
           {/* Em có thể thêm các trang khác ở đây sau này */}
           {/* <Route path="movies" element={<Movies />} /> */}

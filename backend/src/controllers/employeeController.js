@@ -1,0 +1,178 @@
+const employeeModel = require("../models/employeeModel");
+
+// ================= GET ALL =================
+exports.getEmployees = (req, res) => {
+    const { search = "" } = req.query;
+
+    console.log("🔍 Search:", search);
+    
+    employeeModel.getAll(search, (err, results) => {
+        if (err) {
+            console.error("❌ Error fetching employees:", err.message);
+            return res.status(500).json({ message: "Lỗi lấy danh sách nhân viên", error: err });
+        }
+        
+        console.log("✅ Found", results.length, "employees");
+        res.json(results);
+    });
+};
+
+// ================= CREATE EMPLOYEE =================
+exports.createEmployee = (req, res) => {
+    const { ho_ten, ngay_sinh, dia_chi, so_dien_thoai, email, anh_dai_dien, ma_tk, trang_thai } = req.body;
+
+    // ============ VALIDATION - Tất cả field bắt buộc ============
+    if (!ho_ten || ho_ten.trim() === "") {
+        return res.status(400).json({ message: "Họ tên không được bỏ trống" });
+    }
+
+    if (!ngay_sinh || ngay_sinh.trim() === "") {
+        return res.status(400).json({ message: "Ngày sinh không được bỏ trống" });
+    }
+
+    // Kiểm tra tuổi (phải từ 16 tuổi trở lên)
+    const birthDate = new Date(ngay_sinh);
+    const today = new Date();
+    const age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    
+    if (age < 16 || (age === 16 && monthDiff < 0)) {
+        return res.status(400).json({ message: "Nhân viên phải từ 16 tuổi trở lên (sinh từ năm 2010)" });
+    }
+
+    if (!dia_chi || dia_chi.trim() === "") {
+        return res.status(400).json({ message: "Địa chỉ không được bỏ trống" });
+    }
+
+    if (!so_dien_thoai || so_dien_thoai.trim() === "") {
+        return res.status(400).json({ message: "Số điện thoại không được bỏ trống" });
+    }
+
+    if (!/^[0-9]{10}$/.test(so_dien_thoai)) {
+        return res.status(400).json({ message: "Số điện thoại phải đủ 10 số" });
+    }
+
+    if (!email || email.trim() === "") {
+        return res.status(400).json({ message: "Email không được bỏ trống" });
+    }
+
+    // ❌ Kiểm tra trùng số điện thoại
+    employeeModel.checkPhoneExists(so_dien_thoai, (err, exist) => {
+        if (err) {
+            console.error("❌ Error checking phone:", err.message);
+            return res.status(500).json({ message: "Lỗi kiểm tra số điện thoại" });
+        }
+
+        if (exist.length > 0) {
+            return res.status(400).json({ message: "Số điện thoại này đã tồn tại" });
+        }
+
+        // 4️⃣ Thêm nhân viên
+        employeeModel.create({
+            ho_ten,
+            ngay_sinh,
+            dia_chi,
+            so_dien_thoai,
+            email,
+            anh_dai_dien: anh_dai_dien || null,
+            ma_tk: ma_tk || null,
+            trang_thai: trang_thai || "Còn làm"
+        }, (errCreate) => {
+            if (errCreate) {
+                console.error("❌ Error creating employee:", errCreate.message);
+                return res.status(500).json({ message: "Lỗi thêm nhân viên" });
+            }
+
+            console.log("✅ Employee created:", ho_ten);
+            res.json({ message: "Thêm nhân viên thành công" });
+        });
+    });
+};
+
+// ================= UPDATE EMPLOYEE =================
+exports.updateEmployee = (req, res) => {
+    const { id } = req.params;
+    const { ho_ten, ngay_sinh, dia_chi, so_dien_thoai, email, anh_dai_dien, ma_tk, trang_thai } = req.body;
+
+    // ============ VALIDATION - Tất cả field bắt buộc ============
+    if (!ho_ten || ho_ten.trim() === "") {
+        return res.status(400).json({ message: "Họ tên không được bỏ trống" });
+    }
+
+    if (!ngay_sinh || ngay_sinh.trim() === "") {
+        return res.status(400).json({ message: "Ngày sinh không được bỏ trống" });
+    }
+
+    // Kiểm tra tuổi (phải từ 16 tuổi trở lên)
+    const birthDate = new Date(ngay_sinh);
+    const today = new Date();
+    const age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    
+    if (age < 16 || (age === 16 && monthDiff < 0)) {
+        return res.status(400).json({ message: "Nhân viên phải từ 16 tuổi trở lên (sinh từ năm 2010)" });
+    }
+
+    if (!dia_chi || dia_chi.trim() === "") {
+        return res.status(400).json({ message: "Địa chỉ không được bỏ trống" });
+    }
+
+    if (!so_dien_thoai || so_dien_thoai.trim() === "") {
+        return res.status(400).json({ message: "Số điện thoại không được bỏ trống" });
+    }
+
+    if (!/^[0-9]{10}$/.test(so_dien_thoai)) {
+        return res.status(400).json({ message: "Số điện thoại phải đủ 10 số" });
+    }
+
+    if (!email || email.trim() === "") {
+        return res.status(400).json({ message: "Email không được bỏ trống" });
+    }
+
+    // 3️⃣ Kiểm tra trùng số điện thoại (trừ chính nhân viên đó)
+    employeeModel.checkPhoneExistsExclude(so_dien_thoai, id, (err, exist) => {
+        if (err) {
+            console.error("❌ Error checking phone:", err.message);
+            return res.status(500).json({ message: "Lỗi kiểm tra số điện thoại" });
+        }
+
+        if (exist.length > 0) {
+            return res.status(400).json({ message: "Số điện thoại này đã được sử dụng bởi nhân viên khác" });
+        }
+
+        // 4️⃣ Cập nhật nhân viên
+        employeeModel.update(id, {
+            ho_ten,
+            ngay_sinh,
+            dia_chi,
+            so_dien_thoai,
+            email,
+            anh_dai_dien: anh_dai_dien || null,
+            ma_tk: ma_tk || null,
+            trang_thai: trang_thai || "Còn làm"
+        }, (errUpdate) => {
+            if (errUpdate) {
+                console.error("❌ Error updating employee:", errUpdate.message);
+                return res.status(500).json({ message: "Lỗi cập nhật nhân viên" });
+            }
+
+            console.log("✅ Employee updated:", id);
+            res.json({ message: "Cập nhật nhân viên thành công" });
+        });
+    });
+};
+
+// ================= DELETE EMPLOYEE =================
+exports.deleteEmployee = (req, res) => {
+    const { id } = req.params;
+
+    employeeModel.delete(id, (err) => {
+        if (err) {
+            console.error("❌ Error deleting employee:", err.message);
+            return res.status(500).json({ message: "Lỗi xóa nhân viên" });
+        }
+
+        console.log("✅ Employee deleted:", id);
+        res.json({ message: "Xóa nhân viên thành công" });
+    });
+};
