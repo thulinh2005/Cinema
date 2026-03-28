@@ -32,7 +32,7 @@ const data = {
         { title: "Sản phẩm", url: "/products", icon: Popcorn },
         { title: "Vé", url: "/tickets", icon: Ticket },
         { title: "Hóa đơn", url: "/admin/invoices", icon: FileText },
-        { title: "Nhân viên", url: "/staff", icon: Users },
+        { title: "Nhân viên", url: "/admin/employee", icon: Users },
         { title: "Khách hàng", url: "/admin/customers", icon: UserRound },
         { title: "Thống kê", url: "/statistics", icon: ChartSpline },
     ],

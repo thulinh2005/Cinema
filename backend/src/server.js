@@ -9,6 +9,7 @@ const authRoutes = require("./routes/authRoutes");
 const customerRoutes = require("./routes/customerRoutes");
 const roomRoutes = require("./routes/roomRoutes");
 const invoiceRoutes = require("./routes/invoiceRoutes");
+const employeeRoutes = require("./routes/employeeRoutes");
 
 const app = express();
 
@@ -19,6 +20,7 @@ app.use("/api", authRoutes);
 app.use("/api/customers", customerRoutes);
 app.use("/api/rooms", roomRoutes);
 app.use("/api/invoices", invoiceRoutes);
+app.use("/api/employees", employeeRoutes);
 
 app.get("/", (req, res) => {
     res.send("Server dang chay...");

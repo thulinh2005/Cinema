@@ -38,6 +38,7 @@ const Rooms = () => {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setRooms(response.data);
+        // eslint-disable-next-line no-unused-vars
         } catch (error) {
             toast.error("Không thể tải danh sách phòng");
         }
@@ -50,12 +51,14 @@ const Rooms = () => {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setRoomTypes(response.data);
+        // eslint-disable-next-line no-unused-vars
         } catch (error) {
             toast.error("Không thể lấy loại phòng");
         }
     };
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         fetchRooms();
         fetchRoomTypes();
     }, [searchTerm]);
@@ -108,6 +111,7 @@ const Rooms = () => {
             toast.success("Cập nhật phòng thành công!");
             setIsEditModalOpen(false);
             fetchRooms(); // Tải lại danh sách
+        // eslint-disable-next-line no-unused-vars
         } catch (error) {
             toast.error("Lỗi khi cập nhật phòng");
         }
@@ -232,6 +236,7 @@ const Rooms = () => {
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />
             </div>
+            
 
             {/* SỬ DỤNG TABLE COMPONENT CỦA SHADCN - Đã tối ưu layout */}
             <div className="rounded-xl border bg-white shadow-sm overflow-hidden">
