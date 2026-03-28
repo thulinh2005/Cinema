@@ -46,7 +46,7 @@ const Rooms = () => {
     const fetchRoomTypes = async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.get(`http://localhost:5000/api/room-types`, {
+            const response = await axios.get(`http://localhost:5000/api/rooms/room-types`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setRoomTypes(response.data);
