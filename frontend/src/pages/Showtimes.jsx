@@ -11,7 +11,35 @@ import {
   X,
 } from "lucide-react";
 
-import DeleteConfirmModal from "./DeleteConfirmModal";
+const LocalDeleteConfirmModal = ({ isOpen, onClose, onConfirm, title, message }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+      <div className="bg-white w-[400px] rounded-xl p-6 shadow-lg text-center relative">
+        <div className="mx-auto w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-3">
+          <Trash2 className="w-6 h-6 text-red-600" />
+        </div>
+        <h2 className="text-xl font-bold mb-2">{title}</h2>
+        <p className="text-gray-600 text-sm mb-4">{message}</p>
+        <div className="flex gap-3 justify-center">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 bg-gray-100 rounded hover:bg-gray-200"
+          >
+            Hủy
+          </button>
+          <button
+            onClick={onConfirm}
+            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+          >
+            Xóa
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 // Modal chi tiết suất chiếu
 const ShowtimeDetailModal = ({ showtime, open, onOpenChange }) => {
@@ -700,9 +728,9 @@ const Showtimes = () => {
         }}
       />
 
-      <DeleteConfirmModal
-        open={openDelete}
-        onOpenChange={setOpenDelete}
+      <LocalDeleteConfirmModal
+        isOpen={openDelete}
+        onClose={() => setOpenDelete(false)}
         onConfirm={confirmDelete}
         title="Xóa suất chiếu"
         message="Bạn có chắc chắn muốn xóa suất chiếu này? Hành động này không thể hoàn tác."

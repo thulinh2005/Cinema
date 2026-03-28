@@ -11,7 +11,35 @@ import {
   X,
 } from "lucide-react";
 
-import DeleteConfirmModal from "./DeleteConfirmModal";
+const LocalDeleteConfirmModal = ({ isOpen, onClose, onConfirm, title, message }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+      <div className="bg-white w-[400px] rounded-xl p-6 shadow-lg text-center relative">
+        <div className="mx-auto w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-3">
+          <Trash2 className="w-6 h-6 text-red-600" />
+        </div>
+        <h2 className="text-xl font-bold mb-2">{title}</h2>
+        <p className="text-gray-600 text-sm mb-4">{message}</p>
+        <div className="flex gap-3 justify-center">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 bg-gray-100 rounded hover:bg-gray-200"
+          >
+            Hủy
+          </button>
+          <button
+            onClick={onConfirm}
+            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+          >
+            Xóa
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 // Modal chi tiết phim
 const MovieDetailModal = ({ movie, open, onOpenChange }) => {
@@ -134,7 +162,7 @@ const MovieDetailModal = ({ movie, open, onOpenChange }) => {
 // Modal thêm/sửa phim
 const MovieFormModal = ({ movie, mode, open, onOpenChange, onSuccess }) => {
   const [formData, setFormData] = useState({
-    ma_phim: "",  
+    ma_phim: "",
     ten_phim: "",
     the_loai: "",
     thoi_luong: "",
@@ -170,7 +198,7 @@ const MovieFormModal = ({ movie, mode, open, onOpenChange, onSuccess }) => {
       });
     } else {
       setFormData({
-        ma_phim: "",  
+        ma_phim: "",
         ten_phim: "",
         the_loai: "",
         thoi_luong: "",
@@ -249,14 +277,14 @@ const MovieFormModal = ({ movie, mode, open, onOpenChange, onSuccess }) => {
       data.append("do_tuoi_gioi_han", formData.do_tuoi_gioi_han);
       data.append("nuoc_san_xuat", formData.nuoc_san_xuat);
       data.append("tinh_trang", formData.tinh_trang);
-      
+
       // Thêm file nếu có
       if (fileInputRef.current?.files?.[0]) {
-          data.append("anh_poster", fileInputRef.current.files[0]);
-        } else if (mode === "edit") {
-          // QUAN TRỌNG: giữ lại ảnh cũ khi không upload ảnh mới
-          data.append("anh_poster", formData.anh_poster);
-        }
+        data.append("anh_poster", fileInputRef.current.files[0]);
+      } else if (mode === "edit") {
+        // QUAN TRỌNG: giữ lại ảnh cũ khi không upload ảnh mới
+        data.append("anh_poster", formData.anh_poster);
+      }
 
       if (mode === "edit") {
         await axios.put(
@@ -276,7 +304,7 @@ const MovieFormModal = ({ movie, mode, open, onOpenChange, onSuccess }) => {
       console.error("Lỗi:", error);
       const errorMessage = error?.response?.data?.message || "Lỗi khi lưu phim";
       const errorDetail = error?.response?.data?.detail;
-      
+
       if (errorDetail) {
         toast.error(errorDetail);
       } else {
@@ -306,7 +334,7 @@ const MovieFormModal = ({ movie, mode, open, onOpenChange, onSuccess }) => {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-             {/* MÃ PHIM */}
+            {/* MÃ PHIM */}
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-2">
                 Mã phim
@@ -552,7 +580,7 @@ const Movies = () => {
     }
   };
 
-   // --- HÀM XÓA ---
+  // --- HÀM XÓA ---
   const handleDeleteClick = (movie) => {
     setSelectedMovie(movie);
     setOpenDelete(true);
@@ -627,23 +655,23 @@ const Movies = () => {
     }
   };
   const confirmDelete = async () => {
-  // Kiểm tra xem state selectedMovie có tồn tại không
-  if (!selectedMovie) {
-    toast.error("Không tìm thấy thông tin phim để xóa");
-    return;
-  }
+    // Kiểm tra xem state selectedMovie có tồn tại không
+    if (!selectedMovie) {
+      toast.error("Không tìm thấy thông tin phim để xóa");
+      return;
+    }
 
-  try {
-     await axios.delete(`http://localhost:5000/api/movies/${selectedMovie.ma_phim}`);
-    toast.success("Xóa phim thành công");
-    setOpenDelete(false);
-    setSelectedMovie(null);  
-    fetchMovies();  // load lại danh sách
-  
-  } catch (error) {
-    toast.error("Xóa phim thất bại");
-  }
-};
+    try {
+      await axios.delete(`http://localhost:5000/api/movies/${selectedMovie.ma_phim}`);
+      toast.success("Xóa phim thành công");
+      setOpenDelete(false);
+      setSelectedMovie(null);
+      fetchMovies();  // load lại danh sách
+
+    } catch (error) {
+      toast.error("Xóa phim thất bại");
+    }
+  };
   const renderPagination = () => {
     const arr = [];
     for (let i = 1; i <= totalPages; i++) {
@@ -651,11 +679,10 @@ const Movies = () => {
         <button
           key={i}
           onClick={() => setPage(i)}
-          className={`h-9 min-w-[36px] rounded-lg border px-3 text-sm font-medium transition ${
-            page === i
+          className={`h-9 min-w-[36px] rounded-lg border px-3 text-sm font-medium transition ${page === i
               ? "border-blue-600 bg-blue-600 text-white"
               : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
-          }`}
+            }`}
         >
           {i}
         </button>
@@ -894,12 +921,12 @@ const Movies = () => {
                           </button>
 
                           <button
-                          onClick={() => handleDeleteClick(movie)}
-                          className="text-red-500 transition hover:scale-110"
-                          title="Xóa phim"
-                        >
-                          <Trash2 size={18} />
-                        </button>
+                            onClick={() => handleDeleteClick(movie)}
+                            className="text-red-500 transition hover:scale-110"
+                            title="Xóa phim"
+                          >
+                            <Trash2 size={18} />
+                          </button>
                         </div>
                       </td>
                     </tr>
@@ -942,13 +969,12 @@ const Movies = () => {
         }}
       />
 
-      <DeleteConfirmModal
-        open={openDelete}
+      <LocalDeleteConfirmModal
+        isOpen={openDelete}
         onClose={() => setOpenDelete(false)}
-        onOpenChange={setOpenDelete}
         onConfirm={confirmDelete}
         title="Xóa phim"
-        message="Bạn có chắc chắn muốn xóa phim này? Hành động này không thể hoàn tác."
+        message={`Bạn có chắc muốn xóa phim ${selectedMovie?.ten_phim}? Hành động này không thể hoàn tác.`}
       />
     </div>
   );
