@@ -4,10 +4,10 @@ const roomController = require("../controllers/roomController");
 const verifyToken = require("../middlewares/verifyToken");
 
 router.get("/room-types", verifyToken, roomController.getRoomTypes);
-router.get("/rooms", verifyToken, roomController.getAllRooms);
-router.post("/rooms", verifyToken, roomController.createRoom);
-router.put("/rooms/:id", verifyToken, roomController.updateRoom);
-router.delete("/rooms/:id", verifyToken, roomController.deleteRoom);
-router.get("/rooms/:id/seats", verifyToken, roomController.getSeatsByRoom);
-router.put("/rooms/:id/seats", verifyToken, roomController.updateSeats);
+router.get("/", verifyToken, roomController.getAllRooms);
+router.post("/", verifyToken, roomController.createRoom);
+router.put("/:id", verifyToken, roomController.updateRoom);
+router.delete("/:id", verifyToken, roomController.deleteRoom);
+router.get("/:id/seats", verifyToken, roomController.getSeatsByRoom);
+router.put("/:id/seats", verifyToken, roomController.updateSeats);
 module.exports = router;

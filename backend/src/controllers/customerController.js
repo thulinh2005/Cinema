@@ -50,20 +50,30 @@ exports.createCustomer = async (req, res) => {
 
     data.mat_khau = await bcrypt.hash(data.mat_khau, 10);
 
-    Customer.create(data, (err, result) => {
-      if (err) {
-        if (err.code === "ER_DUP_ENTRY") {
-          return res.status(400).json({
-            message: "Email đã tồn tại",
-          });
-        }
+    Customer.checkEmailPhone(data.email, data.so_dien_thoai, null, (err, existing) => {
+      if (err) return res.status(500).json({ message: "Lỗi server khi kiểm tra dữ liệu", err });
 
-        return res.status(500).json({ message: "Lỗi server", err });
+      if (existing.length > 0) {
+        return res.status(400).json({
+          message: "email hoặc số điện thoại đã tồn tại xin vui lòng dùng email hoặc số điện thoại mới",
+        });
       }
 
-      res.status(201).json({
-        message: "Thêm khách hàng thành công",
-        id: result.insertId,
+      Customer.create(data, (err, result) => {
+        if (err) {
+          if (err.code === "ER_DUP_ENTRY") {
+            return res.status(400).json({
+              message: "Email đã tồn tại",
+            });
+          }
+
+          return res.status(500).json({ message: "Lỗi server", err });
+        }
+
+        res.status(201).json({
+          message: "Thêm khách hàng thành công",
+          id: result.insertId,
+        });
       });
     });
   } catch (err) {
@@ -81,16 +91,26 @@ exports.updateCustomer = async (req, res) => {
       data.mat_khau = await bcrypt.hash(data.mat_khau, 10);
     }
 
-    Customer.update(id, data, (err, result) => {
-      if (err) return res.status(500).json({ message: "Lỗi server", err });
+    Customer.checkEmailPhone(data.email, data.so_dien_thoai, id, (err, existing) => {
+      if (err) return res.status(500).json({ message: "Lỗi server khi kiểm tra dữ liệu", err });
 
-      if (result.affectedRows === 0) {
-        return res.status(404).json({
-          message: "Không tìm thấy khách hàng",
+      if (existing.length > 0) {
+        return res.status(400).json({
+          message: "email hoặc số điện thoại đã tồn tại xin vui lòng dùng email hoặc số điện thoại mới",
         });
       }
 
-      res.json({ message: "Cập nhật thành công" });
+      Customer.update(id, data, (err, result) => {
+        if (err) return res.status(500).json({ message: "Lỗi server", err });
+
+        if (result.affectedRows === 0) {
+          return res.status(404).json({
+            message: "Không tìm thấy khách hàng",
+          });
+        }
+
+        res.json({ message: "Cập nhật thành công" });
+      });
     });
   } catch (err) {
     res.status(500).json({ message: "Lỗi server", err });

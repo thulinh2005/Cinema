@@ -12,6 +12,9 @@ const customerRoutes = require("./routes/customerRoutes");
 const roomRoutes = require("./routes/roomRoutes");
 const movieRoutes = require("./routes/movieRoutes");
 const showtimeRoutes = require("./routes/showtimeRoutes");
+const invoiceRoutes = require("./routes/invoiceRoutes");
+const employeeRoutes = require("./routes/employeeRoutes");
+
 const app = express();
 
 app.use(cors());
@@ -49,6 +52,8 @@ app.use("/api/customers", customerRoutes);
 app.use("/api/rooms", roomRoutes);
 app.use("/api/movies", require("./routes/movieRoutes")(upload));
 app.use("/api/showtimes", showtimeRoutes);
+app.use("/api/invoices", invoiceRoutes);
+app.use("/api/employees", employeeRoutes);
 
 app.get("/", (req, res) => {
     res.send("Server dang chay...");

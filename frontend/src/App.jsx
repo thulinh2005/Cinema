@@ -3,6 +3,7 @@ import { Toaster } from "sonner"
 import Login from "./pages/Login"
 import Homepage from "./pages/Homepage"
 import Rooms from "./pages/Rooms"
+import Employee from "./pages/employee"
 import SeatMap from "./pages/SeatMap"
 import Movies from "./pages/Movies"
 import Showtimes from "./pages/Showtimes"
@@ -10,6 +11,8 @@ import Product from "./pages/Product"
 import ProtectedRoute from "./components/ProtectedRoute"
 import NotFound from "./pages/NotFound"
 import Customers from "./pages/Customers"
+import Invoices from "./pages/Invoices"
+
 
 function App() {
   return (
@@ -33,6 +36,9 @@ function App() {
           <Route path="admin/rooms" element={<Rooms />} />
           <Route path="admin/rooms/:id/seats" element={<SeatMap />} />
           <Route path="/admin/customers" element={<Customers />} />
+          <Route path="/admin/invoices" element={<Invoices />} />
+          <Route path="admin/employee" element={<Employee />} />
+          <Route path="admin/employee/:id/seats" element={<SeatMap />} />
 
           {/* Em có thể thêm các trang khác ở đây sau này */}
           <Route path="movies" element={<Movies />} />
