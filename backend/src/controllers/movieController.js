@@ -1,388 +1,308 @@
-const Movie = require("../models/movieModel");
+const Movie = require("../models/movieModel"); 
 
 // Helper function format ngay_khoi_chieu
-const formatMovieDate = (movie) => ({
-  ...movie,
-  ngay_khoi_chieu: movie.ngay_khoi_chieu instanceof Date 
-    ? movie.ngay_khoi_chieu.toISOString().split('T')[0]
-    : movie.ngay_khoi_chieu
-});
-
-// VALIDATION HELPER (built-in)
-const validateMovieData = (data) => {
-  // Normalize
-  data.ten_phim = String(data.ten_phim || "").trim().toLowerCase();
-  data.the_loai = String(data.the_loai || "").trim();
-  data.mo_ta = String(data.mo_ta || "").trim();
-  data.anh_poster = String(data.anh_poster || "").trim();
-  data.link_trailer = String(data.link_trailer || "").trim();
-  data.do_tuoi_gioi_han = String(data.do_tuoi_gioi_han || "").trim();
-  data.nuoc_san_xuat = String(data.nuoc_san_xuat || "").trim();
-  data.tinh_trang = String(data.tinh_trang || "").trim();
-  data.thoi_luong = String(data.thoi_luong || "").trim();
-  data.ngay_khoi_chieu = String(data.ngay_khoi_chieu || "").trim();
-
-  // Check empty fields
-  if (
-    !data.ten_phim || !data.the_loai || !data.thoi_luong ||
-    !data.ngay_khoi_chieu || !data.mo_ta || !data.anh_poster ||
-    !data.link_trailer || !data.do_tuoi_gioi_han ||
-    !data.nuoc_san_xuat || !data.tinh_trang
-  ) {
+const formatMovieDate = (movie) => {
+    if (!movie) return null;
     return {
-      error: true,
-      status: 400,
-      response: {
-        success: false,
-        message: "Dữ liệu không hợp lệ.",
-        detail: "Vui lòng cung cấp đầy đủ và chính xác tất cả 10 trường thông tin bắt buộc:",
-        required: [
-          { field: "ten_phim", description: "Tên phim (không được để trống)" },
-          { field: "the_loai", description: "Thể loại (không được để trống)" },
-          { field: "thoi_luong", description: "Thời lượng (phút, phải > 0)" },
-          { field: "ngay_khoi_chieu", description: "Ngày khởi chiếu (định dạng YYYY-MM-DD)" },
-          { field: "mo_ta", description: "Mô tả phim (không được để trống)" },
-          { field: "anh_poster", description: "URL poster (định dạng ảnh: jpg, png, gif, webp)" },
-          { field: "link_trailer", description: "Link YouTube trailer (YouTube link hợp lệ)" },
-          { field: "do_tuoi_gioi_han", description: "Độ tuổi giới hạn (không được để trống)" },
-          { field: "nuoc_san_xuat", description: "Nước sản xuất (không được để trống)" },
-          { field: "tinh_trang", description: "Tình trạng (không được để trống)" }
-        ]
-      }
+        ...movie,
+        ngay_khoi_chieu: movie.ngay_khoi_chieu instanceof Date 
+            ? movie.ngay_khoi_chieu.toISOString().split('T')[0]
+            : movie.ngay_khoi_chieu
     };
-  }
-
-  // Validate date format
-  const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-  if (!dateRegex.test(data.ngay_khoi_chieu)) {
-    return {
-      error: true,
-      status: 400,
-      response: {
-        success: false,
-        message: "Ngày khởi chiếu không hợp lệ.",
-        detail: `Giá trị nhận được: "${data.ngay_khoi_chieu}". Vui lòng sử dụng định dạng YYYY-MM-DD (ví dụ: 2026-03-25).`
-      }
-    };
-  }
-
-  // Validate duration
-  const thoi_luong = Number(data.thoi_luong);
-  if (isNaN(thoi_luong) || thoi_luong <= 0) {
-    return {
-      error: true,
-      status: 400,
-      response: {
-        success: false,
-        message: "Thời lượng phim không hợp lệ.",
-        detail: `Giá trị nhận được: "${data.thoi_luong}". Thời lượng phải là số dương (tính bằng phút, ví dụ: 120).`
-      }
-    };
-  }
-
-  // Validate poster URL or server path
-  const uploadPathRegex = /^\/uploads\/.+\.(jpg|jpeg|png|gif|webp)$/i;
-  const urlRegex = /^(https?:\/\/)?.+\.(jpg|jpeg|png|gif|webp)$/i;
-  if (!uploadPathRegex.test(data.anh_poster) && !urlRegex.test(data.anh_poster)) {
-    return {
-      error: true,
-      status: 400,
-      response: {
-        success: false,
-        message: "Ảnh poster không hợp lệ.",
-        detail: `Giá trị nhận được: "${data.anh_poster}". Vui lòng upload ảnh từ máy hoặc cung cấp URL ảnh hợp lệ (jpg, jpeg, png, gif hoặc webp).`
-      }
-    };
-  }
-
-  // Validate YouTube link
-  const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube|youtu|youtube-nocookie)\.(com|be)(\/.+)?$/;
-  if (!youtubeRegex.test(data.link_trailer.trim())) {
-    return {
-      error: true,
-      status: 400,
-      response: {
-        success: false,
-        message: "Link trailer YouTube không hợp lệ.",
-        detail: `Giá trị nhận được: "${data.link_trailer}". Vui lòng cung cấp link YouTube hợp lệ (ví dụ: https://www.youtube.com/watch?v=... hoặc https://youtu.be/...).`
-      }
-    };
-  }
-
-  return { error: false };
 };
+
+// VALIDATION HELPER
+const validateMovieData = (data, isUpdate = false) => {
+    const fields = ["ten_phim", "the_loai", "mo_ta", "anh_poster", "link_trailer", "do_tuoi_gioi_han", "nuoc_san_xuat", "tinh_trang", "thoi_luong", "ngay_khoi_chieu"];
+    
+    // Trim dữ liệu nếu có
+    fields.forEach(field => {
+        if (data[field]) data[field] = String(data[field]).trim();
+    });
+
+    // 1. CHỈ CHECK TRỐNG TẤT CẢ KHI THÊM MỚI (isUpdate = false)
+    if (!isUpdate) {
+        for (let field of fields) {
+            if (!data[field]) {
+                return {
+                    error: true,
+                    status: 400,
+                    response: { success: false, message: `Trường ${field} không được để trống khi thêm mới.` }
+                };
+            }
+        }
+    }
+
+    // 2. VALIDATE ĐỊNH DẠNG (Dùng cho cả Thêm và Sửa - nhưng chỉ check khi TRƯỜNG ĐÓ có dữ liệu gửi lên)
+    if (data.ngay_khoi_chieu) {
+        const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+        if (!dateRegex.test(data.ngay_khoi_chieu)) {
+            return { error: true, status: 400, response: { success: false, message: "Ngày khởi chiếu phải có định dạng YYYY-MM-DD" } };
+        }
+    }
+
+    if (data.thoi_luong) {
+        const thoi_luong = Number(data.thoi_luong);
+        if (isNaN(thoi_luong) || thoi_luong <= 0) {
+            return { error: true, status: 400, response: { success: false, message: "Thời lượng phải là số dương." } };
+        }
+    }
+
+    if (data.link_trailer) {
+        const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube|youtu|youtube-nocookie)\.(com|be)(\/.+)?$/;
+        if (!youtubeRegex.test(data.link_trailer)) {
+            return { error: true, status: 400, response: { success: false, message: "Link Youtube không hợp lệ." } };
+        }
+    }
+
+    return { error: false };
+};
+
+// --- CÁC HÀM XỬ LÝ (EXPORTS) ---
 
 // LẤY DANH SÁCH PHIM
 exports.getMovie = (req, res) => {
-  const {
-    search = "",
-    page = 1,
-    limit = 10,
-    the_loai = "",
-    tinh_trang = "",
-    do_tuoi_gioi_han = "",
-    nuoc_san_xuat = "",
-  } = req.query;
+    const { search = "", page = 1, limit = 10, the_loai = "", tinh_trang = "", do_tuoi_gioi_han = "", nuoc_san_xuat = "" } = req.query;
+    const validPage = Math.max(1, Number(page));
+    const validLimit = Math.max(1, Number(limit));
 
-  const validPage = Math.max(1, Number(page));
-  const validLimit = Math.max(1, Number(limit));
+    Movie.count(search, the_loai, tinh_trang, do_tuoi_gioi_han, nuoc_san_xuat, (err, countResult) => {
+        if (err) return res.status(500).json({ success: false, message: "Lỗi đếm số lượng phim." });
+        const total = countResult[0].total;
 
-  Movie.count(search, the_loai, tinh_trang, do_tuoi_gioi_han, nuoc_san_xuat, (err, countResult) => {
-    if (err) return res.status(500).json({ 
-      success: false,
-      message: "Không thể lấy danh sách phim.",
-      detail: "Vui lòng thử lại sau hoặc liên hệ với quản trị viên nếu vấn đề tiếp tục xảy ra.",
-      error: process.env.NODE_ENV === 'development' ? err.message : undefined
+        Movie.getAll(search, validPage, validLimit, the_loai, tinh_trang, do_tuoi_gioi_han, nuoc_san_xuat, (err, data) => {
+            if (err) return res.status(500).json({ success: false, message: "Lỗi lấy danh sách phim." });
+            const formattedData = data.map(movie => formatMovieDate(movie));
+            res.json({ data: formattedData, total, page: validPage, limit: validLimit, totalPages: Math.ceil(total / validLimit) });
+        });
     });
-
-    const total = countResult[0].total;
-
-    Movie.getAll(
-      search,
-      validPage,
-      validLimit,
-      the_loai,
-      tinh_trang,
-      do_tuoi_gioi_han,
-      nuoc_san_xuat,
-      (err, data) => {
-        if (err) return res.status(500).json({ 
-          success: false,
-          message: "Không thể lấy danh sách phim.",
-          detail: "Vui lòng thử lại sau hoặc liên hệ với quản trị viên nếu vấn đề tiếp tục xảy ra.",
-          error: process.env.NODE_ENV === 'development' ? err.message : undefined
-        });
-
-        // Format ngay_khoi_chieu thành YYYY-MM-DD
-        const formattedData = data.map(movie => ({
-          ...movie,
-          ngay_khoi_chieu: movie.ngay_khoi_chieu instanceof Date 
-            ? movie.ngay_khoi_chieu.toISOString().split('T')[0]
-            : movie.ngay_khoi_chieu
-        }));
-
-        res.json({
-          data: formattedData,
-          total,
-          page: validPage,
-          limit: validLimit,
-          totalPages: Math.ceil(total / validLimit),
-        });
-      }
-    );
-  });
 };
 
 // CHI TIẾT PHIM
 exports.getByIdMovie = (req, res) => {
-  const { id } = req.params;
-
-  Movie.getById(id, (err, result) => {
-    if (err) return res.status(500).json({ 
-      success: false,
-      message: "Không thể lấy thông tin phim.",
-      detail: "Vui lòng thử lại sau hoặc liên hệ với quản trị viên nếu vấn đề tiếp tục xảy ra.",
-      error: process.env.NODE_ENV === 'development' ? err.message : undefined
+    const { ma_phim } = req.params;
+    Movie.getById(ma_phim, (err, result) => {
+        if (err) return res.status(500).json({ success: false, message: "Lỗi server." });
+        if (!result || result.length === 0) return res.status(404).json({ success: false, message: "Không tìm thấy phim." });
+        res.json(formatMovieDate(result[0]));
     });
-
-    if (!result || result.length === 0) {
-      return res.status(404).json({
-        success: false,
-        message: "Phim không tồn tại.",
-        detail: `Không tìm thấy phim với ID "${id}". Vui lòng kiểm tra lại ID và thử lại.`
-      });
-    }
-
-    res.json(formatMovieDate(result[0]));
-  });
 };
 
 // THÊM PHIM
 exports.createMovie = (req, res) => {
-  try {
     const data = req.body;
+    if (req.file) data.anh_poster = `/uploads/${req.file.filename}`;
 
-    // Xử lý upload ảnh
-    if (req.file) {
-      data.anh_poster = `/uploads/${req.file.filename}`;
-    }
+    const validation = validateMovieData(data, false); // isUpdate = false
+    if (validation.error) return res.status(validation.status).json(validation.response);
 
-    // Validate data
-    const validation = validateMovieData(data);
-    if (validation.error) {
-      return res.status(validation.status).json(validation.response);
-    }
-
-    // Kiểm tra trùng tên phim
-    Movie.checkDuplicateTitle(data.ten_phim, null, (err, result) => {
-      if (err) return res.status(500).json({ 
-        success: false,
-        message: "Không thể kiểm tra thông tin phim.",
-        detail: "Vui lòng thử lại sau hoặc liên hệ với quản trị viên nếu vấn đề tiếp tục xảy ra.",
-        error: process.env.NODE_ENV === 'development' ? err.message : undefined
-      });
-      
-      if (result[0].count > 0) {
-        return res.status(409).json({
-          success: false,
-          message: "Phim đã tồn tại trong hệ thống.",
-          detail: `Phim có tên "${data.ten_phim}" đã được thêm vào trước đó. Vui lòng chọn tên khác hoặc cập nhật phim hiện có.`
-        });
-      }
-
-      // Nếu pass all validation, thêm phim
-      Movie.create(data, (err, result) => {
-        if (err) {
-          return res.status(500).json({ 
-            success: false,
-            message: "Không thể thêm phim mới.",
-            detail: "Vui lòng thử lại sau hoặc liên hệ với quản trị viên nếu vấn đề tiếp tục xảy ra.",
-            error: process.env.NODE_ENV === 'development' ? err.message : undefined
-          });
-        }
-
-        // Lấy lại thông tin phim vừa tạo để trả về đầy đủ
-        Movie.getById(result.insertId, (getErr, movies) => {
-          if (getErr) {
-            return res.status(500).json({ 
-              success: false,
-              message: "Phim đã được thêm nhưng không thể truy xuất thông tin.",
-              detail: "Vui lòng thử lại sau hoặc liên hệ với quản trị viên nếu vấn đề tiếp tục xảy ra.",
-              error: process.env.NODE_ENV === 'development' ? getErr.message : undefined
-            });
-          }
-
-          res.status(201).json({
-            success: true,
-            message: "Phim đã được thêm thành công.",
-            data: formatMovieDate(movies[0])
-          });
-        });
-      });
+    Movie.create(data, (err, result) => {
+        if (err) return res.status(500).json({ success: false, message: "Lỗi thêm phim." });
+        res.status(201).json({ success: true, message: "Thêm thành công", ma_phim
+          : result.insertId });
     });
-  } catch (err) {
-    res.status(500).json({ 
-      success: false,
-      message: "Đã xảy ra lỗi khi xử lý yêu cầu.",
-      detail: "Vui lòng thử lại sau hoặc liên hệ với quản trị viên nếu vấn đề tiếp tục xảy ra.",
-      error: process.env.NODE_ENV === 'development' ? err.message : undefined
-    });
-  }
 };
 
 // CẬP NHẬT PHIM
 exports.updateMovie = (req, res) => {
-  try {
-    const { id } = req.params;
+    const { ma_phim } = req.params;
     const data = req.body;
+    if (req.file) data.anh_poster = "/uploads/" + req.file.filename;
 
-    // Xử lý upload ảnh
-    if (req.file) {
-      data.anh_poster = `/uploads/${req.file.filename}`;
-    }
+    const validation = validateMovieData(data, true); // isUpdate = true -> Sẽ không bắt 10 trường
+    if (validation.error) return res.status(validation.status).json(validation.response);
 
-    // Validate data
-    const validation = validateMovieData(data);
-    if (validation.error) {
-      return res.status(validation.status).json(validation.response);
-    }
-
-    // Kiểm tra trùng tên phim (excluding phim hiện tại)
-    Movie.checkDuplicateTitle(data.ten_phim, id, (err, result) => {
-      if (err) return res.status(500).json({ 
-        success: false,
-        message: "Không thể kiểm tra thông tin phim.",
-        detail: "Vui lòng thử lại sau hoặc liên hệ với quản trị viên nếu vấn đề tiếp tục xảy ra.",
-        error: process.env.NODE_ENV === 'development' ? err.message : undefined
-      });
-      
-      if (result[0].count > 0) {
-        return res.status(409).json({
-          success: false,
-          message: "Phim đã tồn tại trong hệ thống.",
-          detail: `Phim có tên "${data.ten_phim}" đã được sử dụng bởi phim khác. Vui lòng chọn tên khác.`
-        });
-      }
-
-      Movie.update(id, data, (err, result) => {
-      if (err) return res.status(500).json({ 
-        success: false,
-        message: "Không thể cập nhật phim.",
-        detail: "Vui lòng thử lại sau hoặc liên hệ với quản trị viên nếu vấn đề tiếp tục xảy ra.",
-        error: process.env.NODE_ENV === 'development' ? err.message : undefined
-      });
-
-      if (result.affectedRows === 0) {
-        return res.status(404).json({
-          success: false,
-          message: "Phim không tồn tại.",
-          detail: `Không tìm thấy phim với ID "${id}". Vui lòng kiểm tra lại ID và thử lại.`
-        });
-      }
-
-      // Lấy lại thông tin phim vừa cập nhật để trả về đầy đủ
-      Movie.getById(id, (getErr, movies) => {
-        if (getErr) {
-          return res.status(500).json({ 
-            success: false,
-            message: "Phim đã được cập nhật nhưng không thể truy xuất thông tin.",
-            detail: "Vui lòng thử lại sau hoặc liên hệ với quản trị viên nếu vấn đề tiếp tục xảy ra.",
-            error: process.env.NODE_ENV === 'development' ? getErr.message : undefined
-          });
-        }
-
-        res.json({
-          success: true,
-          message: "Phim đã được cập nhật thành công.",
-          data: formatMovieDate(movies[0])
-        });
-      });
-      });
+    Movie.update(ma_phim, data, (err, result) => {
+        if (err) return res.status(500).json({ success: false, message: "Lỗi cập nhật." });
+        if (result.affectedRows === 0) return res.status(404).json({ success: false, message: "Phim không tồn tại." });
+        res.json({ success: true, message: "Cập nhật thành công" });
     });
-  } catch (err) {
-    res.status(500).json({ 
-      success: false,
-      message: "Đã xảy ra lỗi khi xử lý yêu cầu.",
-      detail: "Vui lòng thử lại sau hoặc liên hệ với quản trị viên nếu vấn đề tiếp tục xảy ra.",
-      error: process.env.NODE_ENV === 'development' ? err.message : undefined
-    });
-  }
 };
 
 // XÓA PHIM
 exports.deleteMovie = (req, res) => {
-  const { id } = req.params;
-
-  // Lấy thông tin phim trước khi xóa
-  Movie.getById(id, (getErr, movies) => {
-    if (getErr) return res.status(500).json({ 
-      success: false,
-      message: "Không thể lấy thông tin phim.",
-      detail: "Vui lòng thử lại sau hoặc liên hệ với quản trị viên nếu vấn đề tiếp tục xảy ra.",
-      error: process.env.NODE_ENV === 'development' ? getErr.message : undefined
-    });
-
-    if (!movies || movies.length === 0) {
-      return res.status(404).json({
-        success: false,
-        message: "Phim không tồn tại.",
-        detail: `Không tìm thấy phim với ID "${id}". Vui lòng kiểm tra lại ID và thử lại.`
-      });
+    const { ma_phim } = req.params;
+    
+    if (!ma_phim) {
+        return res.status(400).json({ success: false, message: "Thiếu mã phim để xóa" });
     }
 
-    Movie.delete(id, (err, result) => {
-      if (err) return res.status(500).json({ 
-        success: false,
-        message: "Không thể xóa phim.",
-        detail: "Vui lòng thử lại sau hoặc liên hệ với quản trị viên nếu vấn đề tiếp tục xảy ra.",
-        error: process.env.NODE_ENV === 'development' ? err.message : undefined
-      });
+    // Check FK references first
+    Movie.getReferencedShowtimes(ma_phim, (err, showtimeCount) => {
+        if (err) {
+            console.error("Lỗi kiểm tra suất chiếu:", err);
+            return res.status(500).json({ success: false, message: "Lỗi kiểm tra dữ liệu liên quan" });
+        }
 
-      res.json({
-        success: true,
-        message: "Phim đã được xóa thành công.",
-        data: formatMovieDate(movies[0])
-      });
+        if (showtimeCount > 0) {
+            return res.status(400).json({ 
+                success: false, 
+                message: `Không thể xóa phim. Phim này đang có ${showtimeCount} suất chiếu liên quan. Vui lòng xóa suất chiếu trước.` 
+            });
+        }
+
+        // Safe to delete
+        Movie.delete(ma_phim, (err, result) => {
+            if (err) {
+                console.error("Lỗi xóa phim:", err);
+                return res.status(500).json({ success: false, message: "Lỗi server khi xóa phim" });
+            }
+            
+            if (result.affectedRows === 0) {
+                return res.status(404).json({ success: false, message: "Không tìm thấy phim để xóa" });
+            }
+
+            res.json({ success: true, message: "Xóa phim thành công" });
+        });
     });
-  });
 };
+// const Movie = require("../models/movieModel");
+
+// // Helper function format ngay_khoi_chieu
+// const formatMovieDate = (movie) => {
+//     if (!movie) return null;
+//     return {
+//         ...movie,
+//         ngay_khoi_chieu: movie.ngay_khoi_chieu instanceof Date 
+//             ? movie.ngay_khoi_chieu.toISOString().split('T')[0]
+//             : movie.ngay_khoi_chieu
+//     };
+// };
+
+// // VALIDATION HELPER
+// const validateMovieData = (data, isUpdate = false) => {
+//     const fields = ["ten_phim", "the_loai", "mo_ta", "anh_poster", "link_trailer", "do_tuoi_gioi_han", "nuoc_san_xuat", "tinh_trang", "thoi_luong", "ngay_khoi_chieu"];
+    
+//     // Trim dữ liệu nếu có
+//     fields.forEach(field => {
+//         if (data[field]) data[field] = String(data[field]).trim();
+//     });
+
+//     // 1. CHỈ CHECK TRỐNG TẤT CẢ KHI THÊM MỚI (isUpdate = false)
+//     if (!isUpdate) {
+//         for (let field of fields) {
+//             if (!data[field]) {
+//                 return {
+//                     error: true,
+//                     status: 400,
+//                     response: { success: false, message: `Trường ${field} không được để trống khi thêm mới.` }
+//                 };
+//             }
+//         }
+//     }
+
+//     // 2. VALIDATE ĐỊNH DẠNG (Dùng cho cả Thêm và Sửa - nhưng chỉ check khi TRƯỜNG ĐÓ có dữ liệu gửi lên)
+//     if (data.ngay_khoi_chieu) {
+//         const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+//         if (!dateRegex.test(data.ngay_khoi_chieu)) {
+//             return { error: true, status: 400, response: { success: false, message: "Ngày khởi chiếu phải có định dạng YYYY-MM-DD" } };
+//         }
+//     }
+
+//     if (data.thoi_luong) {
+//         const thoi_luong = Number(data.thoi_luong);
+//         if (isNaN(thoi_luong) || thoi_luong <= 0) {
+//             return { error: true, status: 400, response: { success: false, message: "Thời lượng phải là số dương." } };
+//         }
+//     }
+
+//     if (data.link_trailer) {
+//         const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube|youtu|youtube-nocookie)\.(com|be)(\/.+)?$/;
+//         if (!youtubeRegex.test(data.link_trailer)) {
+//             return { error: true, status: 400, response: { success: false, message: "Link Youtube không hợp lệ." } };
+//         }
+//     }
+
+//     return { error: false };
+// };
+
+// // --- CÁC HÀM XỬ LÝ (EXPORTS) ---
+
+// // LẤY DANH SÁCH PHIM
+// exports.getMovie = (req, res) => {
+//     const { search = "", page = 1, limit = 10, the_loai = "", tinh_trang = "", do_tuoi_gioi_han = "", nuoc_san_xuat = "" } = req.query;
+//     const validPage = Math.max(1, Number(page));
+//     const validLimit = Math.max(1, Number(limit));
+
+//     Movie.count(search, the_loai, tinh_trang, do_tuoi_gioi_han, nuoc_san_xuat, (err, countResult) => {
+//         if (err) return res.status(500).json({ success: false, message: "Lỗi đếm số lượng phim." });
+//         const total = countResult[0].total;
+
+//         Movie.getAll(search, validPage, validLimit, the_loai, tinh_trang, do_tuoi_gioi_han, nuoc_san_xuat, (err, data) => {
+//             if (err) return res.status(500).json({ success: false, message: "Lỗi lấy danh sách phim." });
+//             const formattedData = data.map(movie => formatMovieDate(movie));
+//             res.json({ data: formattedData, total, page: validPage, limit: validLimit, totalPages: Math.ceil(total / validLimit) });
+//         });
+//     });
+// };
+
+// // CHI TIẾT PHIM
+// exports.getByIdMovie = (req, res) => {
+//     const { ma_phim } = req.params;
+//     Movie.getById(ma_phim, (err, result) => {
+//         if (err) return res.status(500).json({ success: false, message: "Lỗi server." });
+//         if (!result || result.length === 0) return res.status(404).json({ success: false, message: "Không tìm thấy phim." });
+//         res.json(formatMovieDate(result[0]));
+//     });
+// };
+
+// // THÊM PHIM
+// exports.createMovie = (req, res) => {
+//     const data = req.body;
+//     if (req.file) data.anh_poster = `/uploads/${req.file.filename}`;
+
+//     const validation = validateMovieData(data, false); // isUpdate = false
+//     if (validation.error) return res.status(validation.status).json(validation.response);
+
+//     Movie.create(data, (err, result) => {
+//         if (err) return res.status(500).json({ success: false, message: "Lỗi thêm phim." });
+//         res.status(201).json({ success: true, message: "Thêm thành công", ma_phim
+//           : result.insertId });
+//     });
+// };
+
+// // CẬP NHẬT PHIM
+// exports.updateMovie = (req, res) => {
+//     const { ma_phim } = req.params;
+//     const data = req.body;
+//     if (req.file) data.anh_poster = "/uploads/" + req.file.filename;
+
+//     const validation = validateMovieData(data, true); // isUpdate = true -> Sẽ không bắt 10 trường
+//     if (validation.error) return res.status(validation.status).json(validation.response);
+
+//     Movie.update(ma_phim, data, (err, result) => {
+//         if (err) return res.status(500).json({ success: false, message: "Lỗi cập nhật." });
+//         if (result.affectedRows === 0) return res.status(404).json({ success: false, message: "Phim không tồn tại." });
+//         res.json({ success: true, message: "Cập nhật thành công" });
+//     });
+// };
+
+// // XÓA PHIM
+// exports.deleteMovie = (req, res) => {
+//     const { ma_phim } = req.params; // Lấy ID từ URL (vd: /api/movies/10)
+    
+//     if (!ma_phim) {
+//         return res.status(400).json({ success: false, message: "Thiếu mã phim để xóa" });
+//     }
+
+//     Movie.delete(ma_phim, (err, result) => {
+//         if (err) {
+//             console.error("Lỗi xóa phim:", err);
+//             return res.status(500).json({ success: false, message: "Lỗi server khi xóa phim" });
+//         }
+        
+//         // Kiểm tra xem có dòng nào bị xóa không
+//         if (result.affectedRows === 0) {
+//             return res.status(404).json({ success: false, message: "Không tìm thấy phim để xóa" });
+//         }
+
+//         res.json({ success: true, message: "Xóa phim thành công" });
+//     });
+// };
+// // exports.deleteMovie = (req, res) => {
+// //     const { ma_phim } = req.params;
+// //     Movie.delete(ma_phim, (err, result) => {
+// //         if (err) return res.status(500).json({ success: false, message: "Lỗi khi xóa phim." });
+// //         res.json({ success: true, message: "Xóa thành công" });
+// //     });
+// // };

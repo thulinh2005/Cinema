@@ -34,6 +34,10 @@ const MovieDetailModal = ({ movie, open, onOpenChange }) => {
         <div className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
+              <p className="text-sm font-semibold text-slate-600">Mã phim</p>
+              <p className="mt-1 text-base text-slate-900">{movie.ma_phim}</p>
+            </div>
+            <div>
               <p className="text-sm font-semibold text-slate-600">Tên phim</p>
               <p className="mt-1 text-base text-slate-900">{movie.ten_phim}</p>
             </div>
@@ -130,6 +134,7 @@ const MovieDetailModal = ({ movie, open, onOpenChange }) => {
 // Modal thêm/sửa phim
 const MovieFormModal = ({ movie, mode, open, onOpenChange, onSuccess }) => {
   const [formData, setFormData] = useState({
+    ma_phim: "",  
     ten_phim: "",
     the_loai: "",
     thoi_luong: "",
@@ -148,7 +153,10 @@ const MovieFormModal = ({ movie, mode, open, onOpenChange, onSuccess }) => {
 
   useEffect(() => {
     if (mode === "edit" && movie) {
+      console.log("EDIT MOVIE:", movie);
+
       setFormData({
+        ma_phim: movie.ma_phim || "",
         ten_phim: movie.ten_phim || "",
         the_loai: movie.the_loai || "",
         thoi_luong: movie.thoi_luong || "",
@@ -162,6 +170,7 @@ const MovieFormModal = ({ movie, mode, open, onOpenChange, onSuccess }) => {
       });
     } else {
       setFormData({
+        ma_phim: "",  
         ten_phim: "",
         the_loai: "",
         thoi_luong: "",
@@ -243,8 +252,11 @@ const MovieFormModal = ({ movie, mode, open, onOpenChange, onSuccess }) => {
       
       // Thêm file nếu có
       if (fileInputRef.current?.files?.[0]) {
-        data.append("anh_poster", fileInputRef.current.files[0]);
-      }
+          data.append("anh_poster", fileInputRef.current.files[0]);
+        } else if (mode === "edit") {
+          // QUAN TRỌNG: giữ lại ảnh cũ khi không upload ảnh mới
+          data.append("anh_poster", formData.anh_poster);
+        }
 
       if (mode === "edit") {
         await axios.put(
@@ -293,6 +305,20 @@ const MovieFormModal = ({ movie, mode, open, onOpenChange, onSuccess }) => {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+             {/* MÃ PHIM */}
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-2">
+                Mã phim
+              </label>
+              <input
+                type="text"
+                value={formData.ma_phim || "Tự động"}
+                disabled
+                className="w-full rounded-lg border border-slate-300 bg-slate-100 px-4 py-2 text-sm"
+              />
+            </div>
+
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-2">
                 Tên phim *
@@ -512,6 +538,8 @@ const Movies = () => {
           limit,
           search: searchTerm,
           tinh_trang: statusFilter,
+          do_tuoi_gioi_han: ageRatingFilter,
+          nuoc_san_xuat: countryFilter,
         },
       });
 
@@ -524,10 +552,16 @@ const Movies = () => {
     }
   };
 
+   // --- HÀM XÓA ---
+  const handleDeleteClick = (movie) => {
+    setSelectedMovie(movie);
+    setOpenDelete(true);
+  };
+
   useEffect(() => {
     fetchMovies();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, searchTerm, statusFilter]);
+  }, [page, searchTerm, statusFilter, ageRatingFilter, countryFilter]);
 
   const getStatusBadge = (status) => {
     const normalizedStatus = (status || "").trim();
@@ -592,21 +626,24 @@ const Movies = () => {
         );
     }
   };
-
   const confirmDelete = async () => {
-    try {
-      await axios.delete(
-        `http://localhost:5000/api/movies/${selectedMovie.ma_phim}`
-      );
-      toast.success("Xóa phim thành công");
-      setOpenDelete(false);
-      fetchMovies();
-    } catch (err) {
-      console.log("Lỗi xóa phim:", err);
-      toast.error(err?.response?.data?.message || "Xóa phim thất bại");
-    }
-  };
+  // Kiểm tra xem state selectedMovie có tồn tại không
+  if (!selectedMovie) {
+    toast.error("Không tìm thấy thông tin phim để xóa");
+    return;
+  }
 
+  try {
+     await axios.delete(`http://localhost:5000/api/movies/${selectedMovie.ma_phim}`);
+    toast.success("Xóa phim thành công");
+    setOpenDelete(false);
+    setSelectedMovie(null);  
+    fetchMovies();  // load lại danh sách
+  
+  } catch (error) {
+    toast.error("Xóa phim thất bại");
+  }
+};
   const renderPagination = () => {
     const arr = [];
     for (let i = 1; i <= totalPages; i++) {
@@ -731,6 +768,7 @@ const Movies = () => {
             <table className="min-w-full text-sm">
               <thead className="bg-slate-50">
                 <tr className="text-left text-slate-800">
+                  <th className="px-4 py-4 font-semibold">Mã phim</th>
                   <th className="px-4 py-4 font-semibold">Tên phim</th>
                   <th className="px-4 py-4 font-semibold">Thể loại</th>
                   <th className="px-4 py-4 font-semibold">Thời lượng</th>
@@ -751,15 +789,19 @@ const Movies = () => {
                 {movies.length === 0 ? (
                   <tr>
                     <td
-                      colSpan={11}
+                      colSpan={12}
                       className="px-4 py-10 text-center text-slate-500"
                     >
-                      Không có phim phù hợp
+                      Không có phim nào phù hợp
                     </td>
                   </tr>
                 ) : (
                   movies.map((movie) => (
                     <tr key={movie.ma_phim} className="border-t border-slate-200">
+
+                      <td className="px-4 py-4 text-slate-800 font-semibold">
+                        {movie.ma_phim}
+                      </td>
                       <td className="px-4 py-4 font-medium text-slate-900">
                         {movie.ten_phim}
                       </td>
@@ -792,7 +834,16 @@ const Movies = () => {
 
                       <td className="px-4 py-4 text-slate-600">
                         {movie.anh_poster ? (
-                          <span className="text-xs font-medium text-blue-600">Có</span>
+                          <div className="h-16 w-12 overflow-hidden rounded-md border border-slate-300">
+                            <img
+                              src={movie.anh_poster.startsWith('http') ? movie.anh_poster : `http://localhost:5000${movie.anh_poster}`}
+                              alt={movie.ten_phim}
+                              className="h-full w-full object-cover"
+                              onError={(e) => {
+                                e.target.style.display = 'none';
+                              }}
+                            />
+                          </div>
                         ) : (
                           <span className="text-xs text-slate-400">-</span>
                         )}
@@ -843,15 +894,12 @@ const Movies = () => {
                           </button>
 
                           <button
-                            onClick={() => {
-                              setSelectedMovie(movie);
-                              setOpenDelete(true);
-                            }}
-                            className="text-red-500 transition hover:scale-110"
-                            title="Xóa phim"
-                          >
-                            <Trash2 size={18} />
-                          </button>
+                          onClick={() => handleDeleteClick(movie)}
+                          className="text-red-500 transition hover:scale-110"
+                          title="Xóa phim"
+                        >
+                          <Trash2 size={18} />
+                        </button>
                         </div>
                       </td>
                     </tr>
@@ -896,6 +944,7 @@ const Movies = () => {
 
       <DeleteConfirmModal
         open={openDelete}
+        onClose={() => setOpenDelete(false)}
         onOpenChange={setOpenDelete}
         onConfirm={confirmDelete}
         title="Xóa phim"
@@ -904,5 +953,4 @@ const Movies = () => {
     </div>
   );
 };
-
 export default Movies;

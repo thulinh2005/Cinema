@@ -2,7 +2,7 @@ const db = require("../config/db");
 
 const Showtime = {
   // LẤY DANH SÁCH + PAGINATION
-  getAll: (page, limit, ngay_chieu, trang_thai, ma_phong, callback) => {
+getAll: (page, limit, ngay_chieu, trang_thai, ma_phong, callback) => {
     let sql = `
       SELECT sc.*, p.ten_phim, pc.ten_phong
       FROM suat_chieu sc
@@ -12,27 +12,30 @@ const Showtime = {
     `;
     let params = [];
 
-    if (ngay_chieu) {
+    if (ngay_chieu && ngay_chieu !== "") {
       sql += " AND DATE(sc.ngay_chieu) = ?";
       params.push(ngay_chieu);
     }
 
-    if (trang_thai) {
+    if (trang_thai && trang_thai !== "") {
       sql += " AND sc.trang_thai = ?";
       params.push(trang_thai);
     }
 
-    if (ma_phong) {
+    if (ma_phong && ma_phong !== "") {
       sql += " AND sc.ma_phong = ?";
       params.push(ma_phong);
     }
 
-    const offset = (page - 1) * limit;
-    sql += " ORDER BY ngay_chieu ASC, gio_chieu ASC LIMIT ? OFFSET ?";
-    params.push(parseInt(limit), parseInt(offset));
+    const validPage = parseInt(page) || 1;
+    const validLimit = parseInt(limit) || 10;
+    const offset = (validPage - 1) * validLimit;
+
+    sql += " ORDER BY sc.ngay_chieu ASC, sc.gio_chieu ASC LIMIT ? OFFSET ?";
+    params.push(validLimit, offset);
 
     db.query(sql, params, callback);
-  },
+},
 
   // ĐẾM TỔNG
   count: (ngay_chieu, trang_thai, ma_phong, callback) => {
