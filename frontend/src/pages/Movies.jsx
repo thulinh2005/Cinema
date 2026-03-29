@@ -680,8 +680,8 @@ const Movies = () => {
           key={i}
           onClick={() => setPage(i)}
           className={`h-9 min-w-[36px] rounded-lg border px-3 text-sm font-medium transition ${page === i
-              ? "border-blue-600 bg-blue-600 text-white"
-              : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+            ? "border-blue-600 bg-blue-600 text-white"
+            : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
             }`}
         >
           {i}
