@@ -10,17 +10,20 @@ const customerRoutes = require("./routes/customerRoutes");
 const roomRoutes = require("./routes/roomRoutes");
 const invoiceRoutes = require("./routes/invoiceRoutes");
 const employeeRoutes = require("./routes/employeeRoutes");
+const productRoutes = require("./routes/productRoutes");
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.use("/uploads", express.static("uploads"));
 
 app.use("/api", authRoutes);
 app.use("/api/customers", customerRoutes);
 app.use("/api/rooms", roomRoutes);
 app.use("/api/invoices", invoiceRoutes);
 app.use("/api/employees", employeeRoutes);
+app.use("/api/products", productRoutes);
 
 app.get("/", (req, res) => {
     res.send("Server dang chay...");

@@ -9,6 +9,7 @@ import ProtectedRoute from "./components/ProtectedRoute"
 import NotFound from "./pages/NotFound"
 import Customers from "./pages/Customers"
 import Invoices from "./pages/Invoices"
+import Products from "./pages/Products"
 
 
 function App() {
@@ -36,6 +37,7 @@ function App() {
           <Route path="/admin/invoices" element={<Invoices />} />
           <Route path="admin/employee" element={<Employee />} />
           <Route path="admin/employee/:id/seats" element={<SeatMap />} />
+          <Route path="products" element={<Products />} />
 
           {/* Em có thể thêm các trang khác ở đây sau này */}
           {/* <Route path="movies" element={<Movies />} /> */}
