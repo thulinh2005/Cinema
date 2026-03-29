@@ -14,11 +14,13 @@ const movieRoutes = require("./routes/movieRoutes");
 const showtimeRoutes = require("./routes/showtimeRoutes");
 const invoiceRoutes = require("./routes/invoiceRoutes");
 const employeeRoutes = require("./routes/employeeRoutes");
+const productRoutes = require("./routes/productRoutes");
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.use("/uploads", express.static("uploads"));
 
 // Cấu hình multer cho upload ảnh
 const storage = multer.diskStorage({
@@ -54,6 +56,7 @@ app.use("/api/movies", require("./routes/movieRoutes")(upload));
 app.use("/api/showtimes", showtimeRoutes);
 app.use("/api/invoices", invoiceRoutes);
 app.use("/api/employees", employeeRoutes);
+app.use("/api/products", productRoutes);
 
 app.get("/", (req, res) => {
     res.send("Server dang chay...");
