@@ -1,4 +1,7 @@
 const Movie = require("../models/movieModel"); 
+const fs = require('fs');
+const path = require('path');
+
 
 // Helper function format ngay_khoi_chieu
 const formatMovieDate = (movie) => {
@@ -62,15 +65,15 @@ const validateMovieData = (data, isUpdate = false) => {
 
 // LẤY DANH SÁCH PHIM
 exports.getMovie = (req, res) => {
-    const { search = "", page = 1, limit = 10, the_loai = "", tinh_trang = "", do_tuoi_gioi_han = "", nuoc_san_xuat = "" } = req.query;
+    const { search = "", searchField = "ten_phim", page = 1, limit = 10, the_loai = "", tinh_trang = "", do_tuoi_gioi_han = "", nuoc_san_xuat = "" } = req.query;
     const validPage = Math.max(1, Number(page));
     const validLimit = Math.max(1, Number(limit));
 
-    Movie.count(search, the_loai, tinh_trang, do_tuoi_gioi_han, nuoc_san_xuat, (err, countResult) => {
+    Movie.count(search, searchField, the_loai, tinh_trang, do_tuoi_gioi_han, nuoc_san_xuat, (err, countResult) => {
         if (err) return res.status(500).json({ success: false, message: "Lỗi đếm số lượng phim." });
         const total = countResult[0].total;
 
-        Movie.getAll(search, validPage, validLimit, the_loai, tinh_trang, do_tuoi_gioi_han, nuoc_san_xuat, (err, data) => {
+        Movie.getAll(search, searchField, validPage, validLimit, the_loai, tinh_trang, do_tuoi_gioi_han, nuoc_san_xuat, (err, data) => {
             if (err) return res.status(500).json({ success: false, message: "Lỗi lấy danh sách phim." });
             const formattedData = data.map(movie => formatMovieDate(movie));
             res.json({ data: formattedData, total, page: validPage, limit: validLimit, totalPages: Math.ceil(total / validLimit) });
@@ -127,32 +130,61 @@ exports.deleteMovie = (req, res) => {
         return res.status(400).json({ success: false, message: "Thiếu mã phim để xóa" });
     }
 
-    // Check FK references first
-    Movie.getReferencedShowtimes(ma_phim, (err, showtimeCount) => {
+    Movie.getById(ma_phim, (err, movieResult) => {
         if (err) {
-            console.error("Lỗi kiểm tra suất chiếu:", err);
-            return res.status(500).json({ success: false, message: "Lỗi kiểm tra dữ liệu liên quan" });
+            console.error("Lỗi lấy thông tin phim:", err);
+            return res.status(500).json({ success: false, message: "Lỗi server." });
         }
-
-        if (showtimeCount > 0) {
-            return res.status(400).json({ 
-                success: false, 
-                message: `Không thể xóa phim. Phim này đang có ${showtimeCount} suất chiếu liên quan. Vui lòng xóa suất chiếu trước.` 
-            });
+        
+        if (!movieResult || movieResult.length === 0) {
+            return res.status(404).json({ success: false, message: "Không tìm thấy phim để xóa" });
         }
+        
+        const movie = movieResult[0];
 
-        // Safe to delete
-        Movie.delete(ma_phim, (err, result) => {
+        // Check FK references first
+        Movie.getReferencedShowtimes(ma_phim, (err, showtimeCount) => {
             if (err) {
-                console.error("Lỗi xóa phim:", err);
-                return res.status(500).json({ success: false, message: "Lỗi server khi xóa phim" });
-            }
-            
-            if (result.affectedRows === 0) {
-                return res.status(404).json({ success: false, message: "Không tìm thấy phim để xóa" });
+                console.error("Lỗi kiểm tra suất chiếu:", err);
+                return res.status(500).json({ success: false, message: "Lỗi kiểm tra dữ liệu liên quan" });
             }
 
-            res.json({ success: true, message: "Xóa phim thành công" });
+            if (showtimeCount > 0) {
+                return res.status(400).json({ 
+                    success: false, 
+                    message: `Không thể xóa phim. Phim này đang có ${showtimeCount} suất chiếu liên quan. Vui lòng xóa suất chiếu trước.` 
+                });
+            }
+
+            // Safe to delete
+            Movie.delete(ma_phim, (err, result) => {
+                if (err) {
+                    console.error("Lỗi xóa phim:", err);
+                    return res.status(500).json({ success: false, message: "Lỗi server khi xóa phim" });
+                }
+                
+                if (result.affectedRows === 0) {
+                    return res.status(404).json({ success: false, message: "Không tìm thấy phim để xóa" });
+                }
+
+                // Xóa file ảnh vật lý nếu có
+                if (movie.anh_poster && typeof movie.anh_poster === 'string' && movie.anh_poster.startsWith('/uploads/')) {
+                    // Dùng path.resolve và replace để đảm bảo đường dẫn đúng trên cả Windows/Linux
+                    const filePath = path.join(__dirname, '../../', movie.anh_poster);
+                    try {
+                        if (fs.existsSync(filePath)) {
+                            fs.unlinkSync(filePath);
+                            console.log("Đã xóa file ảnh vật lý: ", filePath);
+                        } else {
+                            console.log("File ảnh không tồn tại để xóa: ", filePath);
+                        }
+                    } catch (fsErr) {
+                        console.error("Không thể xóa file ảnh:", fsErr);
+                    }
+                }
+
+                res.json({ success: true, message: "Xóa phim thành công" });
+            });
         });
     });
 };

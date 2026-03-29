@@ -542,9 +542,9 @@ const MovieFormModal = ({ movie, mode, open, onOpenChange, onSuccess }) => {
 const Movies = () => {
   const [movies, setMovies] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [searchField, setSearchField] = useState("ten_phim");
   const [statusFilter, setStatusFilter] = useState("");
   const [ageRatingFilter, setAgeRatingFilter] = useState("");
-  const [countryFilter, setCountryFilter] = useState("");
 
   const [page, setPage] = useState(1);
   const [limit] = useState(6);
@@ -565,9 +565,9 @@ const Movies = () => {
           page,
           limit,
           search: searchTerm,
+          searchField,
           tinh_trang: statusFilter,
           do_tuoi_gioi_han: ageRatingFilter,
-          nuoc_san_xuat: countryFilter,
         },
       });
 
@@ -589,7 +589,7 @@ const Movies = () => {
   useEffect(() => {
     fetchMovies();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, searchTerm, statusFilter, ageRatingFilter, countryFilter]);
+  }, [page, searchTerm, searchField, statusFilter, ageRatingFilter]);
 
   const getStatusBadge = (status) => {
     const normalizedStatus = (status || "").trim();
@@ -719,21 +719,38 @@ const Movies = () => {
 
         <div className="mb-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
-            <div className="relative flex-1">
-              <Search
-                className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
-                size={18}
-              />
-              <input
-                type="text"
-                placeholder="Tìm kiếm theo tên phim..."
-                value={searchTerm}
+            <div className="relative flex-1 flex">
+              <select
+                value={searchField}
                 onChange={(e) => {
                   setPage(1);
-                  setSearchTerm(e.target.value);
+                  setSearchField(e.target.value);
                 }}
-                className="h-12 w-full rounded-xl border border-slate-200 bg-slate-50 pl-11 pr-4 text-sm outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:bg-white"
-              />
+                className="h-12 w-[160px] md:w-1/3 rounded-l-xl border border-r-0 border-slate-200 bg-slate-100 px-4 text-sm outline-none focus:border-blue-500 z-10"
+              >
+                <option value="ten_phim">Tên phim</option>
+                <option value="the_loai">Thể loại</option>
+                <option value="nuoc_san_xuat">Nước sản xuất</option>
+                <option value="ngay_khoi_chieu">Ngày khởi chiếu</option>
+                <option value="mo_ta">Mô tả</option>
+              </select>
+
+              <div className="relative flex-1">
+                <Search
+                  className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+                  size={18}
+                />
+                <input
+                  type="text"
+                  placeholder="Nhập từ khóa tìm kiếm..."
+                  value={searchTerm}
+                  onChange={(e) => {
+                    setPage(1);
+                    setSearchTerm(e.target.value);
+                  }}
+                  className="h-12 w-full rounded-r-xl border border-slate-200 bg-slate-50 pl-11 pr-4 text-sm outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:bg-white"
+                />
+              </div>
             </div>
 
             <div className="hidden h-12 w-12 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 lg:flex">
@@ -756,23 +773,7 @@ const Movies = () => {
               <option value="T18">T18 - 18+</option>
             </select>
 
-            <select
-              value={countryFilter}
-              onChange={(e) => {
-                setPage(1);
-                setCountryFilter(e.target.value);
-              }}
-              className="h-12 min-w-[180px] rounded-xl border border-slate-200 bg-white px-4 text-sm text-slate-700 outline-none focus:border-blue-500"
-            >
-              <option value="">Tất cả nước</option>
-              <option value="Mỹ">Mỹ</option>
-              <option value="Nhật Bản">Nhật Bản</option>
-              <option value="Hàn Quốc">Hàn Quốc</option>
-              <option value="Trung Quốc">Trung Quốc</option>
-              <option value="Việt Nam">Việt Nam</option>
-              <option value="Pháp">Pháp</option>
-              <option value="Anh">Anh</option>
-            </select>
+
 
             <select
               value={statusFilter}
