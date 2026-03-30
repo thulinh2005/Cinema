@@ -74,17 +74,6 @@ const Ticket = {
             data.ma_hd,
             data.trang_thai
         ], callback);
-    },
-
-    update: (ma_ve, data, callback) => {
-        // Chỉ cập nhật giá vé và trạng thái
-        const sql = "UPDATE ve SET gia_ve = ?, trang_thai = ? WHERE ma_ve = ?";
-        db.query(sql, [data.gia_ve, data.trang_thai, ma_ve], callback);
-    },
-
-    delete: (ma_ve, callback) => {
-        const sql = "DELETE FROM ve WHERE ma_ve = ?";
-        db.query(sql, [ma_ve], callback);
     }
 
 };

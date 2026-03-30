@@ -1,16 +1,14 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import axios from 'axios';
-import { Search, Pencil, Trash2, Filter, Info, Ticket as TicketIcon } from 'lucide-react';
+import { Search, Filter, Info, Ticket as TicketIcon } from 'lucide-react';
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import ConfirmDelete from "@/components/ConfirmDelete";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const Tickets = () => {
@@ -25,12 +23,6 @@ const Tickets = () => {
         ma_phong: "all",
         ma_suat_chieu: "all"
     });
-
-    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-    const [ticketToDelete, setTicketToDelete] = useState(null);
-    
-    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-    const [editingTicket, setEditingTicket] = useState(null);
 
     // ==================== FETCH TICKETS ====================
     const fetchTickets = async (currentFilters = filters) => {
@@ -77,52 +69,6 @@ const Tickets = () => {
 
         return { movies: uniqueMovies, rooms: uniqueRooms, showtimes: uniqueShowtimes };
     }, [allRawTickets]);
-
-    // ==================== EDIT TICKET ====================
-    const handleEditClick = (ticket) => {
-        setEditingTicket({ ...ticket });
-        setIsEditModalOpen(true);
-    };
-
-    const handleUpdateTicket = async () => {
-        // 1️⃣ Validation - Tất cả field bắt buộc
-        if (editingTicket.gia_ve === "" || editingTicket.gia_ve === null) {
-            return toast.error("Giá vé không được bỏ trống!");
-        }
-        
-        if (isNaN(editingTicket.gia_ve) || Number(editingTicket.gia_ve) < 0) {
-            return toast.error("Giá vé không hợp lệ!");
-        }
-
-        if (!editingTicket.trang_thai) {
-            return toast.error("Trạng thái không được bỏ trống!");
-        }
-
-        try {
-            await axios.put(`http://localhost:5000/api/tickets/${editingTicket.ma_ve}`, {
-                gia_ve: editingTicket.gia_ve,
-                trang_thai: editingTicket.trang_thai
-            });
-            toast.success("Cập nhật vé thành công!");
-            setIsEditModalOpen(false);
-            fetchTickets();
-        } catch (error) {
-            toast.error(error.response?.data?.message || "Lỗi khi cập nhật vé");
-        }
-    };
-
-    // ==================== DELETE TICKET ====================
-    const handleDeleteTicket = async () => {
-        try {
-            await axios.delete(`http://localhost:5000/api/tickets/${ticketToDelete}`);
-            toast.success("Xóa vé thành công!");
-            setIsDeleteDialogOpen(false);
-            setTicketToDelete(null);
-            fetchTickets();
-        } catch (error) {
-            toast.error(error.response?.data?.message || "Lỗi khi xóa vé");
-        }
-    };
 
     return (
         <div className="space-y-6">
@@ -215,57 +161,6 @@ const Tickets = () => {
                 </Card>
             </div>
 
-            {/* EDIT MODAL */}
-            <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-                <DialogContent className="sm:max-w-[425px]">
-                    <DialogHeader>
-                        <DialogTitle className="text-xl font-bold">Sửa thông tin vé #{editingTicket?.ma_ve}</DialogTitle>
-                    </DialogHeader>
-                    {editingTicket && (
-                        <div className="grid gap-4 py-4">
-                            <div className="grid gap-2">
-                                <Label className="text-slate-500 text-xs">Phim</Label>
-                                <div className="font-semibold">{editingTicket.ten_phim}</div>
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="grid gap-2">
-                                    <Label className="text-slate-500 text-xs">Suất chiếu</Label>
-                                    <div className="font-medium text-sm">{editingTicket.gio_chieu} ({new Date(editingTicket.ngay_chieu).toLocaleDateString('vi-VN')})</div>
-                                </div>
-                                <div className="grid gap-2">
-                                    <Label className="text-slate-500 text-xs">Ghế</Label>
-                                    <div className="font-medium text-sm text-blue-600 font-bold">{editingTicket.so_ghe}</div>
-                                </div>
-                            </div>
-                            <div className="h-px bg-slate-100 my-2" />
-                            <div className="grid gap-2">
-                                <Label>Giá vé (VNĐ) <span className="text-red-500">*</span></Label>
-                                <Input
-                                    type="number"
-                                    value={editingTicket.gia_ve}
-                                    onChange={(e) => setEditingTicket({ ...editingTicket, gia_ve: e.target.value })}
-                                />
-                            </div>
-                            <div className="grid gap-2">
-                                <Label>Trạng thái <span className="text-red-500">*</span></Label>
-                                <Select value={editingTicket.trang_thai} onValueChange={(val) => setEditingTicket({ ...editingTicket, trang_thai: val })}>
-                                    <SelectTrigger><SelectValue /></SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="CHO_THANH_TOAN">Chờ thanh toán</SelectItem>
-                                        <SelectItem value="DA_THANH_TOAN">Đã thanh toán</SelectItem>
-                                        <SelectItem value="DA_HUY">Đã hủy</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                        </div>
-                    )}
-                    <DialogFooter>
-                        <Button variant="outline" onClick={() => setIsEditModalOpen(false)}>Hủy</Button>
-                        <Button onClick={handleUpdateTicket} className="bg-amber-600 hover:bg-amber-700">Lưu thay đổi</Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
-
             {/* TABLE SECTION */}
             <div className="rounded-xl border bg-white shadow-sm overflow-hidden">
                 <Table className="table-fixed w-full">
@@ -277,7 +172,6 @@ const Tickets = () => {
                             <TableHead className="w-[10%] font-bold text-center text-slate-700">Ghế</TableHead>
                             <TableHead className="w-[15%] font-bold text-slate-700">Giá Vé</TableHead>
                             <TableHead className="w-[15%] font-bold text-center text-slate-700">Trạng thái</TableHead>
-                            <TableHead className="w-[17%] text-right font-bold text-slate-700 pr-6">Hành động</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -315,36 +209,11 @@ const Tickets = () => {
                                             : 'Chờ Thanh Toán'}
                                         </Badge>
                                     </TableCell>
-                                    <TableCell className="text-right pr-6">
-                                        <div className="flex justify-end gap-1">
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                className="h-8 w-8 hover:bg-amber-50"
-                                                title="Sửa"
-                                                onClick={() => handleEditClick(ticket)}
-                                            >
-                                                <Pencil className="h-4 w-4 text-amber-500" />
-                                            </Button>
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                className="h-8 w-8 hover:bg-red-50"
-                                                title="Xóa"
-                                                onClick={() => {
-                                                    setTicketToDelete(ticket.ma_ve);
-                                                    setIsDeleteDialogOpen(true);
-                                                }}
-                                            >
-                                                <Trash2 className="h-4 w-4 text-red-500" />
-                                            </Button>
-                                        </div>
-                                    </TableCell>
                                 </TableRow>
                             ))
                         ) : (
                             <TableRow>
-                                <TableCell colSpan={7} className="h-24 text-center text-slate-500">
+                                <TableCell colSpan={6} className="h-24 text-center text-slate-500">
                                     Không tìm thấy vé nào phù hợp với bộ lọc.
                                 </TableCell>
                             </TableRow>
@@ -352,14 +221,6 @@ const Tickets = () => {
                     </TableBody>
                 </Table>
             </div>
-
-            <ConfirmDelete
-                isOpen={isDeleteDialogOpen}
-                onOpenChange={setIsDeleteDialogOpen}
-                onConfirm={handleDeleteTicket}
-                title="Xóa vé"
-                description="Bạn chắc chắn muốn xóa vé này? Hành động này không thể hoàn tác."
-            />
         </div>
     );
 };

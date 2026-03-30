@@ -33,39 +33,3 @@ exports.getTickets = (req, res) => {
         });
     });
 };
-
-// ================= UPDATE TICKET =================
-exports.updateTicket = (req, res) => {
-    const { id } = req.params;
-    const { gia_ve, trang_thai } = req.body;
-
-    // Validate fields
-    if (gia_ve === undefined || gia_ve === null || gia_ve === "") {
-        return res.status(400).json({ message: "Giá vé không được bỏ trống" });
-    }
-
-    if (!trang_thai || trang_thai.trim() === "") {
-        return res.status(400).json({ message: "Trạng thái không được bỏ trống" });
-    }
-
-    ticketModel.update(id, { gia_ve, trang_thai }, (err) => {
-        if (err) {
-            console.error("❌ Error updating ticket:", err.message);
-            return res.status(500).json({ message: "Lỗi cập nhật vé" });
-        }
-        res.json({ message: "Cập nhật vé thành công" });
-    });
-};
-
-// ================= DELETE TICKET =================
-exports.deleteTicket = (req, res) => {
-    const { id } = req.params;
-
-    ticketModel.delete(id, (err) => {
-        if (err) {
-            console.error("❌ Error deleting ticket:", err.message);
-            return res.status(500).json({ message: "Lỗi xóa vé" });
-        }
-        res.json({ message: "Xóa vé thành công" });
-    });
-};
