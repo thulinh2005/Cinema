@@ -6,16 +6,17 @@ const Movie = {
         let params = [];
         const offset = (page - 1) * limit;
 
-        if (search) {
+        if (search && search.toString().trim() !== "") {
+            const cleanSearch = search.toString().trim();
             const allowedFields = ["ten_phim", "the_loai", "nuoc_san_xuat", "ngay_khoi_chieu", "tinh_trang", "do_tuoi_gioi_han", "mo_ta"];
             const field = allowedFields.includes(searchField) ? searchField : "ten_phim";
-            
+
             if (field === "ngay_khoi_chieu") {
                 sql += ` AND ngay_khoi_chieu LIKE ?`;
-                params.push(`%${search}%`);
+                params.push(`%${cleanSearch}%`);
             } else {
                 sql += ` AND ${field} LIKE ?`;
-                params.push(`%${search}%`);
+                params.push(`%${cleanSearch}%`);
             }
         }
         if (the_loai) { sql += " AND the_loai = ?"; params.push(the_loai); }
@@ -33,16 +34,17 @@ const Movie = {
         let sql = "SELECT COUNT(*) AS total FROM phim WHERE 1=1";
         let params = [];
 
-        if (search) {
+        if (search && search.toString().trim() !== "") {
+            const cleanSearch = search.toString().trim();
             const allowedFields = ["ten_phim", "the_loai", "nuoc_san_xuat", "ngay_khoi_chieu", "tinh_trang", "do_tuoi_gioi_han", "mo_ta"];
             const field = allowedFields.includes(searchField) ? searchField : "ten_phim";
-            
+
             if (field === "ngay_khoi_chieu") {
                 sql += ` AND (DATE_FORMAT(ngay_khoi_chieu, '%Y-%m-%d') LIKE ? OR DATE_FORMAT(ngay_khoi_chieu, '%d/%m/%Y') LIKE ?)`;
-                params.push(`%${search}%`, `%${search}%`);
+                params.push(`%${cleanSearch}%`, `%${cleanSearch}%`);
             } else {
                 sql += ` AND ${field} LIKE ?`;
-                params.push(`%${search}%`);
+                params.push(`%${cleanSearch}%`);
             }
         }
         if (the_loai) { sql += " AND the_loai = ?"; params.push(the_loai); }

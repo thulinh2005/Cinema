@@ -4,9 +4,9 @@ const Room = {
     getAll: (search, callback) => {
         let sql = "SELECT * FROM phong_chieu";
         let params = [];
-        if (search) {
+        if (search && search.toString().trim() !== "") {
             sql += " WHERE ten_phong LIKE ?";
-            params.push(`%${search}%`);
+            params.push(`%${search.toString().trim()}%`);
         }
         db.query(sql, params, callback);
     },

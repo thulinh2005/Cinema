@@ -4,7 +4,9 @@ const Showtime = {
   // LẤY DANH SÁCH + PAGINATION
 getAll: (page, limit, ngay_chieu, trang_thai, ma_phong, callback) => {
     let sql = `
-      SELECT sc.*, p.ten_phim, pc.ten_phong
+      SELECT sc.*, p.ten_phim, pc.ten_phong,
+        (SELECT COUNT(*) FROM ghe g WHERE g.ma_phong = sc.ma_phong) AS tong_ghe,
+        (SELECT COUNT(*) FROM ve v WHERE v.ma_suat_chieu = sc.ma_suat_chieu) AS ghe_da_dat
       FROM suat_chieu sc
       JOIN phim p ON sc.ma_phim = p.ma_phim
       JOIN phong_chieu pc ON sc.ma_phong = pc.ma_phong

@@ -1,4 +1,19 @@
 const Showtime = require("../models/showtimeModel");
+const Movie = require("../models/movieModel");
+const Room = require("../models/roomModel");
+
+// LẤY DANH SÁCH DROPDOWN CHO FORM
+exports.getDropdownData = (req, res) => {
+    Movie.getAllNames((err1, movies) => {
+        if (err1) return res.status(500).json({ message: "Lỗi lấy danh sách phim", error: err1 });
+        
+        Room.getAll(null, (err2, rooms) => {
+            if (err2) return res.status(500).json({ message: "Lỗi lấy danh sách phòng", error: err2 });
+            
+            res.json({ movies, rooms });
+        });
+    });
+};
 
 // LẤY DANH SÁCH SUẤT CHIẾU
 exports.getShowtime = (req, res) => {

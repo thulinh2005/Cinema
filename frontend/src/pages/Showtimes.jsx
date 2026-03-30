@@ -102,6 +102,16 @@ const ShowtimeDetailModal = ({ showtime, open, onOpenChange }) => {
                 {showtime.trang_thai}
               </p>
             </div>
+
+            <div>
+              <p className="text-sm font-semibold text-slate-600">Ghế trống</p>
+              <p className="mt-1 text-base text-slate-900">
+                <span className={showtime.tong_ghe - showtime.ghe_da_dat === 0 ? "text-red-500 font-bold" : "text-emerald-600 font-bold"}>
+                  {showtime.tong_ghe - showtime.ghe_da_dat}
+                </span>
+                <span className="text-slate-500 text-sm ml-1">/ {showtime.tong_ghe}</span>
+              </p>
+            </div>
           </div>
 
           <div className="rounded-lg bg-blue-50 border border-blue-200 p-4">
@@ -151,13 +161,12 @@ const ShowtimeFormModal = ({ showtime, mode, open, onOpenChange, onSuccess }) =>
   const fetchMoviesAndRooms = async () => {
     setLoadingData(true);
     try {
-      const [moviesRes, roomsRes] = await Promise.all([
-        axios.get("http://localhost:5000/api/movies?limit=100"),
-        axios.get("http://localhost:5000/api/rooms?limit=100"),
-      ]);
+      const token = localStorage.getItem('token');
+      const config = { headers: { Authorization: `Bearer ${token}` } };
+      const res = await axios.get("http://localhost:5000/api/showtimes/dropdown-data", config);
 
-      setMovies(moviesRes.data.data || []);
-      setRooms(roomsRes.data || []);
+      setMovies(res.data.movies || []);
+      setRooms(res.data.rooms || []);
     } catch (error) {
       console.error("Lỗi lấy dữ liệu:", error);
       toast.error("Không thể tải danh sách phim và phòng");
@@ -234,14 +243,17 @@ const ShowtimeFormModal = ({ showtime, mode, open, onOpenChange, onSuccess }) =>
 
     setLoading(true);
     try {
+      const token = localStorage.getItem('token');
+      const config = { headers: { Authorization: `Bearer ${token}` } };
       if (mode === "edit") {
         await axios.put(
           `http://localhost:5000/api/showtimes/${showtime.ma_suat_chieu}`,
-          formData
+          formData,
+          config
         );
         toast.success("Cập nhật suất chiếu thành công");
       } else {
-        await axios.post("http://localhost:5000/api/showtimes", formData);
+        await axios.post("http://localhost:5000/api/showtimes", formData, config);
         toast.success("Thêm suất chiếu thành công");
       }
       onSuccess();
@@ -388,8 +400,8 @@ const ShowtimeFormModal = ({ showtime, mode, open, onOpenChange, onSuccess }) =>
                 {loading
                   ? "Đang lưu..."
                   : mode === "edit"
-                  ? "Cập nhật"
-                  : "Thêm"}
+                    ? "Cập nhật"
+                    : "Thêm"}
               </button>
             </div>
           </form>
@@ -420,7 +432,10 @@ const Showtimes = () => {
 
   const fetchRooms = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/rooms?limit=100");
+      const token = localStorage.getItem('token');
+      const res = await axios.get("http://localhost:5000/api/rooms?limit=100", {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       setRooms(res.data || []);
     } catch (err) {
       console.log("Lỗi lấy danh sách phòng:", err);
@@ -429,7 +444,9 @@ const Showtimes = () => {
 
   const fetchShowtimes = async () => {
     try {
+      const token = localStorage.getItem('token');
       const res = await axios.get("http://localhost:5000/api/showtimes", {
+        headers: { Authorization: `Bearer ${token}` },
         params: {
           page,
           limit,
@@ -485,8 +502,10 @@ const Showtimes = () => {
 
   const confirmDelete = async () => {
     try {
+      const token = localStorage.getItem('token');
       await axios.delete(
-        `http://localhost:5000/api/showtimes/${selectedShowtime.ma_suat_chieu}`
+        `http://localhost:5000/api/showtimes/${selectedShowtime.ma_suat_chieu}`,
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       toast.success("Xóa suất chiếu thành công");
       setOpenDelete(false);
@@ -504,11 +523,10 @@ const Showtimes = () => {
         <button
           key={i}
           onClick={() => setPage(i)}
-          className={`h-9 min-w-[36px] rounded-lg border px-3 text-sm font-medium transition ${
-            page === i
-              ? "border-blue-600 bg-blue-600 text-white"
-              : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
-          }`}
+          className={`h-9 min-w-[36px] rounded-lg border px-3 text-sm font-medium transition ${page === i
+            ? "border-blue-600 bg-blue-600 text-white"
+            : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+            }`}
         >
           {i}
         </button>
@@ -604,6 +622,7 @@ const Showtimes = () => {
                   <th className="px-4 py-4 font-semibold">Ngày chiếu</th>
                   <th className="px-4 py-4 font-semibold">Giờ bắt đầu</th>
                   <th className="px-4 py-4 font-semibold">Giờ kết thúc</th>
+                  <th className="px-4 py-4 font-semibold">Ghế trống</th>
                   <th className="px-4 py-4 font-semibold">Trạng thái</th>
                   <th className="px-4 py-4 text-center font-semibold">
                     Hoạt động
@@ -615,7 +634,7 @@ const Showtimes = () => {
                 {showtimes.length === 0 ? (
                   <tr>
                     <td
-                      colSpan={7}
+                      colSpan={8}
                       className="px-4 py-10 text-center text-slate-500"
                     >
                       Không có suất chiếu phù hợp
@@ -645,6 +664,13 @@ const Showtimes = () => {
 
                       <td className="px-4 py-4 font-semibold text-slate-900">
                         {showtime.gio_ket_thuc}
+                      </td>
+
+                      <td className="px-4 py-4 font-medium text-slate-800">
+                        <span className={showtime.tong_ghe - showtime.ghe_da_dat === 0 ? "text-red-500 font-bold" : "text-emerald-600 font-bold"}>
+                          {showtime.tong_ghe - showtime.ghe_da_dat}
+                        </span>
+                        <span className="text-slate-500 text-xs ml-1">/ {showtime.tong_ghe}</span>
                       </td>
 
                       <td className="px-4 py-4">
