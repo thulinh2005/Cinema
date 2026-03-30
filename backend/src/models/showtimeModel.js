@@ -2,10 +2,13 @@ const db = require("../config/db");
 
 const Showtime = {
   // LẤY DANH SÁCH + PAGINATION
-getAll: (page, limit, ngay_chieu, trang_thai, ma_phong, callback) => {
+  getAll: (page, limit, ngay_chieu, trang_thai, ma_phong, callback) => {
     let sql = `
-      SELECT sc.*, p.ten_phim, pc.ten_phong,
-        (SELECT COUNT(*) FROM ghe g WHERE g.ma_phong = sc.ma_phong) AS tong_ghe,
+      SELECT sc.ma_suat_chieu, sc.ma_phim, sc.ma_phong, 
+        DATE_FORMAT(sc.ngay_chieu, '%Y-%m-%d') as ngay_chieu, 
+        sc.gio_chieu, sc.gio_ket_thuc, sc.trang_thai, 
+        p.ten_phim, pc.ten_phong,
+        pc.so_ghe AS tong_ghe,
         (SELECT COUNT(*) FROM ve v WHERE v.ma_suat_chieu = sc.ma_suat_chieu) AS ghe_da_dat
       FROM suat_chieu sc
       JOIN phim p ON sc.ma_phim = p.ma_phim
@@ -37,7 +40,7 @@ getAll: (page, limit, ngay_chieu, trang_thai, ma_phong, callback) => {
     params.push(validLimit, offset);
 
     db.query(sql, params, callback);
-},
+  },
 
   // ĐẾM TỔNG
   count: (ngay_chieu, trang_thai, ma_phong, callback) => {
@@ -119,7 +122,10 @@ getAll: (page, limit, ngay_chieu, trang_thai, ma_phong, callback) => {
   // CHI TIẾT SUẤT CHIẾU
   getById: (id, callback) => {
     const sql = `
-      SELECT sc.*, p.ten_phim, pc.ten_phong
+      SELECT sc.ma_suat_chieu, sc.ma_phim, sc.ma_phong, 
+        DATE_FORMAT(sc.ngay_chieu, '%Y-%m-%d') as ngay_chieu, 
+        sc.gio_chieu, sc.gio_ket_thuc, sc.trang_thai, 
+        p.ten_phim, pc.ten_phong
       FROM suat_chieu sc
       JOIN phim p ON sc.ma_phim = p.ma_phim
       JOIN phong_chieu pc ON sc.ma_phong = pc.ma_phong
@@ -147,15 +153,14 @@ getAll: (page, limit, ngay_chieu, trang_thai, ma_phong, callback) => {
   getAvailableSeats: (showtimeId, callback) => {
     const sql = `
       SELECT 
-        COUNT(g.ma_ghe) AS tong_ghe,
+        pc.so_ghe AS tong_ghe,
         COALESCE(COUNT(v.ma_ve), 0) AS ghe_da_dat,
-        COUNT(g.ma_ghe) - COALESCE(COUNT(v.ma_ve), 0) AS ghe_trong
+        pc.so_ghe - COALESCE(COUNT(v.ma_ve), 0) AS ghe_trong
       FROM suat_chieu sc
       LEFT JOIN phong_chieu pc ON sc.ma_phong = pc.ma_phong
-      LEFT JOIN ghe g ON pc.ma_phong = g.ma_phong
-      LEFT JOIN ve v ON sc.ma_suat_chieu = v.ma_suat_chieu AND g.ma_ghe = v.ma_ghe
+      LEFT JOIN ve v ON sc.ma_suat_chieu = v.ma_suat_chieu
       WHERE sc.ma_suat_chieu = ?
-      GROUP BY sc.ma_suat_chieu
+      GROUP BY sc.ma_suat_chieu, pc.so_ghe
     `;
     db.query(sql, [showtimeId], callback);
   }

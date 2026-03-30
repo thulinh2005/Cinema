@@ -168,8 +168,8 @@ const ShowtimeFormModal = ({ showtime, mode, open, onOpenChange, onSuccess }) =>
       setMovies(res.data.movies || []);
       setRooms(res.data.rooms || []);
     } catch (error) {
-      console.error("Lỗi lấy dữ liệu:", error);
-      toast.error("Không thể tải danh sách phim và phòng");
+      console.error("Lỗi lấy dữ liệu chi tiết:", error.response || error);
+      toast.error(error.response?.data?.message || "Không thể tải danh sách phim và phòng");
     } finally {
       setLoadingData(false);
     }

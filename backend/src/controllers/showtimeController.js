@@ -25,7 +25,11 @@ exports.getShowtime = (req, res) => {
     ma_phong = "",
   } = req.query;
 
-  Showtime.count(ngay_chieu, trang_thai, ma_phong, (err, countResult) => {
+  // Gọi hàm cập nhật trạng thái tự động dựa vào thời gian thực trước khi lấy danh sách
+  Showtime.updateStatusAuto((errStatus) => {
+    if (errStatus) console.error("Lỗi cập nhật trạng thái tự động:", errStatus);
+
+    Showtime.count(ngay_chieu, trang_thai, ma_phong, (err, countResult) => {
     if (err) return res.status(500).json({ message: "Lỗi server", err });
 
     const total = countResult[0].total;
@@ -48,6 +52,7 @@ exports.getShowtime = (req, res) => {
         });
       }
     );
+  });
   });
 };
 

@@ -669,7 +669,9 @@ const Movies = () => {
       fetchMovies();  // load lại danh sách
 
     } catch (error) {
-      toast.error("Xóa phim thất bại");
+      // Ưu tiên hiển thị thông báo chi tiết từ server (có kèm số lượng suất chiếu vướng mắc)
+      const errorMsg = error.response?.data?.message || "Xóa phim thất bại";
+      toast.error(errorMsg);
     }
   };
   const renderPagination = () => {
