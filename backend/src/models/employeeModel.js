@@ -28,23 +28,23 @@ const Employee = {
 
     // ================= CREATE EMPLOYEE =================
     create: (data, callback) => {
-        const { ho_ten, ngay_sinh, dia_chi, so_dien_thoai, email, anh_dai_dien, ma_tk, trang_thai } = data;
+        const { ho_ten, ngay_sinh, dia_chi, so_dien_thoai, email, anh_dai_dien, ma_tk, trang_thai, chuc_vu } = data;
 
-        const sql = `INSERT INTO nhan_vien (ho_ten, ngay_sinh, dia_chi, so_dien_thoai, email, anh_dai_dien, ma_tk, trang_thai)
-                     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+        const sql = `INSERT INTO nhan_vien (ho_ten, ngay_sinh, dia_chi, so_dien_thoai, email, anh_dai_dien, ma_tk, trang_thai, chuc_vu)
+                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
-        db.query(sql, [ho_ten, ngay_sinh, dia_chi, so_dien_thoai, email, anh_dai_dien, ma_tk, trang_thai], callback);
+        db.query(sql, [ho_ten, ngay_sinh, dia_chi, so_dien_thoai, email, anh_dai_dien, ma_tk, trang_thai, chuc_vu], callback);
     },
 
     // ================= UPDATE EMPLOYEE =================
     update: (ma_nv, data, callback) => {
-        const { ho_ten, ngay_sinh, dia_chi, so_dien_thoai, email, anh_dai_dien, ma_tk, trang_thai } = data;
+        const { ho_ten, ngay_sinh, dia_chi, so_dien_thoai, email, anh_dai_dien, ma_tk, trang_thai, chuc_vu } = data;
 
         const sql = `UPDATE nhan_vien 
-                     SET ho_ten = ?, ngay_sinh = ?, dia_chi = ?, so_dien_thoai = ?, email = ?, anh_dai_dien = ?, ma_tk = ?, trang_thai = ?
+                     SET ho_ten = ?, ngay_sinh = ?, dia_chi = ?, so_dien_thoai = ?, email = ?, anh_dai_dien = ?, ma_tk = ?, trang_thai = ?, chuc_vu = ?
                      WHERE ma_nv = ?`;
 
-        db.query(sql, [ho_ten, ngay_sinh, dia_chi, so_dien_thoai, email, anh_dai_dien, ma_tk, trang_thai, ma_nv], callback);
+        db.query(sql, [ho_ten, ngay_sinh, dia_chi, so_dien_thoai, email, anh_dai_dien, ma_tk, trang_thai, chuc_vu, ma_nv], callback);
     },
 
     // ================= DELETE EMPLOYEE =================

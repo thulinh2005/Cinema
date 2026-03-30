@@ -29,7 +29,8 @@ const Employee = () => {
         email: "",
         anh_dai_dien: "",
         ma_tk: "",
-        trang_thai: "Còn làm"
+        trang_thai: "Còn làm",
+        chuc_vu: ""
     });
 
     // ==================== FETCH EMPLOYEES ====================
@@ -86,6 +87,10 @@ const Employee = () => {
             return toast.error("Email không được bỏ trống!");
         }
 
+        if (!newEmployee.chuc_vu.trim()) {
+            return toast.error("Chức vụ không được bỏ trống!");
+        }
+
         try {
             await axios.post('http://localhost:5000/api/employees', {
                 ho_ten: newEmployee.ho_ten,
@@ -95,7 +100,8 @@ const Employee = () => {
                 email: newEmployee.email,
                 anh_dai_dien: newEmployee.anh_dai_dien || null,
                 ma_tk: newEmployee.ma_tk || null,
-                trang_thai: newEmployee.trang_thai
+                trang_thai: newEmployee.trang_thai,
+                chuc_vu: newEmployee.chuc_vu
             });
             toast.success("Thêm nhân viên thành công!");
             setIsAddModalOpen(false);
@@ -107,7 +113,8 @@ const Employee = () => {
                 email: "",
                 anh_dai_dien: "",
                 ma_tk: "",
-                trang_thai: "Còn làm"
+                trang_thai: "Còn làm",
+                chuc_vu: ""
             });
             fetchEmployees();
         } catch (error) {
@@ -170,6 +177,10 @@ const Employee = () => {
             return toast.error("Email không được bỏ trống!");
         }
 
+        if (!editingEmployee.chuc_vu || !editingEmployee.chuc_vu.trim()) {
+            return toast.error("Chức vụ không được bỏ trống!");
+        }
+
         try {
             await axios.put(`http://localhost:5000/api/employees/${editingEmployee.ma_nv}`, {
                 ho_ten: editingEmployee.ho_ten,
@@ -179,7 +190,8 @@ const Employee = () => {
                 email: editingEmployee.email,
                 anh_dai_dien: editingEmployee.anh_dai_dien || null,
                 ma_tk: editingEmployee.ma_tk || null,
-                trang_thai: editingEmployee.trang_thai
+                trang_thai: editingEmployee.trang_thai,
+                chuc_vu: editingEmployee.chuc_vu
             });
             toast.success("Cập nhật nhân viên thành công!");
             setIsEditModalOpen(false);
@@ -253,6 +265,15 @@ const Employee = () => {
                                 />
                             </div>
                             <div className="grid gap-2">
+                                <Label htmlFor="chuc_vu">Chức vụ <span className="text-red-500">*</span></Label>
+                                <Input
+                                    id="chuc_vu"
+                                    placeholder="Nhập chức vụ"
+                                    value={newEmployee.chuc_vu}
+                                    onChange={(e) => setNewEmployee({ ...newEmployee, chuc_vu: e.target.value })}
+                                />
+                            </div>
+                            <div className="grid gap-2">
                                 <Label>Trạng thái</Label>
                                 <Select value={newEmployee.trang_thai} onValueChange={(val) => setNewEmployee({ ...newEmployee, trang_thai: val })}>
                                     <SelectTrigger>
@@ -320,6 +341,13 @@ const Employee = () => {
                                 />
                             </div>
                             <div className="grid gap-2">
+                                <Label>Chức vụ <span className="text-red-500">*</span></Label>
+                                <Input
+                                    value={editingEmployee.chuc_vu || ""}
+                                    onChange={(e) => setEditingEmployee({ ...editingEmployee, chuc_vu: e.target.value })}
+                                />
+                            </div>
+                            <div className="grid gap-2">
                                 <Label>Trạng thái</Label>
                                 <Select value={editingEmployee.trang_thai} onValueChange={(val) => setEditingEmployee({ ...editingEmployee, trang_thai: val })}>
                                     <SelectTrigger><SelectValue /></SelectTrigger>
@@ -359,8 +387,9 @@ const Employee = () => {
                             <TableHead className="w-[15%] font-bold text-slate-700">Họ tên</TableHead>
                             <TableHead className="w-[12%] font-bold text-slate-700">SĐT</TableHead>
                             <TableHead className="w-[15%] font-bold text-slate-700">Email</TableHead>
+                            <TableHead className="w-[12%] font-bold text-slate-700">Chức vụ</TableHead>
                             <TableHead className="w-[12%] font-bold text-center text-slate-700">Trạng thái</TableHead>
-                            <TableHead className="w-[20%] text-right font-bold text-slate-700 pr-6">Hành động</TableHead>
+                            <TableHead className="w-[15%] text-right font-bold text-slate-700 pr-6">Hành động</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -381,6 +410,9 @@ const Employee = () => {
                                     </TableCell>
                                     <TableCell className="text-slate-600 text-sm truncate">
                                         {emp.email || "-"}
+                                    </TableCell>
+                                    <TableCell className="text-slate-600 text-sm truncate">
+                                        {emp.chuc_vu || "-"}
                                     </TableCell>
                                     <TableCell className="text-center">
                                         <Badge
@@ -422,7 +454,7 @@ const Employee = () => {
                             ))
                         ) : (
                             <TableRow>
-                                <TableCell colSpan={7} className="h-24 text-center text-slate-500">
+                                <TableCell colSpan={8} className="h-24 text-center text-slate-500">
                                     Không tìm thấy nhân viên nào.
                                 </TableCell>
                             </TableRow>

@@ -10,6 +10,7 @@ const customerRoutes = require("./routes/customerRoutes");
 const roomRoutes = require("./routes/roomRoutes");
 const invoiceRoutes = require("./routes/invoiceRoutes");
 const employeeRoutes = require("./routes/employeeRoutes");
+const ticketRoutes = require("./routes/ticketRoutes");
 
 const app = express();
 
@@ -21,6 +22,7 @@ app.use("/api/customers", customerRoutes);
 app.use("/api/rooms", roomRoutes);
 app.use("/api/invoices", invoiceRoutes);
 app.use("/api/employees", employeeRoutes);
+app.use("/api/tickets", ticketRoutes);
 
 app.get("/", (req, res) => {
     res.send("Server dang chay...");
