@@ -5,10 +5,13 @@ import Homepage from "./pages/Homepage"
 import Rooms from "./pages/Rooms"
 import Employee from "./pages/employee"
 import SeatMap from "./pages/SeatMap"
+import Movies from "./pages/Movies"
+import Showtimes from "./pages/Showtimes"
 import ProtectedRoute from "./components/ProtectedRoute"
 import NotFound from "./pages/NotFound"
 import Customers from "./pages/Customers"
 import Invoices from "./pages/Invoices"
+import Tickets from "./pages/Tickets"
 import Products from "./pages/Products"
 
 
@@ -37,10 +40,12 @@ function App() {
           <Route path="/admin/invoices" element={<Invoices />} />
           <Route path="admin/employee" element={<Employee />} />
           <Route path="admin/employee/:id/seats" element={<SeatMap />} />
+          <Route path="admin/tickets" element={<Tickets />} />
           <Route path="products" element={<Products />} />
 
           {/* Em có thể thêm các trang khác ở đây sau này */}
-          {/* <Route path="movies" element={<Movies />} /> */}
+          <Route path="movies" element={<Movies />} />
+          <Route path="showtimes" element={<Showtimes />} />
         </Route>
 
         <Route path="*" element={<NotFound />} />
