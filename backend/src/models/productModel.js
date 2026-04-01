@@ -68,7 +68,7 @@ const productModel = {
 
         if (product.loai_sp === "Combo") {
             const items = await queryPromise(`
-                SELECT p.ma_sp, p.ten_sp, p.loai_sp, p.gia_ban, p.anh_san_pham
+                SELECT p.ma_sp, p.ten_sp, p.loai_sp, p.gia_ban, p.anh_san_pham, ci.so_luong
                 FROM combo_items ci
                 JOIN san_pham p ON ci.ma_sp = p.ma_sp
                 WHERE ci.ma_combo = ?
@@ -90,8 +90,8 @@ const productModel = {
             const newProductId = result.insertId;
 
             if (loai_sp === 'Combo' && Array.isArray(combo_items) && combo_items.length > 0) {
-                const values = combo_items.map(itemId => [newProductId, itemId]);
-                await queryPromise("INSERT INTO combo_items (ma_combo, ma_sp) VALUES ?", [values]);
+                const values = combo_items.map(item => [newProductId, item.ma_sp, item.so_luong || 1]);
+                await queryPromise("INSERT INTO combo_items (ma_combo, ma_sp, so_luong) VALUES ?", [values]);
             }
 
             await commit();
@@ -124,8 +124,8 @@ const productModel = {
             if (loai_sp === 'Combo') {
                 await queryPromise("DELETE FROM combo_items WHERE ma_combo = ?", [id]);
                 if (Array.isArray(combo_items) && combo_items.length > 0) {
-                    const values = combo_items.map(itemId => [id, itemId]);
-                    await queryPromise("INSERT INTO combo_items (ma_combo, ma_sp) VALUES ?", [values]);
+                    const values = combo_items.map(item => [id, item.ma_sp, item.so_luong || 1]);
+                    await queryPromise("INSERT INTO combo_items (ma_combo, ma_sp, so_luong) VALUES ?", [values]);
                 }
             } else {
                 await queryPromise("DELETE FROM combo_items WHERE ma_combo = ?", [id]);

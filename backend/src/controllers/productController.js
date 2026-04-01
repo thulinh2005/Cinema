@@ -118,7 +118,23 @@ const productController = {
     delete: async (req, res) => {
         try {
             const id = req.params.id;
+            
+            // Lấy thông tin sản phẩm trước khi xóa để lấy đường dẫn file ảnh
+            const product = await productModel.getProductById(id);
+            
+            // Xóa sản phẩm khỏi DB
             await productModel.deleteProduct(id);
+            
+            // Nếu xóa DB thành công và có file ảnh, thì xóa file ảnh vật lý
+            if (product && product.anh_san_pham) {
+                // remove leading slash if any
+                const relativePath = product.anh_san_pham.startsWith('/') ? product.anh_san_pham.substring(1) : product.anh_san_pham;
+                const filePath = path.join(__dirname, "..", "..", relativePath);
+                fs.unlink(filePath, (err) => {
+                    if (err) console.log("Không thể xóa file ảnh vật lý (có thể file không tồn tại):", filePath);
+                });
+            }
+
             res.json({ success: true, message: "Đã xóa sản phẩm" });
         } catch (error) {
             console.error(error);
