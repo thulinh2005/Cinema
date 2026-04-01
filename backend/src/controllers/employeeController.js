@@ -19,7 +19,7 @@ exports.getEmployees = (req, res) => {
 
 // ================= CREATE EMPLOYEE =================
 exports.createEmployee = (req, res) => {
-    const { ho_ten, ngay_sinh, dia_chi, so_dien_thoai, email, anh_dai_dien, ma_tk, trang_thai } = req.body;
+    const { ho_ten, ngay_sinh, dia_chi, so_dien_thoai, email, anh_dai_dien, ma_tk, trang_thai, chuc_vu } = req.body;
 
     // ============ VALIDATION - Tất cả field bắt buộc ============
     if (!ho_ten || ho_ten.trim() === "") {
@@ -54,6 +54,10 @@ exports.createEmployee = (req, res) => {
 
     if (!email || email.trim() === "") {
         return res.status(400).json({ message: "Email không được bỏ trống" });
+    }
+
+    if (!chuc_vu || chuc_vu.trim() === "") {
+        return res.status(400).json({ message: "Chức vụ không được bỏ trống" });
     }
 
     // ❌ Kiểm tra trùng số điện thoại
@@ -76,7 +80,8 @@ exports.createEmployee = (req, res) => {
             email,
             anh_dai_dien: anh_dai_dien || null,
             ma_tk: ma_tk || null,
-            trang_thai: trang_thai || "Còn làm"
+            trang_thai: trang_thai || "Còn làm",
+            chuc_vu
         }, (errCreate) => {
             if (errCreate) {
                 console.error("❌ Error creating employee:", errCreate.message);
@@ -92,7 +97,7 @@ exports.createEmployee = (req, res) => {
 // ================= UPDATE EMPLOYEE =================
 exports.updateEmployee = (req, res) => {
     const { id } = req.params;
-    const { ho_ten, ngay_sinh, dia_chi, so_dien_thoai, email, anh_dai_dien, ma_tk, trang_thai } = req.body;
+    const { ho_ten, ngay_sinh, dia_chi, so_dien_thoai, email, anh_dai_dien, ma_tk, trang_thai, chuc_vu } = req.body;
 
     // ============ VALIDATION - Tất cả field bắt buộc ============
     if (!ho_ten || ho_ten.trim() === "") {
@@ -129,6 +134,10 @@ exports.updateEmployee = (req, res) => {
         return res.status(400).json({ message: "Email không được bỏ trống" });
     }
 
+    if (!chuc_vu || chuc_vu.trim() === "") {
+        return res.status(400).json({ message: "Chức vụ không được bỏ trống" });
+    }
+
     // 3️⃣ Kiểm tra trùng số điện thoại (trừ chính nhân viên đó)
     employeeModel.checkPhoneExistsExclude(so_dien_thoai, id, (err, exist) => {
         if (err) {
@@ -149,7 +158,8 @@ exports.updateEmployee = (req, res) => {
             email,
             anh_dai_dien: anh_dai_dien || null,
             ma_tk: ma_tk || null,
-            trang_thai: trang_thai || "Còn làm"
+            trang_thai: trang_thai || "Còn làm",
+            chuc_vu
         }, (errUpdate) => {
             if (errUpdate) {
                 console.error("❌ Error updating employee:", errUpdate.message);

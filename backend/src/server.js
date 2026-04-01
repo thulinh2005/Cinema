@@ -14,6 +14,7 @@ const movieRoutes = require("./routes/movieRoutes");
 const showtimeRoutes = require("./routes/showtimeRoutes");
 const invoiceRoutes = require("./routes/invoiceRoutes");
 const employeeRoutes = require("./routes/employeeRoutes");
+const ticketRoutes = require("./routes/ticketRoutes");
 const productRoutes = require("./routes/productRoutes");
 
 const app = express();
@@ -56,6 +57,7 @@ app.use("/api/movies", require("./routes/movieRoutes")(upload));
 app.use("/api/showtimes", showtimeRoutes);
 app.use("/api/invoices", invoiceRoutes);
 app.use("/api/employees", employeeRoutes);
+app.use("/api/tickets", ticketRoutes);
 app.use("/api/products", productRoutes);
 
 app.get("/", (req, res) => {
