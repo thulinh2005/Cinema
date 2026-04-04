@@ -141,7 +141,14 @@ const MovieDetailModal = ({ movie, open, onOpenChange }) => {
           {movie.anh_poster && (
             <div>
               <p className="text-sm font-semibold text-slate-600">Poster</p>
-              <p className="mt-1 text-sm text-slate-600">{movie.anh_poster}</p>
+              <img
+                src={movie.anh_poster.startsWith('http') ? movie.anh_poster : `http://localhost:5000${movie.anh_poster}`}
+                alt={movie.ten_phim}
+                className="mt-2 h-40 w-auto object-cover rounded-lg border border-slate-200"
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                }}
+              />
             </div>
           )}
         </div>
