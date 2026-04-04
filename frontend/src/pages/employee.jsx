@@ -30,7 +30,7 @@ const Employee = () => {
         anh_dai_dien: "",
         ma_tk: "",
         trang_thai: "Còn làm",
-        chuc_vu: ""
+        chuc_vu: "Nhân viên quầy vé"
     });
 
     // ==================== FETCH EMPLOYEES ====================
@@ -114,7 +114,7 @@ const Employee = () => {
                 anh_dai_dien: "",
                 ma_tk: "",
                 trang_thai: "Còn làm",
-                chuc_vu: ""
+                chuc_vu: "Nhân viên quầy vé"
             });
             fetchEmployees();
         } catch (error) {
@@ -265,13 +265,19 @@ const Employee = () => {
                                 />
                             </div>
                             <div className="grid gap-2">
-                                <Label htmlFor="chuc_vu">Chức vụ <span className="text-red-500">*</span></Label>
-                                <Input
-                                    id="chuc_vu"
-                                    placeholder="Nhập chức vụ"
-                                    value={newEmployee.chuc_vu}
-                                    onChange={(e) => setNewEmployee({ ...newEmployee, chuc_vu: e.target.value })}
-                                />
+                                <Label>Chức vụ <span className="text-red-500">*</span></Label>
+                                <Select value={newEmployee.chuc_vu} onValueChange={(val) => setNewEmployee({ ...newEmployee, chuc_vu: val })}>
+                                    <SelectTrigger>
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="Nhân viên quầy vé">Nhân viên quầy vé</SelectItem>
+                                        <SelectItem value="Nhân viên quầy đồ ăn">Nhân viên quầy đồ ăn</SelectItem>
+                                        <SelectItem value="Nhân viên vệ sinh">Nhân viên vệ sinh</SelectItem>
+                                        <SelectItem value="Quản lý">Quản lý</SelectItem>
+                                        <SelectItem value="Kế toán">Kế toán</SelectItem>
+                                    </SelectContent>
+                                </Select>
                             </div>
                             <div className="grid gap-2">
                                 <Label>Trạng thái</Label>
@@ -342,10 +348,16 @@ const Employee = () => {
                             </div>
                             <div className="grid gap-2">
                                 <Label>Chức vụ <span className="text-red-500">*</span></Label>
-                                <Input
-                                    value={editingEmployee.chuc_vu || ""}
-                                    onChange={(e) => setEditingEmployee({ ...editingEmployee, chuc_vu: e.target.value })}
-                                />
+                                <Select value={editingEmployee.chuc_vu || "Nhân viên quầy vé"} onValueChange={(val) => setEditingEmployee({ ...editingEmployee, chuc_vu: val })}>
+                                    <SelectTrigger><SelectValue /></SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="Nhân viên quầy vé">Nhân viên quầy vé</SelectItem>
+                                        <SelectItem value="Nhân viên quầy đồ ăn">Nhân viên quầy đồ ăn</SelectItem>
+                                        <SelectItem value="Nhân viên vệ sinh">Nhân viên vệ sinh</SelectItem>
+                                        <SelectItem value="Quản lý">Quản lý</SelectItem>
+                                        <SelectItem value="Kế toán">Kế toán</SelectItem>
+                                    </SelectContent>
+                                </Select>
                             </div>
                             <div className="grid gap-2">
                                 <Label>Trạng thái</Label>

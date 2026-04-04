@@ -60,6 +60,11 @@ exports.createEmployee = (req, res) => {
         return res.status(400).json({ message: "Chức vụ không được bỏ trống" });
     }
 
+    const validChucVu = ['Nhân viên quầy vé', 'Nhân viên quầy đồ ăn', 'Nhân viên vệ sinh', 'Quản lý', 'Kế toán'];
+    if (!validChucVu.includes(chuc_vu)) {
+        return res.status(400).json({ message: "Chức vụ không hợp lệ" });
+    }
+
     // ❌ Kiểm tra trùng số điện thoại
     employeeModel.checkPhoneExists(so_dien_thoai, (err, exist) => {
         if (err) {
@@ -136,6 +141,11 @@ exports.updateEmployee = (req, res) => {
 
     if (!chuc_vu || chuc_vu.trim() === "") {
         return res.status(400).json({ message: "Chức vụ không được bỏ trống" });
+    }
+
+    const validChucVu = ['Nhân viên quầy vé', 'Nhân viên quầy đồ ăn', 'Nhân viên vệ sinh', 'Quản lý', 'Kế toán'];
+    if (!validChucVu.includes(chuc_vu)) {
+        return res.status(400).json({ message: "Chức vụ không hợp lệ" });
     }
 
     // 3️⃣ Kiểm tra trùng số điện thoại (trừ chính nhân viên đó)
