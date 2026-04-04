@@ -13,6 +13,7 @@ import Customers from "./pages/Customers"
 import Invoices from "./pages/Invoices"
 import Tickets from "./pages/Tickets"
 import Products from "./pages/Products"
+import Statistics from "./pages/Statistics"
 
 
 function App() {
@@ -42,6 +43,7 @@ function App() {
           <Route path="admin/employee/:id/seats" element={<SeatMap />} />
           <Route path="admin/tickets" element={<Tickets />} />
           <Route path="products" element={<Products />} />
+          <Route path="statistics" element={<Statistics />} />
 
           {/* Em có thể thêm các trang khác ở đây sau này */}
           <Route path="movies" element={<Movies />} />

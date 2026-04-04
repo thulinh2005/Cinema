@@ -59,6 +59,7 @@ app.use("/api/invoices", invoiceRoutes);
 app.use("/api/employees", employeeRoutes);
 app.use("/api/tickets", ticketRoutes);
 app.use("/api/products", productRoutes);
+app.use("/api/thong-ke", require("./routes/thongKeHoaDonRoutes"));
 
 app.get("/", (req, res) => {
     res.send("Server dang chay...");
