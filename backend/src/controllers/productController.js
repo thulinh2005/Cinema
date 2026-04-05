@@ -88,6 +88,16 @@ const productController = {
             let { ten_sp, loai_sp, gia_ban, trang_thai, combo_items } = req.body;
             let anh_san_pham = req.file ? `/uploads/${req.file.filename}` : undefined; // undefined để ko cập nhật trường ảnh nếu ko gửi file
 
+            if (anh_san_pham) {
+                const oldProduct = await productModel.getProductById(id);
+                if (oldProduct && oldProduct.anh_san_pham) {
+                    const filePath = path.join(__dirname, '../../', oldProduct.anh_san_pham.replace(/^\//, ''));
+                    if (fs.existsSync(filePath)) {
+                        fs.unlinkSync(filePath);
+                    }
+                }
+            }
+
             if (typeof combo_items === "string") {
                 try { combo_items = JSON.parse(combo_items); } catch (e) { combo_items = []; }
             }
@@ -118,7 +128,18 @@ const productController = {
     delete: async (req, res) => {
         try {
             const id = req.params.id;
+            const product = await productModel.getProductById(id);
+            if (!product) return res.status(404).json({ success: false, message: "Không tìm thấy sản phẩm" });
+
             await productModel.deleteProduct(id);
+
+            if (product.anh_san_pham) {
+                const filePath = path.join(__dirname, '../../', product.anh_san_pham.replace(/^\//, ''));
+                if (fs.existsSync(filePath)) {
+                    fs.unlinkSync(filePath);
+                }
+            }
+
             res.json({ success: true, message: "Đã xóa sản phẩm" });
         } catch (error) {
             console.error(error);
