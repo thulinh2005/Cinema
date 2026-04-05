@@ -50,12 +50,12 @@ const MovieDetailModal = ({ movie, open, onOpenChange }) => {
       <div className="relative w-full max-w-2xl rounded-2xl bg-white p-6 shadow-xl">
         <button
           onClick={() => onOpenChange(false)}
-          className="absolute right-4 top-4 rounded-full p-1 hover:bg-slate-100"
+          className="absolute right-4 top-4 z-50 rounded-full p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition"
         >
           <X size={24} />
         </button>
 
-        <h2 className="text-2xl font-bold text-slate-900 mb-4">
+        <h2 className="text-2xl font-bold text-slate-900 mb-4 pr-10">
           Chi tiết phim
         </h2>
 
@@ -329,12 +329,12 @@ const MovieFormModal = ({ movie, mode, open, onOpenChange, onSuccess }) => {
       <div className="relative w-full max-w-2xl rounded-2xl bg-white p-6 shadow-xl max-h-[calc(100vh-2rem)] overflow-y-auto">
         <button
           onClick={() => onOpenChange(false)}
-          className="sticky top-0 right-0 absolute right-4 top-4 rounded-full p-1 hover:bg-slate-100 z-10"
+          className="absolute right-4 top-4 z-50 rounded-full p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition"
         >
           <X size={24} />
         </button>
 
-        <h2 className="text-2xl font-bold text-slate-900 mb-6">
+        <h2 className="text-2xl font-bold text-slate-900 mb-6 pr-10">
           {mode === "edit" ? "Chỉnh sửa phim" : "Thêm phim mới"}
         </h2>
 
@@ -449,7 +449,8 @@ const MovieFormModal = ({ movie, mode, open, onOpenChange, onSuccess }) => {
                 name="tinh_trang"
                 value={formData.tinh_trang}
                 onChange={handleChange}
-                className="w-full rounded-lg border border-slate-300 bg-slate-50 px-4 py-2 text-sm outline-none focus:border-blue-500 focus:bg-white"
+                disabled={mode === "add"}
+                className={`w-full rounded-lg border border-slate-300 px-4 py-2 text-sm outline-none ${mode === "add" ? 'bg-slate-100 text-slate-500 cursor-not-allowed' : 'bg-slate-50 focus:border-blue-500 focus:bg-white'}`}
               >
                 <option value="Sắp chiếu">Sắp chiếu</option>
                 <option value="Đang chiếu">Đang chiếu</option>

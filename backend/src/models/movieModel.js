@@ -56,8 +56,8 @@ const Movie = {
     },
 
     getAllNames: (callback) => {
-        // Chỉ lấy ma_phim và ten_phim để load cho nhanh
-        const sql = "SELECT ma_phim, ten_phim FROM phim WHERE tinh_trang != 'Ngừng chiếu'";
+        // Chỉ lấy ma_phim, ten_phim và thoi_luong để load cho nhanh
+        const sql = "SELECT ma_phim, ten_phim, thoi_luong FROM phim WHERE tinh_trang != 'Ngừng chiếu'";
         db.query(sql, callback);
     },
 
