@@ -76,6 +76,13 @@ const AddCustomerModal = ({ isOpen, onClose, reload }) => {
 
     if (!form.ngay_sinh) {
       newErrors.ngay_sinh = "Vui lòng chọn ngày sinh";
+    } else {
+      // Dùng so sánh chuỗi YYYY-MM-DD để tránh lỗi timezone
+      const today = new Date().toISOString().split("T")[0];
+      if (form.ngay_sinh > today) {
+        newErrors.ngay_sinh = "Ngày sinh không được lớn hơn ngày hiện tại";
+        toast.error("Ngày sinh không được lớn hơn ngày hiện tại");
+      }
     }
 
     if (!form.dia_chi.trim()) {
