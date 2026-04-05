@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Search, Plus, Pencil, Trash2 } from 'lucide-react';
+import { Search, Plus, Pencil, Trash2, Eye } from 'lucide-react';
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -20,6 +20,8 @@ const Employee = () => {
     const [employeeToDelete, setEmployeeToDelete] = useState(null);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [editingEmployee, setEditingEmployee] = useState(null);
+    const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+    const [viewingEmployee, setViewingEmployee] = useState(null);
 
     const [newEmployee, setNewEmployee] = useState({
         ho_ten: "",
@@ -136,6 +138,11 @@ const Employee = () => {
     };
 
     // ==================== EDIT EMPLOYEE ====================
+    const handleViewClick = (employee) => {
+        setViewingEmployee(employee);
+        setIsViewModalOpen(true);
+    };
+
     const handleEditClick = (employee) => {
         setEditingEmployee({ ...employee });
         setIsEditModalOpen(true);
@@ -378,6 +385,73 @@ const Employee = () => {
                 </DialogContent>
             </Dialog>
 
+            {/* VIEW MODAL */}
+            <Dialog open={isViewModalOpen} onOpenChange={setIsViewModalOpen}>
+                <DialogContent className="sm:max-w-[500px]">
+                    <DialogHeader>
+                        <DialogTitle className="text-xl font-bold">Chi tiết nhân viên: {viewingEmployee?.ho_ten}</DialogTitle>
+                    </DialogHeader>
+                    {viewingEmployee && (
+                        <div className="grid gap-4 py-4 text-sm">
+                            <div className="grid grid-cols-3 items-center gap-4 border-b pb-2">
+                                <span className="font-semibold text-slate-700">Mã nhân viên:</span>
+                                <span className="col-span-2 text-slate-600 font-mono">#{viewingEmployee.ma_nv}</span>
+                            </div>
+                            <div className="grid grid-cols-3 items-center gap-4 border-b pb-2">
+                                <span className="font-semibold text-slate-700">Họ tên:</span>
+                                <span className="col-span-2 text-slate-600">{viewingEmployee.ho_ten}</span>
+                            </div>
+                            <div className="grid grid-cols-3 items-center gap-4 border-b pb-2">
+                                <span className="font-semibold text-slate-700">Ngày sinh:</span>
+                                <span className="col-span-2 text-slate-600">
+                                    {viewingEmployee.ngay_sinh ? new Date(viewingEmployee.ngay_sinh).toLocaleDateString('vi-VN') : "-"}
+                                </span>
+                            </div>
+                            <div className="grid grid-cols-3 items-center gap-4 border-b pb-2">
+                                <span className="font-semibold text-slate-700">Địa chỉ:</span>
+                                <span className="col-span-2 text-slate-600">{viewingEmployee.dia_chi || "-"}</span>
+                            </div>
+                            <div className="grid grid-cols-3 items-center gap-4 border-b pb-2">
+                                <span className="font-semibold text-slate-700">Số điện thoại:</span>
+                                <span className="col-span-2 text-slate-600">{viewingEmployee.so_dien_thoai}</span>
+                            </div>
+                            <div className="grid grid-cols-3 items-center gap-4 border-b pb-2">
+                                <span className="font-semibold text-slate-700">Email:</span>
+                                <span className="col-span-2 text-slate-600">{viewingEmployee.email || "-"}</span>
+                            </div>
+                            <div className="grid grid-cols-3 items-center gap-4 border-b pb-2">
+                                <span className="font-semibold text-slate-700">Chức vụ:</span>
+                                <span className="col-span-2 text-slate-600">{viewingEmployee.chuc_vu || "-"}</span>
+                            </div>
+                            {viewingEmployee.ma_tk && (
+                                <div className="grid grid-cols-3 items-center gap-4 border-b pb-2">
+                                    <span className="font-semibold text-slate-700">Mã tài khoản:</span>
+                                    <span className="col-span-2 text-slate-600 font-mono">#{viewingEmployee.ma_tk}</span>
+                                </div>
+                            )}
+                            <div className="grid grid-cols-3 items-center gap-4">
+                                <span className="font-semibold text-slate-700">Trạng thái:</span>
+                                <span className="col-span-2 text-slate-600">
+                                    <Badge
+                                        variant="secondary"
+                                        className={`rounded-md px-2 py-0.5 text-[11px] font-bold border-none whitespace-nowrap ${
+                                            viewingEmployee.trang_thai === 'Còn làm'
+                                                ? 'bg-emerald-100 text-emerald-700'
+                                                : 'bg-red-100 text-red-700'
+                                        }`}
+                                    >
+                                        {viewingEmployee.trang_thai}
+                                    </Badge>
+                                </span>
+                            </div>
+                        </div>
+                    )}
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setIsViewModalOpen(false)}>Đóng</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
             {/* SEARCH BAR */}
             <div className="flex items-center max-w-sm relative group">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
@@ -439,6 +513,15 @@ const Employee = () => {
                                     </TableCell>
                                     <TableCell className="text-right pr-6">
                                         <div className="flex justify-end gap-1">
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                className="h-8 w-8 hover:bg-blue-50"
+                                                title="Xem chi tiết"
+                                                onClick={() => handleViewClick(emp)}
+                                            >
+                                                <Eye className="h-4 w-4 text-blue-500" />
+                                            </Button>
                                             <Button
                                                 variant="ghost"
                                                 size="icon"

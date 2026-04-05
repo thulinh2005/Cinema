@@ -6,11 +6,14 @@ const path = require('path');
 // Helper function format ngay_khoi_chieu
 const formatMovieDate = (movie) => {
     if (!movie) return null;
+    let formattedDate = movie.ngay_khoi_chieu;
+    if (formattedDate instanceof Date) {
+        const localDate = new Date(formattedDate.getTime() - formattedDate.getTimezoneOffset() * 60000);
+        formattedDate = localDate.toISOString().split('T')[0];
+    }
     return {
         ...movie,
-        ngay_khoi_chieu: movie.ngay_khoi_chieu instanceof Date 
-            ? movie.ngay_khoi_chieu.toISOString().split('T')[0]
-            : movie.ngay_khoi_chieu
+        ngay_khoi_chieu: formattedDate
     };
 };
 
@@ -99,10 +102,21 @@ exports.createMovie = (req, res) => {
     const validation = validateMovieData(data, false); // isUpdate = false
     if (validation.error) return res.status(validation.status).json(validation.response);
 
+    if (data.ngay_khoi_chieu && data.tinh_trang !== "Ngừng chiếu") {
+        const now = new Date();
+        const localNow = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+        const todayStr = localNow.toISOString().split('T')[0];
+        
+        if (data.ngay_khoi_chieu <= todayStr) {
+            data.tinh_trang = "Đang chiếu";
+        } else {
+            data.tinh_trang = "Sắp chiếu";
+        }
+    }
+
     Movie.create(data, (err, result) => {
         if (err) return res.status(500).json({ success: false, message: "Lỗi thêm phim." });
-        res.status(201).json({ success: true, message: "Thêm thành công", ma_phim
-          : result.insertId });
+        res.status(201).json({ success: true, message: "Thêm thành công", ma_phim: result.insertId });
     });
 };
 
@@ -114,6 +128,18 @@ exports.updateMovie = (req, res) => {
 
     const validation = validateMovieData(data, true); // isUpdate = true -> Sẽ không bắt 10 trường
     if (validation.error) return res.status(validation.status).json(validation.response);
+
+    if (data.ngay_khoi_chieu && data.tinh_trang !== "Ngừng chiếu") {
+        const now = new Date();
+        const localNow = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+        const todayStr = localNow.toISOString().split('T')[0];
+        
+        if (data.ngay_khoi_chieu <= todayStr) {
+            data.tinh_trang = "Đang chiếu";
+        } else {
+            data.tinh_trang = "Sắp chiếu";
+        }
+    }
 
     Movie.update(ma_phim, data, (err, result) => {
         if (err) return res.status(500).json({ success: false, message: "Lỗi cập nhật." });

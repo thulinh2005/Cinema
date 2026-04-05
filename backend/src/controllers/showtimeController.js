@@ -84,14 +84,39 @@ exports.createShowtime = (req, res) => {
       });
     }
 
-    Showtime.create(data, (err, result) => {
-      if (err) {
-        return res.status(500).json({ message: "Lỗi server", err });
+    Movie.getById(data.ma_phim, (err, movies) => {
+      if (err) return res.status(500).json({ message: "Lỗi server khi kiểm tra phim", err });
+      if (!movies || movies.length === 0) return res.status(404).json({ message: "Không tìm thấy phim" });
+
+      const movie = movies[0];
+      const now = new Date();
+      const localNow = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+      const todayStr = localNow.toISOString().split('T')[0];
+
+      if (data.ngay_chieu < todayStr) {
+        return res.status(400).json({ message: "Không thể thêm suất chiếu trong quá khứ" });
       }
 
-      res.status(201).json({
-        message: "Thêm suất chiếu thành công",
-        id: result.insertId,
+      const start = new Date(`1970-01-01T${data.gio_chieu}:00Z`);
+      const end = new Date(`1970-01-01T${data.gio_ket_thuc}:00Z`);
+      let diffMins = (end - start) / 60000;
+      if (diffMins < 0) diffMins += 24 * 60;
+
+      if (diffMins < movie.thoi_luong) {
+        return res.status(400).json({ 
+          message: `Thời lượng suất chiếu (${diffMins} phút) không được nhỏ hơn thời lượng phim (${movie.thoi_luong} phút)` 
+        });
+      }
+
+      Showtime.create(data, (err, result) => {
+        if (err) {
+          return res.status(500).json({ message: "Lỗi server", err });
+        }
+
+        res.status(201).json({
+          message: "Thêm suất chiếu thành công",
+          id: result.insertId,
+        });
       });
     });
   } catch (err) {
@@ -105,16 +130,47 @@ exports.updateShowtime = (req, res) => {
     const { id } = req.params;
     const data = req.body;
 
-    Showtime.update(id, data, (err, result) => {
-      if (err) return res.status(500).json({ message: "Lỗi server", err });
+    if (!data.ma_phim || !data.ma_phong || !data.ngay_chieu || !data.gio_chieu || !data.gio_ket_thuc) {
+      return res.status(400).json({
+        message: "Thiếu thông tin bắt buộc",
+      });
+    }
 
-      if (result.affectedRows === 0) {
-        return res.status(404).json({
-          message: "Không tìm thấy suất chiếu",
+    Movie.getById(data.ma_phim, (err, movies) => {
+      if (err) return res.status(500).json({ message: "Lỗi server khi kiểm tra phim", err });
+      if (!movies || movies.length === 0) return res.status(404).json({ message: "Không tìm thấy phim" });
+
+      const movie = movies[0];
+      const now = new Date();
+      const localNow = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+      const todayStr = localNow.toISOString().split('T')[0];
+
+      if (data.ngay_chieu < todayStr) {
+        return res.status(400).json({ message: "Không thể cập nhật suất chiếu sang ngày trong quá khứ" });
+      }
+
+      const start = new Date(`1970-01-01T${data.gio_chieu}:00Z`);
+      const end = new Date(`1970-01-01T${data.gio_ket_thuc}:00Z`);
+      let diffMins = (end - start) / 60000;
+      if (diffMins < 0) diffMins += 24 * 60;
+
+      if (diffMins < movie.thoi_luong) {
+        return res.status(400).json({ 
+          message: `Thời lượng suất chiếu (${diffMins} phút) không được nhỏ hơn thời lượng phim (${movie.thoi_luong} phút)` 
         });
       }
 
-      res.json({ message: "Cập nhật suất chiếu thành công" });
+      Showtime.update(id, data, (err, result) => {
+        if (err) return res.status(500).json({ message: "Lỗi server", err });
+
+        if (result.affectedRows === 0) {
+          return res.status(404).json({
+            message: "Không tìm thấy suất chiếu",
+          });
+        }
+
+        res.json({ message: "Cập nhật suất chiếu thành công" });
+      });
     });
   } catch (err) {
     res.status(500).json({ message: "Lỗi server", err });

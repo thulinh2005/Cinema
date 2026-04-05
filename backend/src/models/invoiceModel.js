@@ -101,7 +101,7 @@ const Invoice = {
     db.query(sql, [id], callback);
   },
 
-  // CẬP NHẬT HÓA ĐƠN (đơn giản, không tính điểm - giữ lại để tương thích)
+  // CẬP NHẬT HÓA ĐƠN
   update: (id, data, callback) => {
     const { ma_kh, ma_nv, tong_tien } = data;
     const sql = `

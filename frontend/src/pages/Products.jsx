@@ -57,7 +57,7 @@ const ProductFormModal = ({ product, isOpen, onClose, isEdit, reload }) => {
                             const res = await axios.get(`http://localhost:5000/api/products/${product.ma_sp}`);
                             const detail = res.data.data;
                             if (detail && detail.combo_items) {
-                                setSelectedItems(detail.combo_items.map(item => item.ma_sp));
+                                setSelectedItems(detail.combo_items.map(item => ({ ma_sp: item.ma_sp, so_luong: item.so_luong || 1 })));
                             }
                         } catch (err) {
                             console.error("Lỗi lấy chi tiết combo:", err);
@@ -87,12 +87,20 @@ const ProductFormModal = ({ product, isOpen, onClose, isEdit, reload }) => {
         }
     };
 
+    const isItemSelected = (itemId) => selectedItems.some(i => i.ma_sp === itemId);
+
     const toggleComboItem = (itemId) => {
-        if (selectedItems.includes(itemId)) {
-            setSelectedItems(selectedItems.filter(id => id !== itemId));
+        if (isItemSelected(itemId)) {
+            setSelectedItems(selectedItems.filter(i => i.ma_sp !== itemId));
         } else {
-            setSelectedItems([...selectedItems, itemId]);
+            setSelectedItems([...selectedItems, { ma_sp: itemId, so_luong: 1 }]);
         }
+    };
+
+    const updateQuantity = (itemId, qty) => {
+        const value = parseInt(qty, 10);
+        if (isNaN(value) || value < 1) return;
+        setSelectedItems(selectedItems.map(i => i.ma_sp === itemId ? { ...i, so_luong: value } : i));
     };
 
     const handleSubmit = async (e) => {
@@ -244,29 +252,50 @@ const ProductFormModal = ({ product, isOpen, onClose, isEdit, reload }) => {
                                     <p className="p-2 text-sm text-slate-500">Không có đồ ăn / nước uống nào khả dụng.</p>
                                 ) : (
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                        {availableSingles.map(item => (
-                                            <label
-                                                key={item.ma_sp}
-                                                className={`flex cursor-pointer items-center gap-3 rounded-lg border p-3 transition ${
-                                                    selectedItems.includes(item.ma_sp)
-                                                        ? "border-blue-500 bg-blue-50"
-                                                        : "border-slate-200 hover:bg-slate-50"
-                                                }`}
-                                            >
-                                                <input
-                                                    type="checkbox"
-                                                    checked={selectedItems.includes(item.ma_sp)}
-                                                    onChange={() => toggleComboItem(item.ma_sp)}
-                                                    className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
-                                                />
-                                                <div className="flex flex-col">
-                                                    <span className="text-sm font-medium text-slate-900">{item.ten_sp}</span>
-                                                    <span className="text-xs text-slate-500">
-                                                        {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.gia_ban)}
-                                                    </span>
-                                                </div>
-                                            </label>
-                                        ))}
+                                        {availableSingles.map(item => {
+                                            const selectedObj = selectedItems.find(i => i.ma_sp === item.ma_sp);
+                                            const isSelected = !!selectedObj;
+
+                                            return (
+                                              <div
+                                                  key={item.ma_sp}
+                                                  className={`flex flex-col gap-2 rounded-lg border p-3 transition ${
+                                                      isSelected
+                                                          ? "border-blue-500 bg-blue-50"
+                                                          : "border-slate-200 hover:bg-slate-50"
+                                                  }`}
+                                              >
+                                                  <label className="flex cursor-pointer items-center gap-3">
+                                                      <input
+                                                          type="checkbox"
+                                                          checked={isSelected}
+                                                          onChange={() => toggleComboItem(item.ma_sp)}
+                                                          className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                                                      />
+                                                      <div className="flex flex-col">
+                                                          <span className="text-sm font-medium text-slate-900">{item.ten_sp}</span>
+                                                          <span className="text-xs text-slate-500">
+                                                              {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.gia_ban)}
+                                                          </span>
+                                                      </div>
+                                                  </label>
+                                                  
+                                                  {isSelected && (
+                                                      <div className="flex items-center gap-2 pl-7 mt-1">
+                                                          <span className="text-xs text-slate-600 font-medium">Số lượng:</span>
+                                                          <input 
+                                                              type="number" 
+                                                              min="1" 
+                                                              value={selectedObj.so_luong} 
+                                                              onChange={(e) => updateQuantity(item.ma_sp, e.target.value)}
+                                                              className="w-16 rounded border border-slate-300 px-2 py-1 text-sm outline-none focus:border-blue-500 bg-white"
+                                                              onClick={(e) => e.stopPropagation()}
+                                                          />
+                                                      </div>
+                                                  )}
+                                              </div>
+                                            );
+                                        })}
                                     </div>
                                 )}
                             </div>
