@@ -15,9 +15,6 @@ router.get("/", getInvoices);
 // CHI TIẾT
 router.get("/:id", getInvoiceById);
 
-// THÊM MỚI (tự động tích điểm 5%)
-router.post("/", createInvoice);
-
 // CẬP NHẬT
 router.put("/:id", updateInvoice);
 
