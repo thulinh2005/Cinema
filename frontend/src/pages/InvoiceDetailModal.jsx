@@ -117,15 +117,15 @@ const InvoiceDetailModal = ({ invoice, isOpen, onClose }) => {
             ) : (
               <div className="rounded-xl border border-slate-200 overflow-hidden">
                 <table className="min-w-full text-sm">
-                  <thead className="bg-slate-50">
-                    <tr className="text-slate-600">
-                      <th className="px-4 py-3 text-left font-semibold">Phim</th>
-                      <th className="px-4 py-3 text-left font-semibold">Phòng</th>
-                      <th className="px-4 py-3 text-left font-semibold">Ngày chiếu</th>
-                      <th className="px-4 py-3 text-left font-semibold">Giờ</th>
-                      <th className="px-4 py-3 text-left font-semibold">Ghế</th>
-                      <th className="px-4 py-3 text-left font-semibold">Loại</th>
-                      <th className="px-4 py-3 text-right font-semibold">Giá vé</th>
+                  <thead className="bg-slate-50/50">
+                    <tr className="text-slate-700">
+                      <th className="px-4 py-3 text-left font-bold text-slate-700">Phim</th>
+                      <th className="px-4 py-3 text-left font-bold text-slate-700">Phòng</th>
+                      <th className="px-4 py-3 text-left font-bold text-slate-700">Ngày chiếu</th>
+                      <th className="px-4 py-3 text-left font-bold text-slate-700">Giờ</th>
+                      <th className="px-4 py-3 text-left font-bold text-slate-700">Ghế</th>
+                      <th className="px-4 py-3 text-left font-bold text-slate-700">Loại</th>
+                      <th className="px-4 py-3 text-right font-bold text-slate-700">Giá vé</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -171,13 +171,13 @@ const InvoiceDetailModal = ({ invoice, isOpen, onClose }) => {
             ) : (
               <div className="rounded-xl border border-slate-200 overflow-hidden">
                 <table className="min-w-full text-sm">
-                  <thead className="bg-slate-50">
-                    <tr className="text-slate-600">
-                      <th className="px-4 py-3 text-left font-semibold">Sản phẩm</th>
-                      <th className="px-4 py-3 text-left font-semibold">Loại</th>
-                      <th className="px-4 py-3 text-center font-semibold">Số lượng</th>
-                      <th className="px-4 py-3 text-right font-semibold">Đơn giá</th>
-                      <th className="px-4 py-3 text-right font-semibold">Thành tiền</th>
+                  <thead className="bg-slate-50/50">
+                    <tr className="text-slate-700">
+                      <th className="px-4 py-3 text-left font-bold text-slate-700">Sản phẩm</th>
+                      <th className="px-4 py-3 text-left font-bold text-slate-700">Loại</th>
+                      <th className="px-4 py-3 text-center font-bold text-slate-700">Số lượng</th>
+                      <th className="px-4 py-3 text-right font-bold text-slate-700">Đơn giá</th>
+                      <th className="px-4 py-3 text-right font-bold text-slate-700">Thành tiền</th>
                     </tr>
                   </thead>
                   <tbody>
