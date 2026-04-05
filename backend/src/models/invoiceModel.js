@@ -15,8 +15,8 @@ const Invoice = {
 
     const sql = `
       SELECT hd.ma_hd, hd.ngay_lap, hd.tong_tien,
-             hd.ma_kh, kh.ten_kh,
-             hd.ma_nv, nv.ho_ten AS ten_nv,
+             hd.ma_kh, COALESCE(kh.ten_kh, 'Khách vãng lai') AS ten_kh,
+             hd.ma_nv, COALESCE(nv.ho_ten, 'Hệ thống') AS ten_nv,
              (SELECT GROUP_CONCAT(DISTINCT p.ten_phim SEPARATOR ', ')
               FROM ve v
               JOIN suat_chieu sc ON v.ma_suat_chieu = sc.ma_suat_chieu

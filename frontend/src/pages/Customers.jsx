@@ -145,10 +145,10 @@ const Customers = () => {
       <div className="mx-auto max-w-7xl">
         <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div>
-            <h1 className="text-4xl font-bold tracking-tight text-slate-900">
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900">
               Quản lý khách hàng
             </h1>
-            <p className="mt-2 text-[17px] text-slate-600">
+            <p className="mt-1 text-sm text-slate-500">
               Quản lý thông tin và theo dõi hoạt động của khách hàng
             </p>
           </div>
@@ -217,14 +217,14 @@ const Customers = () => {
         <div className="overflow-hidden rounded-2xl border border-slate-300 bg-white shadow-sm">
           <div className="overflow-x-auto">
             <table className="min-w-full text-sm">
-              <thead className="bg-slate-50">
-                <tr className="text-left text-slate-800">
-                  <th className="px-4 py-4 font-semibold">Tên khách hàng</th>
-                  <th className="px-4 py-4 font-semibold">Email</th>
-                  <th className="px-4 py-4 font-semibold">Số điện thoại</th>
-                  <th className="px-4 py-4 font-semibold">Hạng thành viên</th>
-                  <th className="px-4 py-4 font-semibold">Trạng thái</th>
-                  <th className="px-4 py-4 text-center font-semibold">
+              <thead className="bg-slate-50/50">
+                <tr className="text-left">
+                  <th className="px-4 py-4 font-bold text-slate-700">Tên khách hàng</th>
+                  <th className="px-4 py-4 font-bold text-slate-700">Email</th>
+                  <th className="px-4 py-4 font-bold text-slate-700">Số điện thoại</th>
+                  <th className="px-4 py-4 font-bold text-slate-700">Hạng thành viên</th>
+                  <th className="px-4 py-4 font-bold text-slate-700">Trạng thái</th>
+                  <th className="px-4 py-4 text-center font-bold text-slate-700">
                     Hoạt động
                   </th>
                 </tr>
