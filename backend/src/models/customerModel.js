@@ -155,6 +155,23 @@ const Customer = {
     `;
     db.query(sql, [id], callback);
   },
+
+  // CỘNG ĐIỂM TÍCH LŨY VÀ TỰ ĐỘNG SET HẠNG THÀNH VIÊN
+  // Hạng: Standard (0-999), VIP (1000-4999), SVIP (5000+)
+  updateLoyaltyPoints: (id, pointsToAdd, callback) => {
+    const sql = `
+      UPDATE khach_hang
+      SET
+        diem_tich_luy = diem_tich_luy + ?,
+        hang_thanh_vien = CASE
+          WHEN (diem_tich_luy + ?) >= 5000 THEN 'SVIP'
+          WHEN (diem_tich_luy + ?) >= 1000 THEN 'VIP'
+          ELSE 'Standard'
+        END
+      WHERE ma_kh = ?
+    `;
+    db.query(sql, [pointsToAdd, pointsToAdd, pointsToAdd, id], callback);
+  },
 };
 
 module.exports = Customer;
