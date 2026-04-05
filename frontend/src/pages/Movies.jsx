@@ -370,7 +370,7 @@ const MovieFormModal = ({ movie, mode, open, onOpenChange, onSuccess }) => {
 
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-2">
-                Thể loại
+                Thể loại *
               </label>
               <input
                 type="text"
@@ -384,7 +384,7 @@ const MovieFormModal = ({ movie, mode, open, onOpenChange, onSuccess }) => {
 
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-2">
-                Thời lượng (phút)
+                Thời lượng (phút) *
               </label>
               <input
                 type="number"
@@ -398,7 +398,7 @@ const MovieFormModal = ({ movie, mode, open, onOpenChange, onSuccess }) => {
 
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-2">
-                Ngày khởi chiếu
+                Ngày khởi chiếu *
               </label>
               <input
                 type="date"
@@ -429,7 +429,7 @@ const MovieFormModal = ({ movie, mode, open, onOpenChange, onSuccess }) => {
 
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-2">
-                Nước sản xuất
+                Nước sản xuất *
               </label>
               <input
                 type="text"
@@ -443,7 +443,7 @@ const MovieFormModal = ({ movie, mode, open, onOpenChange, onSuccess }) => {
 
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-2">
-                Trạng thái
+                Trạng thái *
               </label>
               <select
                 name="tinh_trang"
@@ -460,7 +460,7 @@ const MovieFormModal = ({ movie, mode, open, onOpenChange, onSuccess }) => {
 
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-2">
-                Ảnh Poster
+                Ảnh Poster {mode === "add" && "*"}
               </label>
               <div className="space-y-2">
                 <input
@@ -485,7 +485,7 @@ const MovieFormModal = ({ movie, mode, open, onOpenChange, onSuccess }) => {
 
           <div>
             <label className="block text-sm font-semibold text-slate-700 mb-2">
-              Link Trailer
+              Link Trailer *
             </label>
             <input
               type="text"
@@ -513,7 +513,7 @@ const MovieFormModal = ({ movie, mode, open, onOpenChange, onSuccess }) => {
 
           <div>
             <label className="block text-sm font-semibold text-slate-700 mb-2">
-              Mô tả
+              Mô tả *
             </label>
             <textarea
               name="mo_ta"

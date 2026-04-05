@@ -218,11 +218,11 @@ const ShowtimeFormModal = ({ showtime, mode, open, onOpenChange, onSuccess }) =>
       toast.error("Vui lòng chọn ngày chiếu");
       return false;
     }
-    
+
     const now = new Date();
     const localNow = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
     const todayStr = localNow.toISOString().split('T')[0];
-    
+
     if (formData.ngay_chieu < todayStr) {
       toast.error("Không thể chọn ngày chiếu trong quá khứ");
       return false;
@@ -245,15 +245,15 @@ const ShowtimeFormModal = ({ showtime, mode, open, onOpenChange, onSuccess }) =>
 
     const selectedMovie = movies.find(m => m.ma_phim.toString() === formData.ma_phim.toString());
     if (selectedMovie && selectedMovie.thoi_luong) {
-       const start = new Date(`1970-01-01T${formData.gio_chieu}:00Z`);
-       const end = new Date(`1970-01-01T${formData.gio_ket_thuc}:00Z`);
-       let diffMins = (end - start) / 60000;
-       if (diffMins < 0) diffMins += 24 * 60;
-       
-       if (diffMins < selectedMovie.thoi_luong) {
-          toast.error(`Thời lượng suất chiếu (${diffMins} phút) không được nhỏ hơn thời lượng phim (${selectedMovie.thoi_luong} phút)`);
-          return false;
-       }
+      const start = new Date(`1970-01-01T${formData.gio_chieu}:00Z`);
+      const end = new Date(`1970-01-01T${formData.gio_ket_thuc}:00Z`);
+      let diffMins = (end - start) / 60000;
+      if (diffMins < 0) diffMins += 24 * 60;
+
+      if (diffMins < selectedMovie.thoi_luong) {
+        toast.error(`Thời lượng suất chiếu (${diffMins} phút) không được nhỏ hơn thời lượng phim (${selectedMovie.thoi_luong} phút)`);
+        return false;
+      }
     }
 
     return true;
@@ -567,7 +567,7 @@ const Showtimes = () => {
               Quản lý suất chiếu
             </h1>
             <p className="mt-2 text-[17px] text-slate-600">
-              Quản lý lịch chiếu phim, phòng chiếu và trạng thái suất chiếu
+              Quản lý thông tin suất chiếu
             </p>
           </div>
 
