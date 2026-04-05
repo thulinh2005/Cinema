@@ -315,7 +315,7 @@ const ShowtimeFormModal = ({ showtime, mode, open, onOpenChange, onSuccess }) =>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-2">
-                  Chọn phim *
+                  Chọn phim <span className="text-red-500">*</span>
                 </label>
                 <select
                   name="ma_phim"
@@ -334,7 +334,7 @@ const ShowtimeFormModal = ({ showtime, mode, open, onOpenChange, onSuccess }) =>
 
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-2">
-                  Chọn phòng chiếu *
+                  Chọn phòng chiếu <span className="text-red-500">*</span>
                 </label>
                 <select
                   name="ma_phong"
@@ -353,7 +353,7 @@ const ShowtimeFormModal = ({ showtime, mode, open, onOpenChange, onSuccess }) =>
 
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-2">
-                  Ngày chiếu *
+                  Ngày chiếu <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="date"
@@ -366,7 +366,7 @@ const ShowtimeFormModal = ({ showtime, mode, open, onOpenChange, onSuccess }) =>
 
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-2">
-                  Giờ bắt đầu *
+                  Giờ bắt đầu <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="time"
@@ -379,7 +379,7 @@ const ShowtimeFormModal = ({ showtime, mode, open, onOpenChange, onSuccess }) =>
 
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-2">
-                  Giờ kết thúc *
+                  Giờ kết thúc <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="time"

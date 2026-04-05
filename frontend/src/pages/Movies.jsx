@@ -356,7 +356,7 @@ const MovieFormModal = ({ movie, mode, open, onOpenChange, onSuccess }) => {
 
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-2">
-                Tên phim *
+                Tên phim <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -370,7 +370,7 @@ const MovieFormModal = ({ movie, mode, open, onOpenChange, onSuccess }) => {
 
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-2">
-                Thể loại *
+                Thể loại <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -384,7 +384,7 @@ const MovieFormModal = ({ movie, mode, open, onOpenChange, onSuccess }) => {
 
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-2">
-                Thời lượng (phút) *
+                Thời lượng (phút) <span className="text-red-500">*</span>
               </label>
               <input
                 type="number"
@@ -398,7 +398,7 @@ const MovieFormModal = ({ movie, mode, open, onOpenChange, onSuccess }) => {
 
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-2">
-                Ngày khởi chiếu *
+                Ngày khởi chiếu <span className="text-red-500">*</span>
               </label>
               <input
                 type="date"
@@ -411,7 +411,7 @@ const MovieFormModal = ({ movie, mode, open, onOpenChange, onSuccess }) => {
 
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-2">
-                Độ tuổi giới hạn *
+                Độ tuổi giới hạn <span className="text-red-500">*</span>
               </label>
               <select
                 name="do_tuoi_gioi_han"
@@ -429,7 +429,7 @@ const MovieFormModal = ({ movie, mode, open, onOpenChange, onSuccess }) => {
 
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-2">
-                Nước sản xuất *
+                Nước sản xuất <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -443,7 +443,7 @@ const MovieFormModal = ({ movie, mode, open, onOpenChange, onSuccess }) => {
 
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-2">
-                Trạng thái *
+                Trạng thái <span className="text-red-500">*</span>
               </label>
               <select
                 name="tinh_trang"
@@ -460,7 +460,7 @@ const MovieFormModal = ({ movie, mode, open, onOpenChange, onSuccess }) => {
 
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-2">
-                Ảnh Poster {mode === "add" && "*"}
+                Ảnh Poster {mode === "add" && <span className="text-red-500">*</span>}
               </label>
               <div className="space-y-2">
                 <input
@@ -485,7 +485,7 @@ const MovieFormModal = ({ movie, mode, open, onOpenChange, onSuccess }) => {
 
           <div>
             <label className="block text-sm font-semibold text-slate-700 mb-2">
-              Link Trailer *
+              Link Trailer <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
@@ -513,7 +513,7 @@ const MovieFormModal = ({ movie, mode, open, onOpenChange, onSuccess }) => {
 
           <div>
             <label className="block text-sm font-semibold text-slate-700 mb-2">
-              Mô tả *
+              Mô tả <span className="text-red-500">*</span>
             </label>
             <textarea
               name="mo_ta"
