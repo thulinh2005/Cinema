@@ -1,5 +1,23 @@
 const Invoice = require("../models/invoiceModel");
 
+// THÊM HÓA ĐƠN
+exports.createInvoice = (req, res) => {
+  const data = req.body;
+
+  if (!data.tong_tien || isNaN(parseFloat(data.tong_tien))) {
+    return res.status(400).json({ message: "Thiếu hoặc sai định dạng tổng tiền" });
+  }
+
+  Invoice.create(data, (err, result) => {
+    if (err) return res.status(500).json({ message: "Lỗi server", err });
+
+    res.status(201).json({
+      message: "Tạo hóa đơn thành công (Hệ thống tự động tích điểm nếu có khách hàng)",
+      ma_hd: result.insertId
+    });
+  });
+};
+
 // LẤY DANH SÁCH (filter + pagination)
 exports.getInvoices = (req, res) => {
   const {
@@ -58,12 +76,16 @@ exports.updateInvoice = (req, res) => {
   const { id } = req.params;
   const data = req.body;
 
+  if (!data.tong_tien || isNaN(parseFloat(data.tong_tien))) {
+    return res.status(400).json({ message: "Thiếu hoặc sai định dạng tổng tiền" });
+  }
+
   Invoice.update(id, data, (err, result) => {
     if (err) return res.status(500).json({ message: "Lỗi server", err });
     if (result.affectedRows === 0)
       return res.status(404).json({ message: "Không tìm thấy hóa đơn" });
 
-    res.json({ message: "Cập nhật hóa đơn thành công" });
+    res.json({ message: "Cập nhật hóa đơn thành công (Hệ thống DB sẽ tự tính lại điểm tích lũy)" });
   });
 };
 
