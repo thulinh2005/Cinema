@@ -27,7 +27,7 @@ const CustomerDetailModal = ({ customer, isOpen, onClose }) => {
                 {/* CLOSE */}
                 <button
                     onClick={onClose}
-                    className="absolute top-3 right-3 text-gray-400 hover:text-red-500"
+                    className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition"
                 >
                     ✕
                 </button>
@@ -43,11 +43,11 @@ const CustomerDetailModal = ({ customer, isOpen, onClose }) => {
                     </div>
 
                     <div>
-                        <h2 className="text-xl font-bold">{customer.ten_kh}</h2>
+                        <h2 className="text-xl font-bold text-slate-900">{customer.ten_kh}</h2>
 
                         <div className="flex gap-2 mt-1">
                             {/* HẠNG */}
-                            <span className="px-2 py-1 text-xs rounded bg-yellow-100 text-yellow-700">
+                            <span className="px-2 py-1 text-xs rounded font-medium bg-amber-100 text-amber-700">
                                 {tier}
                             </span>
 
@@ -66,7 +66,7 @@ const CustomerDetailModal = ({ customer, isOpen, onClose }) => {
                 </div>
 
                 {/* INFO */}
-                <div className="grid grid-cols-2 gap-4 mt-5 text-sm">
+                <div className="grid grid-cols-2 gap-x-4 gap-y-6 mt-6">
 
                     <Info icon={<CreditCard size={16} />} label="Mã KH" value={customer.ma_kh} />
                     <Info icon={<User size={16} />} label="Giới tính" value={customer.gioi_tinh} />
@@ -95,18 +95,18 @@ const CustomerDetailModal = ({ customer, isOpen, onClose }) => {
                 </div>
 
                 {/* ĐIỂM */}
-                <div className="mt-6 bg-gray-50 p-4 rounded-lg">
+                <div className="mt-6 bg-slate-50 border border-slate-200 p-4 rounded-xl">
                     <div className="flex justify-between items-center">
                         <div className="flex items-center gap-2">
                             <Award size={18} />
                             <span>Điểm tích lũy</span>
                         </div>
-                        <span className="text-xl font-bold">
+                        <span className="text-xl font-bold text-slate-800">
                             {customer.diem_tich_luy?.toLocaleString("vi-VN")}
                         </span>
                     </div>
 
-                    <div className="text-xs text-gray-500 mt-2">
+                    <div className="text-xs font-medium text-slate-500 mt-2">
                         {tier === "Standard" && (
                             <div>Cần {1000 - customer.diem_tich_luy} điểm để lên VIP</div>
                         )}
@@ -123,11 +123,11 @@ const CustomerDetailModal = ({ customer, isOpen, onClose }) => {
 // COMPONENT nhỏ
 const Info = ({ icon, label, value, className = "" }) => {
     return (
-        <div className={`flex gap-2 ${className}`}>
-            <div className="text-blue-500 mt-1">{icon}</div>
+        <div className={`flex items-start gap-3 ${className}`}>
+            <div className="text-blue-500 mt-0.5">{icon}</div>
             <div>
-                <p className="text-xs text-gray-400">{label}</p>
-                <p className="font-medium">{value || "—"}</p>
+                <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-widest mb-0.5">{label}</p>
+                <p className="font-semibold text-slate-800 text-sm">{value || "—"}</p>
             </div>
         </div>
     );
