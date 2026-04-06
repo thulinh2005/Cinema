@@ -194,7 +194,7 @@ const Customers = () => {
               className="h-12 min-w-[200px] rounded-xl border border-slate-200 bg-white px-4 text-sm text-slate-700 outline-none focus:border-blue-500"
             >
               <option value="">Tất cả hạng</option>
-              <option value="STANDARD">Standard</option>
+              <option value="Standard">Standard</option>
               <option value="VIP">VIP</option>
               <option value="SVIP">SVIP</option>
             </select>
@@ -223,9 +223,10 @@ const Customers = () => {
                   <th className="px-4 py-4 font-bold text-slate-700">Email</th>
                   <th className="px-4 py-4 font-bold text-slate-700">Số điện thoại</th>
                   <th className="px-4 py-4 font-bold text-slate-700">Hạng thành viên</th>
+                  <th className="px-4 py-4 font-bold text-slate-700">Điểm tích lũy</th>
                   <th className="px-4 py-4 font-bold text-slate-700">Trạng thái</th>
                   <th className="px-4 py-4 text-center font-bold text-slate-700">
-                    Hoạt động
+                    Thao tác
                   </th>
                 </tr>
               </thead>
@@ -234,7 +235,7 @@ const Customers = () => {
                 {customers.length === 0 ? (
                   <tr>
                     <td
-                      colSpan={6}
+                      colSpan={7}
                       className="px-4 py-10 text-center text-slate-500"
                     >
                       Không có khách hàng phù hợp
@@ -255,6 +256,10 @@ const Customers = () => {
 
                       <td className="px-4 py-4">
                         {getRankBadge(c.hang_thanh_vien)}
+                      </td>
+
+                      <td className="px-4 py-4 text-slate-800 font-medium">
+                        {c.diem_tich_luy?.toLocaleString("vi-VN") || 0}
                       </td>
 
                       <td className="px-4 py-4">
