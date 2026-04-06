@@ -152,21 +152,31 @@ const productModel = {
     deleteProduct: async (id) => {
         await beginTransaction();
         try {
-            // Kiểm tra xem sản phẩm có đang nằm trong combo nào không (nếu nó là sản phẩm đơn)
-            const check = await queryPromise("SELECT count(*) as count FROM combo_items WHERE ma_sp = ?", [id]);
-            if (check && check.length > 0 && check[0].count > 0) {
-                // Nếu xóa ngang 1 món ăn đang có trong combo thì combo đó sẽ bị vô lý (vd: Combo cần 2 món nhưng bị xóa 1) -> Khóa lại
-                throw new Error("Sản phẩm này đang nằm trong một Combo. Vui lòng gỡ khỏi Combo trước khi xóa!");
-            }
+            // 1. Kiểm tra xem sản phẩm có nằm trong hóa đơn nào không
+            const checkInvoice = await queryPromise("SELECT count(*) as count FROM chi_tiet_hoa_don_sp WHERE ma_sp = ?", [id]);
+            const isLinkedToInvoice = (checkInvoice && checkInvoice.length > 0 && checkInvoice[0].count > 0);
 
-            // Xóa các sản phẩm con nếu đây là 1 Combo
-            await queryPromise("DELETE FROM combo_items WHERE ma_combo = ?", [id]);
-            
-            // Xóa sản phẩm
-            await queryPromise("DELETE FROM san_pham WHERE ma_sp = ?", [id]);
-            
-            await commit();
-            return true;
+            if (isLinkedToInvoice) {
+                // Nếu đã có trong hóa đơn -> Chuyển trạng thái thành 'Ngừng bán'
+                await queryPromise("UPDATE san_pham SET trang_thai = 'Ngừng bán' WHERE ma_sp = ?", [id]);
+                await commit();
+                return { action: 'updated', message: 'Sản phẩm đã có trong hóa đơn nên được chuyển sang trạng thái Ngừng bán' };
+            } else {
+                // Kiểm tra xem sản phẩm có đang nằm trong combo nào không (nếu nó là sản phẩm đơn)
+                const check = await queryPromise("SELECT count(*) as count FROM combo_items WHERE ma_sp = ?", [id]);
+                if (check && check.length > 0 && check[0].count > 0) {
+                    throw new Error("Sản phẩm này đang nằm trong một Combo. Vui lòng gỡ khỏi Combo trước khi xóa!");
+                }
+
+                // Xóa các sản phẩm con nếu đây là 1 Combo
+                await queryPromise("DELETE FROM combo_items WHERE ma_combo = ?", [id]);
+                
+                // Xóa sản phẩm
+                await queryPromise("DELETE FROM san_pham WHERE ma_sp = ?", [id]);
+                
+                await commit();
+                return { action: 'deleted', message: 'Đã xóa sản phẩm thành công' };
+            }
         } catch (error) {
             await rollback();
             throw error;

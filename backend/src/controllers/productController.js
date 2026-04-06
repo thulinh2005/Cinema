@@ -131,16 +131,19 @@ const productController = {
             const product = await productModel.getProductById(id);
             if (!product) return res.status(404).json({ success: false, message: "Không tìm thấy sản phẩm" });
 
-            await productModel.deleteProduct(id);
+            const result = await productModel.deleteProduct(id);
 
-            if (product.anh_san_pham) {
-                const filePath = path.join(__dirname, '../../', product.anh_san_pham.replace(/^\//, ''));
-                if (fs.existsSync(filePath)) {
-                    fs.unlinkSync(filePath);
+            // Chỉ xóa file ảnh vật lý nếu sản phẩm thực sự bị DELETE khỏi CSDL
+            if (result.action === 'deleted') {
+                if (product.anh_san_pham) {
+                    const filePath = path.join(__dirname, '../../', product.anh_san_pham.replace(/^\//, ''));
+                    if (fs.existsSync(filePath)) {
+                        fs.unlinkSync(filePath);
+                    }
                 }
             }
 
-            res.json({ success: true, message: "Đã xóa sản phẩm" });
+            res.json({ success: true, message: result.message, action: result.action });
         } catch (error) {
             console.error(error);
             if (error.message && error.message.includes("Combo")) {

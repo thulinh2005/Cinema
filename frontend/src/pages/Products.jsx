@@ -420,8 +420,8 @@ const Products = () => {
 
     const confirmDelete = async () => {
         try {
-            await axios.delete(`http://localhost:5000/api/products/${selectedProduct.ma_sp}`);
-            toast.success("Xóa sản phẩm thành công");
+            const response = await axios.delete(`http://localhost:5000/api/products/${selectedProduct.ma_sp}`);
+            toast.success(response.data.message || "Xóa sản phẩm thành công");
             setOpenDelete(false);
             fetchProducts();
         } catch (err) {

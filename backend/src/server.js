@@ -16,6 +16,7 @@ const invoiceRoutes = require("./routes/invoiceRoutes");
 const employeeRoutes = require("./routes/employeeRoutes");
 const ticketRoutes = require("./routes/ticketRoutes");
 const productRoutes = require("./routes/productRoutes");
+const statisticRoutes = require("./routes/statisticRoutes");
 
 const app = express();
 
@@ -59,6 +60,7 @@ app.use("/api/invoices", invoiceRoutes);
 app.use("/api/employees", employeeRoutes);
 app.use("/api/tickets", ticketRoutes);
 app.use("/api/products", productRoutes);
+app.use("/api/thong-ke", statisticRoutes);
 
 app.get("/", (req, res) => {
     res.send("Server dang chay...");

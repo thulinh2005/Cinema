@@ -87,7 +87,15 @@ const CustomerFormModal = ({ customer, isOpen, onClose, mode, reload }) => {
     if (!form.email.trim()) err.email = "Vui lòng nhập email";
     if (!form.so_dien_thoai.trim()) err.so_dien_thoai = "Vui lòng nhập số điện thoại";
     if (mode === "add" && !form.mat_khau.trim()) err.mat_khau = "Vui lòng nhập mật khẩu";
-    if (!form.ngay_sinh) err.ngay_sinh = "Vui lòng chọn ngày sinh";
+    if (!form.ngay_sinh) {
+      err.ngay_sinh = "Vui lòng chọn ngày sinh";
+    } else {
+      const today = new Date().toISOString().split("T")[0];
+      if (form.ngay_sinh > today) {
+        err.ngay_sinh = "Ngày sinh không được lớn hơn ngày hiện tại";
+        toast.error("Ngày sinh không được lớn hơn ngày hiện tại");
+      }
+    }
     if (!form.dia_chi.trim()) err.dia_chi = "Vui lòng nhập địa chỉ";
 
     setErrors(err);
