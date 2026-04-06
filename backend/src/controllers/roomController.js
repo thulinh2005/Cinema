@@ -66,9 +66,45 @@ exports.updateRoom = (req, res) => {
 };
 
 exports.deleteRoom = (req, res) => {
-    Room.delete(req.params.id, (err) => {
-        if (err) return res.status(500).json({ message: "Delete failed" });
-        res.json({ message: "Delete success" });
+    const ma_phong = req.params.id;
+
+    // 1. Kiểm tra xem phòng có suất chiếu nào không
+    const checkSuatChieuSql = "SELECT ma_suat_chieu FROM suat_chieu WHERE ma_phong = ?";
+
+    db.query(checkSuatChieuSql, [ma_phong], (err, suatChieuResults) => {
+        if (err) return res.status(500).json({ message: "Lỗi kiểm tra suất chiếu", error: err });
+
+        if (suatChieuResults.length > 0) {
+            // Lấy danh sách ID các suất chiếu của phòng này
+            const maSuatChieuList = suatChieuResults.map(sc => sc.ma_suat_chieu);
+
+            // 2. Kiểm tra xem các suất chiếu này đã có vé nào được đặt (Đã thanh toán hoặc Chờ thanh toán) chưa
+            const checkVeSql = "SELECT COUNT(*) as ticketCount FROM ve WHERE ma_suat_chieu IN (?)";
+
+            db.query(checkVeSql, [maSuatChieuList], (errVe, veResults) => {
+                if (errVe) return res.status(500).json({ message: "Lỗi kiểm tra vé", error: errVe });
+
+                if (veResults[0].ticketCount > 0) {
+                    // Trường hợp 1: Đã có người đặt vé -> Tuyệt đối không cho xóa
+                    return res.status(400).json({
+                        message: "Không thể xóa phòng! Đã có khách hàng đặt vé cho các suất chiếu tại phòng này."
+                    });
+                } else {
+                    // Trường hợp 2: Có suất chiếu nhưng chưa có vé -> Yêu cầu xóa suất chiếu trước
+                    return res.status(400).json({
+                        message: "Phòng đang có lịch suất chiếu. Vui lòng xóa các suất chiếu trước khi xóa phòng!"
+                    });
+                }
+            });
+        } else {
+            // 3. Nếu không có suất chiếu nào liên quan -> Tiến hành xóa phòng
+            Room.delete(ma_phong, (errDelete) => {
+                if (errDelete) {
+                    return res.status(500).json({ message: "Xóa phòng thất bại do ràng buộc hệ thống." });
+                }
+                res.json({ message: "Xóa phòng chiếu thành công!" });
+            });
+        }
     });
 };
 
