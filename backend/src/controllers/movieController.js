@@ -2,7 +2,6 @@ const Movie = require("../models/movieModel");
 const fs = require('fs');
 const path = require('path');
 
-
 const formatMovieDate = (movie) => {
     if (!movie) return null;
     let formattedDate = movie.ngay_khoi_chieu;
