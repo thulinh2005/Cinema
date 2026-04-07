@@ -17,21 +17,13 @@ import { Plus } from "lucide-react";
 
 const Invoices = () => {
   const [invoices, setInvoices] = useState([]);
-
-  // Filters
   const [searchTerm, setSearchTerm] = useState("");
-
-  // Pagination
   const [page, setPage] = useState(1);
   const [limit] = useState(8);
   const [totalPages, setTotalPages] = useState(1);
   const [totalInvoices, setTotalInvoices] = useState(0);
-
-  // Modals
   const [selectedInvoice, setSelectedInvoice] = useState(null);
   const [openDetail, setOpenDetail] = useState(false);
-
-
 
   const fetchInvoices = async () => {
     try {
@@ -56,7 +48,6 @@ const Invoices = () => {
     fetchInvoices();
   }, [page, searchTerm]);
 
-  // View Details
   const handleViewDetail = async (invoice) => {
     try {
       const res = await axios.get(`http://localhost:5000/api/invoices/${invoice.ma_hd}`);
@@ -88,8 +79,8 @@ const Invoices = () => {
           key={i}
           onClick={() => setPage(i)}
           className={`h-9 min-w-[36px] rounded-lg border px-3 text-sm font-medium transition ${page === i
-              ? "border-blue-600 bg-blue-600 text-white"
-              : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+            ? "border-blue-600 bg-blue-600 text-white"
+            : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
             }`}
         >
           {i}
@@ -110,7 +101,6 @@ const Invoices = () => {
           </div>
         </div>
 
-        {/* Filters */}
         <div className="mb-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
           <div className="flex flex-col gap-3 md:flex-row md:items-center">
             <div className="relative flex-1">
@@ -133,7 +123,6 @@ const Invoices = () => {
           </div>
         </div>
 
-        {/* Table */}
         <div className="overflow-hidden rounded-2xl border border-slate-300 bg-white shadow-sm">
           <div className="overflow-x-auto">
             <table className="min-w-full text-sm">

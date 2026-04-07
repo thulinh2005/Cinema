@@ -2,20 +2,18 @@ const Showtime = require("../models/showtimeModel");
 const Movie = require("../models/movieModel");
 const Room = require("../models/roomModel");
 
-// LẤY DANH SÁCH DROPDOWN CHO FORM
 exports.getDropdownData = (req, res) => {
-    Movie.getAllNames((err1, movies) => {
-        if (err1) return res.status(500).json({ message: "Lỗi lấy danh sách phim", error: err1 });
-        
-        Room.getAll(null, (err2, rooms) => {
-            if (err2) return res.status(500).json({ message: "Lỗi lấy danh sách phòng", error: err2 });
-            
-            res.json({ movies, rooms });
-        });
+  Movie.getAllNames((err1, movies) => {
+    if (err1) return res.status(500).json({ message: "Lỗi lấy danh sách phim", error: err1 });
+
+    Room.getAll(null, (err2, rooms) => {
+      if (err2) return res.status(500).json({ message: "Lỗi lấy danh sách phòng", error: err2 });
+
+      res.json({ movies, rooms });
     });
+  });
 };
 
-// LẤY DANH SÁCH SUẤT CHIẾU
 exports.getShowtime = (req, res) => {
   const {
     page = 1,
@@ -25,38 +23,36 @@ exports.getShowtime = (req, res) => {
     ma_phong = "",
   } = req.query;
 
-  // Gọi hàm cập nhật trạng thái tự động dựa vào thời gian thực trước khi lấy danh sách
   Showtime.updateStatusAuto((errStatus) => {
     if (errStatus) console.error("Lỗi cập nhật trạng thái tự động:", errStatus);
 
     Showtime.count(ngay_chieu, trang_thai, ma_phong, (err, countResult) => {
-    if (err) return res.status(500).json({ message: "Lỗi server", err });
+      if (err) return res.status(500).json({ message: "Lỗi server", err });
 
-    const total = countResult[0].total;
+      const total = countResult[0].total;
 
-    Showtime.getAll(
-      page,
-      limit,
-      ngay_chieu,
-      trang_thai,
-      ma_phong,
-      (err, data) => {
-        if (err) return res.status(500).json({ message: "Lỗi server", err });
+      Showtime.getAll(
+        page,
+        limit,
+        ngay_chieu,
+        trang_thai,
+        ma_phong,
+        (err, data) => {
+          if (err) return res.status(500).json({ message: "Lỗi server", err });
 
-        res.json({
-          data,
-          total,
-          page: Number(page),
-          limit: Number(limit),
-          totalPages: Math.ceil(total / limit),
-        });
-      }
-    );
-  });
+          res.json({
+            data,
+            total,
+            page: Number(page),
+            limit: Number(limit),
+            totalPages: Math.ceil(total / limit),
+          });
+        }
+      );
+    });
   });
 };
 
-// CHI TIẾT SUẤT CHIẾU
 exports.getByIdShowtime = (req, res) => {
   const { id } = req.params;
 
@@ -73,7 +69,6 @@ exports.getByIdShowtime = (req, res) => {
   });
 };
 
-// THÊM SUẤT CHIẾU
 exports.createShowtime = (req, res) => {
   try {
     const data = req.body;
@@ -103,8 +98,8 @@ exports.createShowtime = (req, res) => {
       if (diffMins < 0) diffMins += 24 * 60;
 
       if (diffMins < movie.thoi_luong) {
-        return res.status(400).json({ 
-          message: `Thời lượng suất chiếu (${diffMins} phút) không được nhỏ hơn thời lượng phim (${movie.thoi_luong} phút)` 
+        return res.status(400).json({
+          message: `Thời lượng suất chiếu (${diffMins} phút) không được nhỏ hơn thời lượng phim (${movie.thoi_luong} phút)`
         });
       }
 
@@ -124,7 +119,6 @@ exports.createShowtime = (req, res) => {
   }
 };
 
-// CẬP NHẬT SUẤT CHIẾU
 exports.updateShowtime = (req, res) => {
   try {
     const { id } = req.params;
@@ -155,8 +149,8 @@ exports.updateShowtime = (req, res) => {
       if (diffMins < 0) diffMins += 24 * 60;
 
       if (diffMins < movie.thoi_luong) {
-        return res.status(400).json({ 
-          message: `Thời lượng suất chiếu (${diffMins} phút) không được nhỏ hơn thời lượng phim (${movie.thoi_luong} phút)` 
+        return res.status(400).json({
+          message: `Thời lượng suất chiếu (${diffMins} phút) không được nhỏ hơn thời lượng phim (${movie.thoi_luong} phút)`
         });
       }
 
@@ -177,7 +171,6 @@ exports.updateShowtime = (req, res) => {
   }
 };
 
-// XÓA SUẤT CHIẾU
 exports.deleteShowtime = (req, res) => {
   const { id } = req.params;
 
@@ -194,7 +187,6 @@ exports.deleteShowtime = (req, res) => {
   });
 };
 
-// TỰ ĐỘNG CẬP NHẬT TRẠNG THÁI
 exports.updateStatusShowtime = (req, res) => {
   try {
     Showtime.updateStatusAuto((err, result) => {
@@ -210,7 +202,6 @@ exports.updateStatusShowtime = (req, res) => {
   }
 };
 
-// KIỂM TRA GHẾ TRỐNG
 exports.getAvailableSeatsShowtime = (req, res) => {
   const { id } = req.params;
 

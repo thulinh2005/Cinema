@@ -38,7 +38,6 @@ const Rooms = () => {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setRooms(response.data);
-            // eslint-disable-next-line no-unused-vars
         } catch (error) {
             toast.error("Không thể tải danh sách phòng");
         }
@@ -51,14 +50,12 @@ const Rooms = () => {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setRoomTypes(response.data);
-            // eslint-disable-next-line no-unused-vars
         } catch (error) {
             toast.error("Không thể lấy loại phòng");
         }
     };
 
     useEffect(() => {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
         fetchRooms();
         fetchRoomTypes();
     }, [searchTerm]);
@@ -89,16 +86,16 @@ const Rooms = () => {
                 headers: { Authorization: `Bearer ${token}` }
             });
             toast.success("Xóa phòng chiếu thành công!");
-            setIsDeleteDialogOpen(false); // Đóng popup
-            setRoomToDelete(null); // Reset ID
-            fetchRooms(); // Tải lại bảng
+            setIsDeleteDialogOpen(false);
+            setRoomToDelete(null);
+            fetchRooms();
         } catch (error) {
             toast.error(error.response?.data?.message || "Lỗi khi xóa phòng");
         }
     };
 
     const handleEditClick = (room) => {
-        setEditingRoom({ ...room }); // Copy dữ liệu phòng vào state sửa
+        setEditingRoom({ ...room });
         setIsEditModalOpen(true);
     };
 
@@ -110,8 +107,7 @@ const Rooms = () => {
             });
             toast.success("Cập nhật phòng thành công!");
             setIsEditModalOpen(false);
-            fetchRooms(); // Tải lại danh sách
-            // eslint-disable-next-line no-unused-vars
+            fetchRooms();
         } catch (error) {
             toast.error("Lỗi khi cập nhật phòng");
         }
@@ -297,7 +293,6 @@ const Rooms = () => {
                             ))
                         ) : (
                             <TableRow>
-                                {/* Sửa từ 7 thành 8 ở đây */}
                                 <TableCell colSpan={8} className="h-24 text-center text-slate-500 italic">
                                     Không tìm thấy phòng chiếu nào.
                                 </TableCell>

@@ -1,5 +1,5 @@
 import * as React from "react"
-import { Link } from "react-router-dom" // Import Link để chuyển trang mượt
+import { Link } from "react-router-dom"
 import {
     Projector,
     Users,
@@ -45,7 +45,6 @@ export function AppSidebar({ ...props }) {
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
-                            {/* Dùng Link thay cho thẻ a */}
                             <Link to="/">
                                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
                                     <House className="size-4" />
@@ -65,7 +64,6 @@ export function AppSidebar({ ...props }) {
                         {data.navMain.map((item) => (
                             <SidebarMenuItem key={item.title}>
                                 <SidebarMenuButton asChild tooltip={item.title}>
-                                    {/* Dùng Link to={...} giúp app không bị load lại trang */}
                                     <Link to={item.url} className="flex items-center gap-3">
                                         <item.icon className="size-4" />
                                         <span className="font-medium">{item.title}</span>

@@ -35,26 +35,20 @@ const Employee = () => {
         chuc_vu: "Nhân viên quầy vé"
     });
 
-    // ==================== FETCH EMPLOYEES ====================
     const fetchEmployees = async () => {
         try {
             const response = await axios.get(`http://localhost:5000/api/employees?search=${searchTerm}`);
             setEmployees(response.data);
-        // eslint-disable-next-line no-unused-vars
         } catch (error) {
             toast.error("Không thể tải danh sách nhân viên");
         }
     };
 
     useEffect(() => {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
         fetchEmployees();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [searchTerm]);
 
-    // ==================== ADD EMPLOYEE ====================
     const handleAddEmployee = async () => {
-        // 1️⃣ Validation - Tất cả field bắt buộc
         if (!newEmployee.ho_ten.trim()) {
             return toast.error("Họ tên không được bỏ trống!");
         }
@@ -63,12 +57,11 @@ const Employee = () => {
             return toast.error("Ngày sinh không được bỏ trống!");
         }
 
-        // Kiểm tra tuổi (phải từ 16 tuổi trở lên)
         const birthDate = new Date(newEmployee.ngay_sinh);
         const today = new Date();
         const age = today.getFullYear() - birthDate.getFullYear();
         const monthDiff = today.getMonth() - birthDate.getMonth();
-        
+
         if (age < 16 || (age === 16 && monthDiff < 0)) {
             return toast.error("Nhân viên phải từ 16 tuổi trở lên (sinh từ năm 2010)!");
         }
@@ -124,7 +117,6 @@ const Employee = () => {
         }
     };
 
-    // ==================== DELETE EMPLOYEE ====================
     const handleDeleteEmployee = async () => {
         try {
             await axios.delete(`http://localhost:5000/api/employees/${employeeToDelete}`);
@@ -137,7 +129,6 @@ const Employee = () => {
         }
     };
 
-    // ==================== EDIT EMPLOYEE ====================
     const handleViewClick = (employee) => {
         setViewingEmployee(employee);
         setIsViewModalOpen(true);
@@ -149,7 +140,7 @@ const Employee = () => {
     };
 
     const handleUpdateEmployee = async () => {
-        // 1️⃣ Validation - Tất cả field bắt buộc
+
         if (!editingEmployee.ho_ten.trim()) {
             return toast.error("Họ tên không được bỏ trống!");
         }
@@ -158,12 +149,11 @@ const Employee = () => {
             return toast.error("Ngày sinh không được bỏ trống!");
         }
 
-        // Kiểm tra tuổi (phải từ 16 tuổi trở lên)
         const birthDate = new Date(editingEmployee.ngay_sinh);
         const today = new Date();
         const age = today.getFullYear() - birthDate.getFullYear();
         const monthDiff = today.getMonth() - birthDate.getMonth();
-        
+
         if (age < 16 || (age === 16 && monthDiff < 0)) {
             return toast.error("Nhân viên phải từ 16 tuổi trở lên (sinh từ năm 2010)!");
         }
@@ -307,7 +297,6 @@ const Employee = () => {
                 </Dialog>
             </div>
 
-            {/* EDIT MODAL */}
             <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
                 <DialogContent className="sm:max-w-[500px]">
                     <DialogHeader>
@@ -385,7 +374,6 @@ const Employee = () => {
                 </DialogContent>
             </Dialog>
 
-            {/* VIEW MODAL */}
             <Dialog open={isViewModalOpen} onOpenChange={setIsViewModalOpen}>
                 <DialogContent className="sm:max-w-[500px]">
                     <DialogHeader>
@@ -434,11 +422,10 @@ const Employee = () => {
                                 <span className="col-span-2 text-slate-600">
                                     <Badge
                                         variant="secondary"
-                                        className={`rounded-md px-2 py-0.5 text-[11px] font-bold border-none whitespace-nowrap ${
-                                            viewingEmployee.trang_thai === 'Còn làm'
+                                        className={`rounded-md px-2 py-0.5 text-[11px] font-bold border-none whitespace-nowrap ${viewingEmployee.trang_thai === 'Còn làm'
                                                 ? 'bg-emerald-100 text-emerald-700'
                                                 : 'bg-red-100 text-red-700'
-                                        }`}
+                                            }`}
                                     >
                                         {viewingEmployee.trang_thai}
                                     </Badge>
@@ -452,7 +439,6 @@ const Employee = () => {
                 </DialogContent>
             </Dialog>
 
-            {/* SEARCH BAR */}
             <div className="flex items-center max-w-sm relative group">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
                 <Input
@@ -463,7 +449,6 @@ const Employee = () => {
                 />
             </div>
 
-            {/* TABLE */}
             <div className="rounded-xl border bg-white shadow-sm overflow-hidden">
                 <Table className="table-fixed w-full">
                     <TableHeader className="bg-slate-50/50">

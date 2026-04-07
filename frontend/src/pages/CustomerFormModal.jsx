@@ -60,8 +60,7 @@ const CustomerFormModal = ({ customer, isOpen, onClose, mode, reload }) => {
 
   const formatDateForInput = (dateValue) => {
     if (!dateValue) return "";
-    
-    // Attempt to safely parse date keeping the correct day
+
     const dateObj = new Date(dateValue);
     if (!isNaN(dateObj.getTime())) {
       const year = dateObj.getFullYear();
@@ -69,7 +68,7 @@ const CustomerFormModal = ({ customer, isOpen, onClose, mode, reload }) => {
       const day = String(dateObj.getDate()).padStart(2, "0");
       return `${year}-${month}-${day}`;
     }
-    
+
     return dateValue.split("T")[0];
   };
 
@@ -103,27 +102,27 @@ const CustomerFormModal = ({ customer, isOpen, onClose, mode, reload }) => {
   };
 
   const handleSubmit = async () => {
-  if (!validate()) return;
+    if (!validate()) return;
 
-  try {
-    if (mode === "add") {
-      await axios.post("http://localhost:5000/api/customers", form);
-      toast.success("Thêm khách hàng thành công");
-    } else {
-      await axios.put(
-        `http://localhost:5000/api/customers/${customer.ma_kh}`,
-        form
-      );
-      toast.success("Cập nhật thông tin khách hàng thành công");
+    try {
+      if (mode === "add") {
+        await axios.post("http://localhost:5000/api/customers", form);
+        toast.success("Thêm khách hàng thành công");
+      } else {
+        await axios.put(
+          `http://localhost:5000/api/customers/${customer.ma_kh}`,
+          form
+        );
+        toast.success("Cập nhật thông tin khách hàng thành công");
+      }
+
+      reload();
+      onClose();
+    } catch (err) {
+      console.log(err);
+      toast.error(err?.response?.data?.message || "Có lỗi xảy ra");
     }
-
-    reload();
-    onClose();
-  } catch (err) {
-    console.log(err);
-    toast.error(err?.response?.data?.message || "Có lỗi xảy ra");
-  }
-};
+  };
   if (!isOpen) return null;
 
   return (
@@ -152,11 +151,10 @@ const CustomerFormModal = ({ customer, isOpen, onClose, mode, reload }) => {
                 type="text"
                 value={form.ten_kh}
                 onChange={(e) => handleChange("ten_kh", e.target.value)}
-                className={`h-12 w-full rounded-xl border bg-white px-4 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 ${
-                  errors.ten_kh
+                className={`h-12 w-full rounded-xl border bg-white px-4 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 ${errors.ten_kh
                     ? "border-red-300 focus:border-red-400"
                     : "border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                }`}
+                  }`}
               />
             </InputField>
 
@@ -171,11 +169,10 @@ const CustomerFormModal = ({ customer, isOpen, onClose, mode, reload }) => {
                   type="email"
                   value={form.email}
                   onChange={(e) => handleChange("email", e.target.value)}
-                  className={`h-12 w-full rounded-xl border bg-white px-4 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 ${
-                    errors.email
+                  className={`h-12 w-full rounded-xl border bg-white px-4 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 ${errors.email
                       ? "border-red-300 focus:border-red-400"
                       : "border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                  }`}
+                    }`}
                 />
               </InputField>
 
@@ -189,11 +186,10 @@ const CustomerFormModal = ({ customer, isOpen, onClose, mode, reload }) => {
                   type="text"
                   value={form.so_dien_thoai}
                   onChange={(e) => handleChange("so_dien_thoai", e.target.value)}
-                  className={`h-12 w-full rounded-xl border bg-white px-4 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 ${
-                    errors.so_dien_thoai
+                  className={`h-12 w-full rounded-xl border bg-white px-4 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 ${errors.so_dien_thoai
                       ? "border-red-300 focus:border-red-400"
                       : "border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                  }`}
+                    }`}
                 />
               </InputField>
             </div>
@@ -210,11 +206,10 @@ const CustomerFormModal = ({ customer, isOpen, onClose, mode, reload }) => {
                 placeholder="Nhập mật khẩu mới (không bắt buộc)"
                 value={form.mat_khau}
                 onChange={(e) => handleChange("mat_khau", e.target.value)}
-                className={`h-12 w-full rounded-xl border bg-white px-4 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 ${
-                  errors.mat_khau
+                className={`h-12 w-full rounded-xl border bg-white px-4 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 ${errors.mat_khau
                     ? "border-red-300 focus:border-red-400"
                     : "border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                }`}
+                  }`}
               />
             </InputField>
 
@@ -229,11 +224,10 @@ const CustomerFormModal = ({ customer, isOpen, onClose, mode, reload }) => {
                   type="date"
                   value={form.ngay_sinh}
                   onChange={(e) => handleChange("ngay_sinh", e.target.value)}
-                  className={`h-12 w-full rounded-xl border bg-white px-4 text-sm text-slate-800 outline-none transition ${
-                    errors.ngay_sinh
+                  className={`h-12 w-full rounded-xl border bg-white px-4 text-sm text-slate-800 outline-none transition ${errors.ngay_sinh
                       ? "border-red-300 focus:border-red-400"
                       : "border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                  }`}
+                    }`}
                 />
               </InputField>
 
@@ -263,11 +257,10 @@ const CustomerFormModal = ({ customer, isOpen, onClose, mode, reload }) => {
                 type="text"
                 value={form.dia_chi}
                 onChange={(e) => handleChange("dia_chi", e.target.value)}
-                className={`h-12 w-full rounded-xl border bg-white px-4 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 ${
-                  errors.dia_chi
+                className={`h-12 w-full rounded-xl border bg-white px-4 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 ${errors.dia_chi
                     ? "border-red-300 focus:border-red-400"
                     : "border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                }`}
+                  }`}
               />
             </InputField>
           </div>

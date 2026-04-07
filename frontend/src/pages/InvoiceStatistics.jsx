@@ -104,10 +104,8 @@ const InvoiceStatistics = () => {
                     <h1 className="text-2xl font-bold tracking-tight text-slate-900">Thống kê tổng quan</h1>
                 </div>
 
-                {/* Trình đơn lọc thời gian */}
                 <div className="flex flex-col sm:flex-row items-center gap-3">
 
-                    {/* Bảng nhập 2 khoảng ngày - Dựa vào thẻ type "date" của quản lý suất chiếu */}
                     {filter === 'custom' && (
                         <div className="flex items-center space-x-2 bg-white rounded-xl p-1.5 shadow-sm border border-slate-200">
                             <input
@@ -145,9 +143,7 @@ const InvoiceStatistics = () => {
                 </div>
             </div>
 
-            {/* Kpis */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                {/* Total Revenue */}
                 <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex items-center justify-between">
                     <div>
                         <p className="text-sm font-medium text-slate-500 uppercase tracking-wider mb-1">
@@ -162,7 +158,6 @@ const InvoiceStatistics = () => {
                     </div>
                 </div>
 
-                {/* Today Revenue */}
                 <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex items-center justify-between">
                     <div>
                         <p className="text-sm font-medium text-slate-500 uppercase tracking-wider mb-1">Doanh thu hôm nay</p>
@@ -175,7 +170,6 @@ const InvoiceStatistics = () => {
                     </div>
                 </div>
 
-                {/* Total Tickets */}
                 <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex items-center justify-between">
                     <div>
                         <p className="text-sm font-medium text-slate-500 uppercase tracking-wider mb-1">
@@ -191,7 +185,6 @@ const InvoiceStatistics = () => {
                 </div>
             </div>
 
-            {/* Chart */}
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
                 <h2 className="text-lg font-bold text-slate-800 mb-6">Biểu đồ doanh thu theo thời gian</h2>
                 {loading ? (

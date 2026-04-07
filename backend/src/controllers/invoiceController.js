@@ -1,6 +1,5 @@
 const Invoice = require("../models/invoiceModel");
 
-// LẤY DANH SÁCH (filter + pagination)
 exports.getInvoices = (req, res) => {
   const {
     search = "",
@@ -28,7 +27,6 @@ exports.getInvoices = (req, res) => {
   });
 };
 
-// CHI TIẾT HÓA ĐƠN (bao gồm vé + sản phẩm)
 exports.getInvoiceById = (req, res) => {
   const { id } = req.params;
 
@@ -39,11 +37,9 @@ exports.getInvoiceById = (req, res) => {
 
     const invoice = result[0];
 
-    // Lấy vé
     Invoice.getTicketsByInvoice(id, (err, tickets) => {
       if (err) return res.status(500).json({ message: "Lỗi server", err });
 
-      // Lấy sản phẩm
       Invoice.getProductsByInvoice(id, (err, products) => {
         if (err) return res.status(500).json({ message: "Lỗi server", err });
 
@@ -53,7 +49,6 @@ exports.getInvoiceById = (req, res) => {
   });
 };
 
-// CẬP NHẬT HÓA ĐƠN
 exports.updateInvoice = (req, res) => {
   const { id } = req.params;
   const data = req.body;
@@ -67,7 +62,6 @@ exports.updateInvoice = (req, res) => {
   });
 };
 
-// XÓA HÓA ĐƠN
 exports.deleteInvoice = (req, res) => {
   const { id } = req.params;
 

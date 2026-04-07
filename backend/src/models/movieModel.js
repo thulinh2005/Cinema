@@ -27,7 +27,7 @@ const Movie = {
         sql += " ORDER BY ma_phim DESC LIMIT ? OFFSET ?";
         params.push(parseInt(limit), parseInt(offset));
 
-        db.query(sql, params, callback); // Dùng db.query với callback
+        db.query(sql, params, callback);
     },
 
     count: (search, searchField, the_loai, tinh_trang, do_tuoi_gioi_han, nuoc_san_xuat, callback) => {
@@ -56,7 +56,6 @@ const Movie = {
     },
 
     getAllNames: (callback) => {
-        // Chỉ lấy ma_phim, ten_phim và thoi_luong để load cho nhanh
         const sql = "SELECT ma_phim, ten_phim, thoi_luong FROM phim WHERE tinh_trang != 'Ngừng chiếu'";
         db.query(sql, callback);
     },

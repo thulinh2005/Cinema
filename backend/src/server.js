@@ -24,7 +24,6 @@ app.use(cors());
 app.use(express.json());
 app.use("/uploads", express.static("uploads"));
 
-// Cấu hình multer cho upload ảnh
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, path.join(__dirname, "../uploads/"));
@@ -37,7 +36,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage: storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+  limits: { fileSize: 5 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
     const allowedMimes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
     if (allowedMimes.includes(file.mimetype)) {
@@ -48,7 +47,7 @@ const upload = multer({
   },
 });
 
-// Serve static files từ uploads folder
+
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
 app.use("/api", authRoutes);
@@ -63,11 +62,11 @@ app.use("/api/products", productRoutes);
 app.use("/api/thong-ke", statisticRoutes);
 
 app.get("/", (req, res) => {
-    res.send("Server dang chay...");
+  res.send("Server dang chay...");
 });
 
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
-    console.log(`Server chạy ở port ${PORT}`);
+  console.log(`Server chạy ở port ${PORT}`);
 });

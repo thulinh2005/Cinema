@@ -33,7 +33,6 @@ const Room = {
         `;
         db.query(sql, [roomId], callback);
     },
-    // CHỈ GIỮ 1 HÀM NÀY VÀ PHẢI CÓ ĐỦ 8 CỘT
     createSeatsBulk: (seatData, callback) => {
         const sql = "INSERT INTO ghe (ma_phong, hang, cot, so_ghe, loai_ghe, trang_thai, has_aisle, has_aisle_horizontal) VALUES ?";
         db.query(sql, [seatData], callback);

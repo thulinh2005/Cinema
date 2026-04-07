@@ -14,8 +14,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 const Tickets = () => {
     const [tickets, setTickets] = useState([]);
     const [stats, setStats] = useState({ tong_da_ban: 0, tong_chua_ban: 0 });
-
-    // Original list without filters (to extract unique filter options)
     const [allRawTickets, setAllRawTickets] = useState([]);
 
     const [filters, setFilters] = useState({
@@ -24,10 +22,8 @@ const Tickets = () => {
         ma_suat_chieu: "all"
     });
 
-    // ==================== FETCH TICKETS ====================
     const fetchTickets = async (currentFilters = filters) => {
         try {
-            // Build query params
             const params = new URLSearchParams();
             if (currentFilters.ma_phim && currentFilters.ma_phim !== "all") params.append("ma_phim", currentFilters.ma_phim);
             if (currentFilters.ma_phong && currentFilters.ma_phong !== "all") params.append("ma_phong", currentFilters.ma_phong);
@@ -37,11 +33,9 @@ const Tickets = () => {
             setTickets(response.data.tickets);
             setStats(response.data.stats);
 
-            // Fetch all options once on initial load
             if (Object.values(currentFilters).every(v => v === "all") && allRawTickets.length === 0) {
                 setAllRawTickets(response.data.tickets);
             }
-            // eslint-disable-next-line no-unused-vars
         } catch (error) {
             toast.error("Không thể tải danh sách vé");
         }
@@ -49,11 +43,8 @@ const Tickets = () => {
 
     useEffect(() => {
         fetchTickets(filters);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [filters]);
 
-    // ==================== FILTER OPTIONS ====================
-    // Extract unique movies, rooms, showtimes from raw data
     const filterOptions = useMemo(() => {
         const uniqueMovies = Array.from(new Set(allRawTickets.map(t => t.ma_phim)))
             .map(id => allRawTickets.find(t => t.ma_phim === id))
@@ -76,10 +67,7 @@ const Tickets = () => {
                 <h1 className="text-2xl font-bold tracking-tight text-slate-900">Quản lý vé</h1>
             </div>
 
-            {/* FILTER & STATS SECTION */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-
-                {/* Filters */}
                 <Card className="col-span-1 md:col-span-2 shadow-sm border-slate-100">
                     <CardHeader className="bg-slate-50/50 pb-4">
                         <CardTitle className="text-base flex items-center gap-2">
@@ -139,8 +127,6 @@ const Tickets = () => {
                         </div>
                     </CardContent>
                 </Card>
-
-                {/* Statistics Overview */}
                 <Card className="shadow-sm border-slate-100 bg-gradient-to-br from-blue-50 to-indigo-50">
                     <CardHeader className="pb-2">
                         <CardTitle className="text-base flex items-center gap-2 text-blue-900">
@@ -161,7 +147,6 @@ const Tickets = () => {
                 </Card>
             </div>
 
-            {/* TABLE SECTION */}
             <div className="rounded-xl border bg-white shadow-sm overflow-hidden">
                 <Table className="table-fixed w-full">
                     <TableHeader className="bg-slate-50/50">

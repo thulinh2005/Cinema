@@ -41,7 +41,6 @@ const LocalDeleteConfirmModal = ({ isOpen, onClose, onConfirm, title, message })
   );
 };
 
-// Modal chi tiết phim
 const MovieDetailModal = ({ movie, open, onOpenChange }) => {
   if (!open || !movie) return null;
 
@@ -166,7 +165,6 @@ const MovieDetailModal = ({ movie, open, onOpenChange }) => {
   );
 };
 
-// Modal thêm/sửa phim
 const MovieFormModal = ({ movie, mode, open, onOpenChange, onSuccess }) => {
   const [formData, setFormData] = useState({
     ma_phim: "",
@@ -219,7 +217,7 @@ const MovieFormModal = ({ movie, mode, open, onOpenChange, onSuccess }) => {
       });
       setPosterPreview(null);
     }
-    // Set preview nếu có ảnh in edit mode
+
     if (mode === "edit" && movie && movie.anh_poster) {
       setPosterPreview(`http://localhost:5000${movie.anh_poster}`);
     }
@@ -244,7 +242,6 @@ const MovieFormModal = ({ movie, mode, open, onOpenChange, onSuccess }) => {
     }
   };
 
-  // Helper: Extract YouTube video ID
   const getYoutubeVideoId = (url) => {
     if (!url.trim()) return null;
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*$/;
@@ -273,7 +270,6 @@ const MovieFormModal = ({ movie, mode, open, onOpenChange, onSuccess }) => {
 
     setLoading(true);
     try {
-      // Tạo FormData để gửi file
       const data = new FormData();
       data.append("ten_phim", formData.ten_phim);
       data.append("the_loai", formData.the_loai);
@@ -285,11 +281,9 @@ const MovieFormModal = ({ movie, mode, open, onOpenChange, onSuccess }) => {
       data.append("nuoc_san_xuat", formData.nuoc_san_xuat);
       data.append("tinh_trang", formData.tinh_trang);
 
-      // Thêm file nếu có
       if (fileInputRef.current?.files?.[0]) {
         data.append("anh_poster", fileInputRef.current.files[0]);
       } else if (mode === "edit") {
-        // QUAN TRỌNG: giữ lại ảnh cũ khi không upload ảnh mới
         data.append("anh_poster", formData.anh_poster);
       }
 
@@ -588,7 +582,6 @@ const Movies = () => {
     }
   };
 
-  // --- HÀM XÓA ---
   const handleDeleteClick = (movie) => {
     setSelectedMovie(movie);
     setOpenDelete(true);
@@ -596,7 +589,6 @@ const Movies = () => {
 
   useEffect(() => {
     fetchMovies();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, searchTerm, searchField, statusFilter, ageRatingFilter]);
 
   const getStatusBadge = (status) => {
@@ -663,7 +655,6 @@ const Movies = () => {
     }
   };
   const confirmDelete = async () => {
-    // Kiểm tra xem state selectedMovie có tồn tại không
     if (!selectedMovie) {
       toast.error("Không tìm thấy thông tin phim để xóa");
       return;
@@ -674,10 +665,9 @@ const Movies = () => {
       toast.success("Xóa phim thành công");
       setOpenDelete(false);
       setSelectedMovie(null);
-      fetchMovies();  // load lại danh sách
+      fetchMovies();
 
     } catch (error) {
-      // Ưu tiên hiển thị thông báo chi tiết từ server (có kèm số lượng suất chiếu vướng mắc)
       const errorMsg = error.response?.data?.message || "Xóa phim thất bại";
       toast.error(errorMsg);
     }

@@ -1,27 +1,24 @@
 const employeeModel = require("../models/employeeModel");
 
-// ================= GET ALL =================
 exports.getEmployees = (req, res) => {
     const { search = "" } = req.query;
 
     console.log("🔍 Search:", search);
-    
+
     employeeModel.getAll(search, (err, results) => {
         if (err) {
             console.error("❌ Error fetching employees:", err.message);
             return res.status(500).json({ message: "Lỗi lấy danh sách nhân viên", error: err });
         }
-        
+
         console.log("✅ Found", results.length, "employees");
         res.json(results);
     });
 };
 
-// ================= CREATE EMPLOYEE =================
 exports.createEmployee = (req, res) => {
     const { ho_ten, ngay_sinh, dia_chi, so_dien_thoai, email, anh_dai_dien, ma_tk, trang_thai, chuc_vu } = req.body;
 
-    // ============ VALIDATION - Tất cả field bắt buộc ============
     if (!ho_ten || ho_ten.trim() === "") {
         return res.status(400).json({ message: "Họ tên không được bỏ trống" });
     }
@@ -30,12 +27,11 @@ exports.createEmployee = (req, res) => {
         return res.status(400).json({ message: "Ngày sinh không được bỏ trống" });
     }
 
-    // Kiểm tra tuổi (phải từ 16 tuổi trở lên)
     const birthDate = new Date(ngay_sinh);
     const today = new Date();
     const age = today.getFullYear() - birthDate.getFullYear();
     const monthDiff = today.getMonth() - birthDate.getMonth();
-    
+
     if (age < 16 || (age === 16 && monthDiff < 0)) {
         return res.status(400).json({ message: "Nhân viên phải từ 16 tuổi trở lên (sinh từ năm 2010)" });
     }
@@ -65,7 +61,6 @@ exports.createEmployee = (req, res) => {
         return res.status(400).json({ message: "Chức vụ không hợp lệ" });
     }
 
-    // ❌ Kiểm tra trùng số điện thoại
     employeeModel.checkPhoneExists(so_dien_thoai, (err, exist) => {
         if (err) {
             console.error("❌ Error checking phone:", err.message);
@@ -76,7 +71,6 @@ exports.createEmployee = (req, res) => {
             return res.status(400).json({ message: "Số điện thoại này đã tồn tại" });
         }
 
-        // 4️⃣ Thêm nhân viên
         employeeModel.create({
             ho_ten,
             ngay_sinh,
@@ -99,12 +93,10 @@ exports.createEmployee = (req, res) => {
     });
 };
 
-// ================= UPDATE EMPLOYEE =================
 exports.updateEmployee = (req, res) => {
     const { id } = req.params;
     const { ho_ten, ngay_sinh, dia_chi, so_dien_thoai, email, anh_dai_dien, ma_tk, trang_thai, chuc_vu } = req.body;
 
-    // ============ VALIDATION - Tất cả field bắt buộc ============
     if (!ho_ten || ho_ten.trim() === "") {
         return res.status(400).json({ message: "Họ tên không được bỏ trống" });
     }
@@ -113,12 +105,11 @@ exports.updateEmployee = (req, res) => {
         return res.status(400).json({ message: "Ngày sinh không được bỏ trống" });
     }
 
-    // Kiểm tra tuổi (phải từ 16 tuổi trở lên)
     const birthDate = new Date(ngay_sinh);
     const today = new Date();
     const age = today.getFullYear() - birthDate.getFullYear();
     const monthDiff = today.getMonth() - birthDate.getMonth();
-    
+
     if (age < 16 || (age === 16 && monthDiff < 0)) {
         return res.status(400).json({ message: "Nhân viên phải từ 16 tuổi trở lên (sinh từ năm 2010)" });
     }
@@ -148,7 +139,6 @@ exports.updateEmployee = (req, res) => {
         return res.status(400).json({ message: "Chức vụ không hợp lệ" });
     }
 
-    // 3️⃣ Kiểm tra trùng số điện thoại (trừ chính nhân viên đó)
     employeeModel.checkPhoneExistsExclude(so_dien_thoai, id, (err, exist) => {
         if (err) {
             console.error("❌ Error checking phone:", err.message);
@@ -159,7 +149,6 @@ exports.updateEmployee = (req, res) => {
             return res.status(400).json({ message: "Số điện thoại này đã được sử dụng bởi nhân viên khác" });
         }
 
-        // 4️⃣ Cập nhật nhân viên
         employeeModel.update(id, {
             ho_ten,
             ngay_sinh,
@@ -182,7 +171,6 @@ exports.updateEmployee = (req, res) => {
     });
 };
 
-// ================= DELETE EMPLOYEE =================
 exports.deleteEmployee = (req, res) => {
     const { id } = req.params;
 

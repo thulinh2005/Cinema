@@ -47,7 +47,6 @@ const statisticModel = {
             ${dateFilter};
         `;
 
-        // Doanh thu hôm nay (cố định theo CURRENT_DATE, không bị đè bởi filter)
         const todayRevSql = `
             SELECT SUM(
                 IFNULL(sp.total_sp, 0) + IFNULL(v.total_ve, 0)
@@ -114,8 +113,8 @@ const statisticModel = {
             const tongDoanhThu = totalRevRes && totalRevRes.tong_doanh_thu ? Number(totalRevRes.tong_doanh_thu) : 0;
             const doanhThuHomNay = todayRevRes && todayRevRes.doanh_thu_hom_nay ? Number(todayRevRes.doanh_thu_hom_nay) : 0;
             const tongVe = totalTicketsRes && totalTicketsRes.tong_ve ? Number(totalTicketsRes.tong_ve) : 0;
-            
-            const bieuDo = Array.isArray(chartRes) 
+
+            const bieuDo = Array.isArray(chartRes)
                 ? chartRes.map(item => ({
                     ngay: item.ngay || "Unknown",
                     doanh_thu: item.doanh_thu ? Number(item.doanh_thu) : 0
