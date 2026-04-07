@@ -1,7 +1,6 @@
 const db = require("../config/db");
 
 const Showtime = {
-  // LẤY DANH SÁCH + PAGINATION
   getAll: (page, limit, ngay_chieu, trang_thai, ma_phong, callback) => {
     let sql = `
       SELECT sc.ma_suat_chieu, sc.ma_phim, sc.ma_phong, 
@@ -42,7 +41,6 @@ const Showtime = {
     db.query(sql, params, callback);
   },
 
-  // ĐẾM TỔNG
   count: (ngay_chieu, trang_thai, ma_phong, callback) => {
     let sql = `
       SELECT COUNT(*) AS total FROM suat_chieu
