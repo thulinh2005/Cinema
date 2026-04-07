@@ -20,6 +20,12 @@ export default function Login() {
     const [matKhau, setMatKhau] = useState("")
     const [loading, setLoading] = useState(false)
 
+
+    const handleForgotPassword = (e) => {
+        e.preventDefault(); // Chặn load lại trang
+        toast.info("Đã gửi yêu cầu cấp lại tài khoản cho quản trị viên, vui lòng liên hệ quản lý trực tiếp để được hỗ trợ!");
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault()
         setLoading(true)
@@ -52,7 +58,7 @@ export default function Login() {
 
             navigate("/")
 
-        // eslint-disable-next-line no-unused-vars
+            // eslint-disable-next-line no-unused-vars
         } catch (error) {
             toast.error("Không kết nối được server")
         }
@@ -111,6 +117,7 @@ export default function Login() {
                                         <Label htmlFor="password">Mật khẩu</Label>
                                         <a
                                             href="#"
+                                            onClick={handleForgotPassword}
                                             className="ml-auto text-sm hover:underline text-purple-600"
                                         >
                                             Quên mật khẩu?

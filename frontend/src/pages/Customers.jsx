@@ -127,11 +127,10 @@ const Customers = () => {
         <button
           key={i}
           onClick={() => setPage(i)}
-          className={`h-9 min-w-[36px] rounded-lg border px-3 text-sm font-medium transition ${
-            page === i
+          className={`h-9 min-w-[36px] rounded-lg border px-3 text-sm font-medium transition ${page === i
               ? "border-blue-600 bg-blue-600 text-white"
               : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
-          }`}
+            }`}
         >
           {i}
         </button>
@@ -148,9 +147,6 @@ const Customers = () => {
             <h1 className="text-2xl font-bold tracking-tight text-slate-900">
               Quản lý khách hàng
             </h1>
-            <p className="mt-1 text-sm text-slate-500">
-              Quản lý thông tin và theo dõi hoạt động của khách hàng
-            </p>
           </div>
 
           <button

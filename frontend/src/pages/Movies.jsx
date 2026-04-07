@@ -706,12 +706,9 @@ const Movies = () => {
       <div className="mx-auto max-w-7xl">
         <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div>
-            <h1 className="text-4xl font-bold tracking-tight text-slate-900">
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900">
               Quản lý phim
             </h1>
-            <p className="mt-2 text-[17px] text-slate-600">
-              Quản lý thông tin phim
-            </p>
           </div>
 
           <button

@@ -38,7 +38,7 @@ const Rooms = () => {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setRooms(response.data);
-        // eslint-disable-next-line no-unused-vars
+            // eslint-disable-next-line no-unused-vars
         } catch (error) {
             toast.error("Không thể tải danh sách phòng");
         }
@@ -51,7 +51,7 @@ const Rooms = () => {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setRoomTypes(response.data);
-        // eslint-disable-next-line no-unused-vars
+            // eslint-disable-next-line no-unused-vars
         } catch (error) {
             toast.error("Không thể lấy loại phòng");
         }
@@ -111,7 +111,7 @@ const Rooms = () => {
             toast.success("Cập nhật phòng thành công!");
             setIsEditModalOpen(false);
             fetchRooms(); // Tải lại danh sách
-        // eslint-disable-next-line no-unused-vars
+            // eslint-disable-next-line no-unused-vars
         } catch (error) {
             toast.error("Lỗi khi cập nhật phòng");
         }
@@ -120,7 +120,9 @@ const Rooms = () => {
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
-                <h1 className="text-2xl font-bold tracking-tight text-slate-900">Danh sách phòng chiếu</h1>
+                <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+                    Danh sách phòng chiếu
+                </h1>
 
                 <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
                     <DialogTrigger asChild>
@@ -186,7 +188,7 @@ const Rooms = () => {
                                 <Input
                                     type="number"
                                     value={editingRoom.so_ghe}
-                                    disabled // THÊM THUỘC TÍNH NÀY ĐỂ LÀM MỜ VÀ KHÓA CHỈNH SỬA
+                                    disabled
                                     className="bg-slate-50 cursor-not-allowed opacity-70"
                                 />
                             </div>
@@ -236,9 +238,7 @@ const Rooms = () => {
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />
             </div>
-            
 
-            {/* SỬ DỤNG TABLE COMPONENT CỦA SHADCN - Đã tối ưu layout */}
             <div className="rounded-xl border bg-white shadow-sm overflow-hidden">
                 <Table className="table-fixed w-full">
                     <TableHeader className="bg-slate-50/50">
