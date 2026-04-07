@@ -60,8 +60,7 @@ const CustomerFormModal = ({ customer, isOpen, onClose, mode, reload }) => {
 
   const formatDateForInput = (dateValue) => {
     if (!dateValue) return "";
-    
-    // Attempt to safely parse date keeping the correct day
+
     const dateObj = new Date(dateValue);
     if (!isNaN(dateObj.getTime())) {
       const year = dateObj.getFullYear();
@@ -69,7 +68,7 @@ const CustomerFormModal = ({ customer, isOpen, onClose, mode, reload }) => {
       const day = String(dateObj.getDate()).padStart(2, "0");
       return `${year}-${month}-${day}`;
     }
-    
+
     return dateValue.split("T")[0];
   };
 
@@ -87,7 +86,15 @@ const CustomerFormModal = ({ customer, isOpen, onClose, mode, reload }) => {
     if (!form.email.trim()) err.email = "Vui lòng nhập email";
     if (!form.so_dien_thoai.trim()) err.so_dien_thoai = "Vui lòng nhập số điện thoại";
     if (mode === "add" && !form.mat_khau.trim()) err.mat_khau = "Vui lòng nhập mật khẩu";
-    if (!form.ngay_sinh) err.ngay_sinh = "Vui lòng chọn ngày sinh";
+    if (!form.ngay_sinh) {
+      err.ngay_sinh = "Vui lòng chọn ngày sinh";
+    } else {
+      const today = new Date().toISOString().split("T")[0];
+      if (form.ngay_sinh > today) {
+        err.ngay_sinh = "Ngày sinh không được lớn hơn ngày hiện tại";
+        toast.error("Ngày sinh không được lớn hơn ngày hiện tại");
+      }
+    }
     if (!form.dia_chi.trim()) err.dia_chi = "Vui lòng nhập địa chỉ";
 
     setErrors(err);
@@ -95,27 +102,27 @@ const CustomerFormModal = ({ customer, isOpen, onClose, mode, reload }) => {
   };
 
   const handleSubmit = async () => {
-  if (!validate()) return;
+    if (!validate()) return;
 
-  try {
-    if (mode === "add") {
-      await axios.post("http://localhost:5000/api/customers", form);
-      toast.success("Thêm khách hàng thành công");
-    } else {
-      await axios.put(
-        `http://localhost:5000/api/customers/${customer.ma_kh}`,
-        form
-      );
-      toast.success("Cập nhật thông tin khách hàng thành công");
+    try {
+      if (mode === "add") {
+        await axios.post("http://localhost:5000/api/customers", form);
+        toast.success("Thêm khách hàng thành công");
+      } else {
+        await axios.put(
+          `http://localhost:5000/api/customers/${customer.ma_kh}`,
+          form
+        );
+        toast.success("Cập nhật thông tin khách hàng thành công");
+      }
+
+      reload();
+      onClose();
+    } catch (err) {
+      console.log(err);
+      toast.error(err?.response?.data?.message || "Có lỗi xảy ra");
     }
-
-    reload();
-    onClose();
-  } catch (err) {
-    console.log(err);
-    toast.error(err?.response?.data?.message || "Có lỗi xảy ra");
-  }
-};
+  };
   if (!isOpen) return null;
 
   return (
@@ -129,7 +136,7 @@ const CustomerFormModal = ({ customer, isOpen, onClose, mode, reload }) => {
         </button>
 
         <div className="px-7 pb-7 pt-6">
-          <h2 className="mb-8 text-[20px] font-bold text-slate-900">
+          <h2 className="mb-8 text-xl font-bold text-slate-900">
             {mode === "add" ? "Thêm khách hàng" : "Chỉnh sửa thông tin"}
           </h2>
 
@@ -144,11 +151,10 @@ const CustomerFormModal = ({ customer, isOpen, onClose, mode, reload }) => {
                 type="text"
                 value={form.ten_kh}
                 onChange={(e) => handleChange("ten_kh", e.target.value)}
-                className={`h-12 w-full rounded-xl border bg-white px-4 text-[15px] text-slate-800 outline-none transition placeholder:text-slate-400 ${
-                  errors.ten_kh
+                className={`h-12 w-full rounded-xl border bg-white px-4 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 ${errors.ten_kh
                     ? "border-red-300 focus:border-red-400"
                     : "border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                }`}
+                  }`}
               />
             </InputField>
 
@@ -163,11 +169,10 @@ const CustomerFormModal = ({ customer, isOpen, onClose, mode, reload }) => {
                   type="email"
                   value={form.email}
                   onChange={(e) => handleChange("email", e.target.value)}
-                  className={`h-12 w-full rounded-xl border bg-white px-4 text-[15px] text-slate-800 outline-none transition placeholder:text-slate-400 ${
-                    errors.email
+                  className={`h-12 w-full rounded-xl border bg-white px-4 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 ${errors.email
                       ? "border-red-300 focus:border-red-400"
                       : "border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                  }`}
+                    }`}
                 />
               </InputField>
 
@@ -181,11 +186,10 @@ const CustomerFormModal = ({ customer, isOpen, onClose, mode, reload }) => {
                   type="text"
                   value={form.so_dien_thoai}
                   onChange={(e) => handleChange("so_dien_thoai", e.target.value)}
-                  className={`h-12 w-full rounded-xl border bg-white px-4 text-[15px] text-slate-800 outline-none transition placeholder:text-slate-400 ${
-                    errors.so_dien_thoai
+                  className={`h-12 w-full rounded-xl border bg-white px-4 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 ${errors.so_dien_thoai
                       ? "border-red-300 focus:border-red-400"
                       : "border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                  }`}
+                    }`}
                 />
               </InputField>
             </div>
@@ -202,11 +206,10 @@ const CustomerFormModal = ({ customer, isOpen, onClose, mode, reload }) => {
                 placeholder="Nhập mật khẩu mới (không bắt buộc)"
                 value={form.mat_khau}
                 onChange={(e) => handleChange("mat_khau", e.target.value)}
-                className={`h-12 w-full rounded-xl border bg-white px-4 text-[15px] text-slate-800 outline-none transition placeholder:text-slate-400 ${
-                  errors.mat_khau
+                className={`h-12 w-full rounded-xl border bg-white px-4 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 ${errors.mat_khau
                     ? "border-red-300 focus:border-red-400"
                     : "border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                }`}
+                  }`}
               />
             </InputField>
 
@@ -221,11 +224,10 @@ const CustomerFormModal = ({ customer, isOpen, onClose, mode, reload }) => {
                   type="date"
                   value={form.ngay_sinh}
                   onChange={(e) => handleChange("ngay_sinh", e.target.value)}
-                  className={`h-12 w-full rounded-xl border bg-white px-4 text-[15px] text-slate-800 outline-none transition ${
-                    errors.ngay_sinh
+                  className={`h-12 w-full rounded-xl border bg-white px-4 text-sm text-slate-800 outline-none transition ${errors.ngay_sinh
                       ? "border-red-300 focus:border-red-400"
                       : "border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                  }`}
+                    }`}
                 />
               </InputField>
 
@@ -236,7 +238,7 @@ const CustomerFormModal = ({ customer, isOpen, onClose, mode, reload }) => {
                 <select
                   value={form.gioi_tinh}
                   onChange={(e) => handleChange("gioi_tinh", e.target.value)}
-                  className="h-12 w-full rounded-xl border border-slate-300 bg-white px-4 text-[15px] text-slate-800 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                  className="h-12 w-full rounded-xl border border-slate-300 bg-white px-4 text-sm text-slate-800 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                 >
                   <option value="Nam">Nam</option>
                   <option value="Nữ">Nữ</option>
@@ -255,11 +257,10 @@ const CustomerFormModal = ({ customer, isOpen, onClose, mode, reload }) => {
                 type="text"
                 value={form.dia_chi}
                 onChange={(e) => handleChange("dia_chi", e.target.value)}
-                className={`h-12 w-full rounded-xl border bg-white px-4 text-[15px] text-slate-800 outline-none transition placeholder:text-slate-400 ${
-                  errors.dia_chi
+                className={`h-12 w-full rounded-xl border bg-white px-4 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 ${errors.dia_chi
                     ? "border-red-300 focus:border-red-400"
                     : "border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                }`}
+                  }`}
               />
             </InputField>
           </div>
@@ -267,14 +268,14 @@ const CustomerFormModal = ({ customer, isOpen, onClose, mode, reload }) => {
           <div className="mt-9 flex items-center justify-end gap-3">
             <button
               onClick={onClose}
-              className="rounded-xl border border-slate-300 bg-white px-6 py-3 text-[15px] font-medium text-slate-700 transition hover:bg-slate-50"
+              className="rounded-xl border border-slate-300 bg-white px-6 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
             >
               Hủy
             </button>
 
             <button
               onClick={handleSubmit}
-              className="rounded-xl bg-blue-600 px-6 py-3 text-[15px] font-semibold text-white transition hover:bg-blue-700"
+              className="rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-blue-700"
             >
               {mode === "add" ? "Thêm khách hàng" : "Lưu thay đổi"}
             </button>
@@ -295,7 +296,7 @@ const InputField = ({
 }) => {
   return (
     <div>
-      <label className="mb-2 flex items-center gap-2 text-[15px] font-medium text-slate-800">
+      <label className="mb-2 flex items-center gap-2 text-sm font-medium text-slate-800">
         {icon}
         <span>{label}</span>
         {required && <span className="text-red-500">*</span>}

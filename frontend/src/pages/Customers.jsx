@@ -127,11 +127,10 @@ const Customers = () => {
         <button
           key={i}
           onClick={() => setPage(i)}
-          className={`h-9 min-w-[36px] rounded-lg border px-3 text-sm font-medium transition ${
-            page === i
+          className={`h-9 min-w-[36px] rounded-lg border px-3 text-sm font-medium transition ${page === i
               ? "border-blue-600 bg-blue-600 text-white"
               : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
-          }`}
+            }`}
         >
           {i}
         </button>
@@ -145,12 +144,9 @@ const Customers = () => {
       <div className="mx-auto max-w-7xl">
         <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div>
-            <h1 className="text-4xl font-bold tracking-tight text-slate-900">
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900">
               Quản lý khách hàng
             </h1>
-            <p className="mt-2 text-[17px] text-slate-600">
-              Quản lý thông tin và theo dõi hoạt động của khách hàng
-            </p>
           </div>
 
           <button
@@ -194,7 +190,7 @@ const Customers = () => {
               className="h-12 min-w-[200px] rounded-xl border border-slate-200 bg-white px-4 text-sm text-slate-700 outline-none focus:border-blue-500"
             >
               <option value="">Tất cả hạng</option>
-              <option value="STANDARD">Standard</option>
+              <option value="Standard">Standard</option>
               <option value="VIP">VIP</option>
               <option value="SVIP">SVIP</option>
             </select>
@@ -217,15 +213,16 @@ const Customers = () => {
         <div className="overflow-hidden rounded-2xl border border-slate-300 bg-white shadow-sm">
           <div className="overflow-x-auto">
             <table className="min-w-full text-sm">
-              <thead className="bg-slate-50">
-                <tr className="text-left text-slate-800">
-                  <th className="px-4 py-4 font-semibold">Tên khách hàng</th>
-                  <th className="px-4 py-4 font-semibold">Email</th>
-                  <th className="px-4 py-4 font-semibold">Số điện thoại</th>
-                  <th className="px-4 py-4 font-semibold">Hạng thành viên</th>
-                  <th className="px-4 py-4 font-semibold">Trạng thái</th>
-                  <th className="px-4 py-4 text-center font-semibold">
-                    Hoạt động
+              <thead className="bg-slate-50/50">
+                <tr className="text-left">
+                  <th className="px-4 py-4 font-bold text-slate-700">Tên khách hàng</th>
+                  <th className="px-4 py-4 font-bold text-slate-700">Email</th>
+                  <th className="px-4 py-4 font-bold text-slate-700">Số điện thoại</th>
+                  <th className="px-4 py-4 font-bold text-slate-700">Hạng thành viên</th>
+                  <th className="px-4 py-4 font-bold text-slate-700">Điểm tích lũy</th>
+                  <th className="px-4 py-4 font-bold text-slate-700">Trạng thái</th>
+                  <th className="px-4 py-4 text-center font-bold text-slate-700">
+                    Thao tác
                   </th>
                 </tr>
               </thead>
@@ -234,7 +231,7 @@ const Customers = () => {
                 {customers.length === 0 ? (
                   <tr>
                     <td
-                      colSpan={6}
+                      colSpan={7}
                       className="px-4 py-10 text-center text-slate-500"
                     >
                       Không có khách hàng phù hợp
@@ -255,6 +252,10 @@ const Customers = () => {
 
                       <td className="px-4 py-4">
                         {getRankBadge(c.hang_thanh_vien)}
+                      </td>
+
+                      <td className="px-4 py-4 text-slate-800 font-medium">
+                        {c.diem_tich_luy?.toLocaleString("vi-VN") || 0}
                       </td>
 
                       <td className="px-4 py-4">

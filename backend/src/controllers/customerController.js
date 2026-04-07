@@ -117,7 +117,7 @@ exports.updateCustomer = async (req, res) => {
   }
 };
 
-// HỦY TÀI KHOẢN (thay cho xóa cứng)
+// HỦY TÀI KHOẢN
 exports.deleteCustomer = (req, res) => {
   const { id } = req.params;
 

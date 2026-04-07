@@ -27,7 +27,6 @@ const InvoiceDetailModal = ({ invoice, isOpen, onClose }) => {
 
   const handlePrint = () => {
     toast.success("Đã ghi nhận yêu cầu in hóa đơn cho máy in khác.");
-    // Thêm logic thực tế gửi sang máy in ở đây
   };
 
   const tickets = invoice.tickets || [];
@@ -36,7 +35,6 @@ const InvoiceDetailModal = ({ invoice, isOpen, onClose }) => {
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-white w-full max-w-3xl rounded-2xl shadow-2xl flex flex-col max-h-[90vh]">
-        {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
           <div>
             <h2 className="text-xl font-bold text-slate-900">
@@ -63,15 +61,12 @@ const InvoiceDetailModal = ({ invoice, isOpen, onClose }) => {
           </div>
         </div>
 
-        {/* Scrollable content */}
         <div className="overflow-y-auto flex-1 px-6 py-5" ref={printRef}>
-          {/* Print-only header */}
           <div className="hidden print:block header">
             <h1>🎬 Cinema — Hóa Đơn #{invoice.ma_hd}</h1>
             <p>{formatDateTime(invoice.ngay_lap)}</p>
           </div>
 
-          {/* Info grid */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
             <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
               <div className="flex items-center gap-2 mb-1">
@@ -106,7 +101,6 @@ const InvoiceDetailModal = ({ invoice, isOpen, onClose }) => {
             </div>
           </div>
 
-          {/* Vé section */}
           <div className="mb-5">
             <div className="flex items-center gap-2 mb-3">
               <Ticket size={16} className="text-slate-600" />
@@ -117,15 +111,15 @@ const InvoiceDetailModal = ({ invoice, isOpen, onClose }) => {
             ) : (
               <div className="rounded-xl border border-slate-200 overflow-hidden">
                 <table className="min-w-full text-sm">
-                  <thead className="bg-slate-50">
-                    <tr className="text-slate-600">
-                      <th className="px-4 py-3 text-left font-semibold">Phim</th>
-                      <th className="px-4 py-3 text-left font-semibold">Phòng</th>
-                      <th className="px-4 py-3 text-left font-semibold">Ngày chiếu</th>
-                      <th className="px-4 py-3 text-left font-semibold">Giờ</th>
-                      <th className="px-4 py-3 text-left font-semibold">Ghế</th>
-                      <th className="px-4 py-3 text-left font-semibold">Loại</th>
-                      <th className="px-4 py-3 text-right font-semibold">Giá vé</th>
+                  <thead className="bg-slate-50/50">
+                    <tr className="text-slate-700">
+                      <th className="px-4 py-3 text-left font-bold text-slate-700">Phim</th>
+                      <th className="px-4 py-3 text-left font-bold text-slate-700">Phòng</th>
+                      <th className="px-4 py-3 text-left font-bold text-slate-700">Ngày chiếu</th>
+                      <th className="px-4 py-3 text-left font-bold text-slate-700">Giờ</th>
+                      <th className="px-4 py-3 text-left font-bold text-slate-700">Ghế</th>
+                      <th className="px-4 py-3 text-left font-bold text-slate-700">Loại</th>
+                      <th className="px-4 py-3 text-right font-bold text-slate-700">Giá vé</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -139,13 +133,12 @@ const InvoiceDetailModal = ({ invoice, isOpen, onClose }) => {
                           <span className="font-semibold text-slate-800">{t.so_ghe}</span>
                         </td>
                         <td className="px-4 py-3">
-                          <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
-                            t.loai_ghe === "VIP"
+                          <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${t.loai_ghe === "VIP"
                               ? "bg-amber-50 text-amber-700 border border-amber-200"
                               : t.loai_ghe === "SWEETBOX"
-                              ? "bg-pink-50 text-pink-700 border border-pink-200"
-                              : "bg-sky-50 text-sky-700 border border-sky-200"
-                          }`}>
+                                ? "bg-pink-50 text-pink-700 border border-pink-200"
+                                : "bg-sky-50 text-sky-700 border border-sky-200"
+                            }`}>
                             {t.loai_ghe}
                           </span>
                         </td>
@@ -160,7 +153,6 @@ const InvoiceDetailModal = ({ invoice, isOpen, onClose }) => {
             )}
           </div>
 
-          {/* Sản phẩm section */}
           <div>
             <div className="flex items-center gap-2 mb-3">
               <ShoppingCart size={16} className="text-slate-600" />
@@ -171,13 +163,13 @@ const InvoiceDetailModal = ({ invoice, isOpen, onClose }) => {
             ) : (
               <div className="rounded-xl border border-slate-200 overflow-hidden">
                 <table className="min-w-full text-sm">
-                  <thead className="bg-slate-50">
-                    <tr className="text-slate-600">
-                      <th className="px-4 py-3 text-left font-semibold">Sản phẩm</th>
-                      <th className="px-4 py-3 text-left font-semibold">Loại</th>
-                      <th className="px-4 py-3 text-center font-semibold">Số lượng</th>
-                      <th className="px-4 py-3 text-right font-semibold">Đơn giá</th>
-                      <th className="px-4 py-3 text-right font-semibold">Thành tiền</th>
+                  <thead className="bg-slate-50/50">
+                    <tr className="text-slate-700">
+                      <th className="px-4 py-3 text-left font-bold text-slate-700">Sản phẩm</th>
+                      <th className="px-4 py-3 text-left font-bold text-slate-700">Loại</th>
+                      <th className="px-4 py-3 text-center font-bold text-slate-700">Số lượng</th>
+                      <th className="px-4 py-3 text-right font-bold text-slate-700">Đơn giá</th>
+                      <th className="px-4 py-3 text-right font-bold text-slate-700">Thành tiền</th>
                     </tr>
                   </thead>
                   <tbody>

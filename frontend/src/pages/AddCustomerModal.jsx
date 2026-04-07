@@ -76,6 +76,13 @@ const AddCustomerModal = ({ isOpen, onClose, reload }) => {
 
     if (!form.ngay_sinh) {
       newErrors.ngay_sinh = "Vui lòng chọn ngày sinh";
+    } else {
+      // Dùng so sánh chuỗi YYYY-MM-DD để tránh lỗi timezone
+      const today = new Date().toISOString().split("T")[0];
+      if (form.ngay_sinh > today) {
+        newErrors.ngay_sinh = "Ngày sinh không được lớn hơn ngày hiện tại";
+        toast.error("Ngày sinh không được lớn hơn ngày hiện tại");
+      }
     }
 
     if (!form.dia_chi.trim()) {
@@ -124,7 +131,7 @@ const AddCustomerModal = ({ isOpen, onClose, reload }) => {
         </button>
 
         <div className="px-7 pb-7 pt-6">
-          <h2 className="mb-8 text-[20px] font-bold text-slate-900">
+          <h2 className="mb-8 text-xl font-bold text-slate-900">
             Thêm khách hàng
           </h2>
 
@@ -213,7 +220,7 @@ const AddCustomerModal = ({ isOpen, onClose, reload }) => {
                 <select
                   value={form.gioi_tinh}
                   onChange={(e) => handleChange("gioi_tinh", e.target.value)}
-                  className="h-12 w-full rounded-xl border border-slate-300 bg-white px-4 text-[15px] text-slate-800 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                  className="h-12 w-full rounded-xl border border-slate-300 bg-white px-4 text-sm text-slate-800 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                 >
                   <option value="Nam">Nam</option>
                   <option value="Nữ">Nữ</option>
@@ -242,7 +249,7 @@ const AddCustomerModal = ({ isOpen, onClose, reload }) => {
             <button
               onClick={handleClose}
               disabled={loading}
-              className="rounded-xl border border-slate-300 bg-white px-6 py-3 text-[15px] font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+              className="rounded-xl border border-slate-300 bg-white px-6 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
             >
               Hủy
             </button>
@@ -250,7 +257,7 @@ const AddCustomerModal = ({ isOpen, onClose, reload }) => {
             <button
               onClick={handleSubmit}
               disabled={loading}
-              className="rounded-xl bg-blue-600 px-6 py-3 text-[15px] font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+              className="rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {loading ? "Đang lưu..." : "Thêm khách hàng"}
             </button>
@@ -270,7 +277,7 @@ const InputField = ({
 }) => {
   return (
     <div>
-      <label className="mb-2 flex items-center gap-2 text-[15px] font-medium text-slate-800">
+      <label className="mb-2 flex items-center gap-2 text-sm font-medium text-slate-800">
         {icon}
         <span>{label}</span>
         {required && <span className="text-red-500">*</span>}
@@ -284,7 +291,7 @@ const InputField = ({
 };
 
 const inputClass = (hasError) =>
-  `h-12 w-full rounded-xl border bg-white px-4 text-[15px] text-slate-800 outline-none transition placeholder:text-slate-400 ${
+  `h-12 w-full rounded-xl border bg-white px-4 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 ${
     hasError
       ? "border-red-300 focus:border-red-400"
       : "border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"

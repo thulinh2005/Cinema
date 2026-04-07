@@ -20,6 +20,12 @@ export default function Login() {
     const [matKhau, setMatKhau] = useState("")
     const [loading, setLoading] = useState(false)
 
+
+    const handleForgotPassword = (e) => {
+        e.preventDefault();
+        toast.info("Đã gửi yêu cầu cấp lại tài khoản cho quản trị viên, vui lòng liên hệ quản lý trực tiếp để được hỗ trợ!");
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault()
         setLoading(true)
@@ -44,7 +50,6 @@ export default function Login() {
                 return
             }
 
-            // Lưu token & user
             localStorage.setItem("token", data.token)
             localStorage.setItem("user", JSON.stringify(data.user))
 
@@ -52,7 +57,6 @@ export default function Login() {
 
             navigate("/")
 
-        // eslint-disable-next-line no-unused-vars
         } catch (error) {
             toast.error("Không kết nối được server")
         }
@@ -63,7 +67,6 @@ export default function Login() {
     return (
         <div className="min-h-screen w-full relative bg-white overflow-hidden">
 
-            {/* Purple Glow Left */}
             <div
                 className="absolute inset-0 z-0"
                 style={{
@@ -80,7 +83,6 @@ export default function Login() {
                 }}
             />
 
-            {/* Centered Content */}
             <div className="min-h-screen flex items-center justify-center relative z-10 px-4">
 
                 <Card className="w-full max-w-sm shadow-xl border-0">
@@ -111,6 +113,7 @@ export default function Login() {
                                         <Label htmlFor="password">Mật khẩu</Label>
                                         <a
                                             href="#"
+                                            onClick={handleForgotPassword}
                                             className="ml-auto text-sm hover:underline text-purple-600"
                                         >
                                             Quên mật khẩu?

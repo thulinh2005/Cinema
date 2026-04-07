@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Search, Plus, Pencil, Trash2 } from 'lucide-react';
+import { Search, Plus, Pencil, Trash2, Eye } from 'lucide-react';
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -20,6 +20,8 @@ const Employee = () => {
     const [employeeToDelete, setEmployeeToDelete] = useState(null);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [editingEmployee, setEditingEmployee] = useState(null);
+    const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+    const [viewingEmployee, setViewingEmployee] = useState(null);
 
     const [newEmployee, setNewEmployee] = useState({
         ho_ten: "",
@@ -30,29 +32,23 @@ const Employee = () => {
         anh_dai_dien: "",
         ma_tk: "",
         trang_thai: "Còn làm",
-        chuc_vu: ""
+        chuc_vu: "Nhân viên quầy vé"
     });
 
-    // ==================== FETCH EMPLOYEES ====================
     const fetchEmployees = async () => {
         try {
             const response = await axios.get(`http://localhost:5000/api/employees?search=${searchTerm}`);
             setEmployees(response.data);
-        // eslint-disable-next-line no-unused-vars
         } catch (error) {
             toast.error("Không thể tải danh sách nhân viên");
         }
     };
 
     useEffect(() => {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
         fetchEmployees();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [searchTerm]);
 
-    // ==================== ADD EMPLOYEE ====================
     const handleAddEmployee = async () => {
-        // 1️⃣ Validation - Tất cả field bắt buộc
         if (!newEmployee.ho_ten.trim()) {
             return toast.error("Họ tên không được bỏ trống!");
         }
@@ -61,12 +57,11 @@ const Employee = () => {
             return toast.error("Ngày sinh không được bỏ trống!");
         }
 
-        // Kiểm tra tuổi (phải từ 16 tuổi trở lên)
         const birthDate = new Date(newEmployee.ngay_sinh);
         const today = new Date();
         const age = today.getFullYear() - birthDate.getFullYear();
         const monthDiff = today.getMonth() - birthDate.getMonth();
-        
+
         if (age < 16 || (age === 16 && monthDiff < 0)) {
             return toast.error("Nhân viên phải từ 16 tuổi trở lên (sinh từ năm 2010)!");
         }
@@ -114,7 +109,7 @@ const Employee = () => {
                 anh_dai_dien: "",
                 ma_tk: "",
                 trang_thai: "Còn làm",
-                chuc_vu: ""
+                chuc_vu: "Nhân viên quầy vé"
             });
             fetchEmployees();
         } catch (error) {
@@ -122,7 +117,6 @@ const Employee = () => {
         }
     };
 
-    // ==================== DELETE EMPLOYEE ====================
     const handleDeleteEmployee = async () => {
         try {
             await axios.delete(`http://localhost:5000/api/employees/${employeeToDelete}`);
@@ -135,14 +129,18 @@ const Employee = () => {
         }
     };
 
-    // ==================== EDIT EMPLOYEE ====================
+    const handleViewClick = (employee) => {
+        setViewingEmployee(employee);
+        setIsViewModalOpen(true);
+    };
+
     const handleEditClick = (employee) => {
         setEditingEmployee({ ...employee });
         setIsEditModalOpen(true);
     };
 
     const handleUpdateEmployee = async () => {
-        // 1️⃣ Validation - Tất cả field bắt buộc
+
         if (!editingEmployee.ho_ten.trim()) {
             return toast.error("Họ tên không được bỏ trống!");
         }
@@ -151,12 +149,11 @@ const Employee = () => {
             return toast.error("Ngày sinh không được bỏ trống!");
         }
 
-        // Kiểm tra tuổi (phải từ 16 tuổi trở lên)
         const birthDate = new Date(editingEmployee.ngay_sinh);
         const today = new Date();
         const age = today.getFullYear() - birthDate.getFullYear();
         const monthDiff = today.getMonth() - birthDate.getMonth();
-        
+
         if (age < 16 || (age === 16 && monthDiff < 0)) {
             return toast.error("Nhân viên phải từ 16 tuổi trở lên (sinh từ năm 2010)!");
         }
@@ -265,13 +262,19 @@ const Employee = () => {
                                 />
                             </div>
                             <div className="grid gap-2">
-                                <Label htmlFor="chuc_vu">Chức vụ <span className="text-red-500">*</span></Label>
-                                <Input
-                                    id="chuc_vu"
-                                    placeholder="Nhập chức vụ"
-                                    value={newEmployee.chuc_vu}
-                                    onChange={(e) => setNewEmployee({ ...newEmployee, chuc_vu: e.target.value })}
-                                />
+                                <Label>Chức vụ <span className="text-red-500">*</span></Label>
+                                <Select value={newEmployee.chuc_vu} onValueChange={(val) => setNewEmployee({ ...newEmployee, chuc_vu: val })}>
+                                    <SelectTrigger>
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="Nhân viên quầy vé">Nhân viên quầy vé</SelectItem>
+                                        <SelectItem value="Nhân viên quầy đồ ăn">Nhân viên quầy đồ ăn</SelectItem>
+                                        <SelectItem value="Nhân viên vệ sinh">Nhân viên vệ sinh</SelectItem>
+                                        <SelectItem value="Quản lý">Quản lý</SelectItem>
+                                        <SelectItem value="Kế toán">Kế toán</SelectItem>
+                                    </SelectContent>
+                                </Select>
                             </div>
                             <div className="grid gap-2">
                                 <Label>Trạng thái</Label>
@@ -294,7 +297,6 @@ const Employee = () => {
                 </Dialog>
             </div>
 
-            {/* EDIT MODAL */}
             <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
                 <DialogContent className="sm:max-w-[500px]">
                     <DialogHeader>
@@ -342,10 +344,16 @@ const Employee = () => {
                             </div>
                             <div className="grid gap-2">
                                 <Label>Chức vụ <span className="text-red-500">*</span></Label>
-                                <Input
-                                    value={editingEmployee.chuc_vu || ""}
-                                    onChange={(e) => setEditingEmployee({ ...editingEmployee, chuc_vu: e.target.value })}
-                                />
+                                <Select value={editingEmployee.chuc_vu || "Nhân viên quầy vé"} onValueChange={(val) => setEditingEmployee({ ...editingEmployee, chuc_vu: val })}>
+                                    <SelectTrigger><SelectValue /></SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="Nhân viên quầy vé">Nhân viên quầy vé</SelectItem>
+                                        <SelectItem value="Nhân viên quầy đồ ăn">Nhân viên quầy đồ ăn</SelectItem>
+                                        <SelectItem value="Nhân viên vệ sinh">Nhân viên vệ sinh</SelectItem>
+                                        <SelectItem value="Quản lý">Quản lý</SelectItem>
+                                        <SelectItem value="Kế toán">Kế toán</SelectItem>
+                                    </SelectContent>
+                                </Select>
                             </div>
                             <div className="grid gap-2">
                                 <Label>Trạng thái</Label>
@@ -366,7 +374,71 @@ const Employee = () => {
                 </DialogContent>
             </Dialog>
 
-            {/* SEARCH BAR */}
+            <Dialog open={isViewModalOpen} onOpenChange={setIsViewModalOpen}>
+                <DialogContent className="sm:max-w-[500px]">
+                    <DialogHeader>
+                        <DialogTitle className="text-xl font-bold">Chi tiết nhân viên: {viewingEmployee?.ho_ten}</DialogTitle>
+                    </DialogHeader>
+                    {viewingEmployee && (
+                        <div className="grid gap-4 py-4 text-sm">
+                            <div className="grid grid-cols-3 items-center gap-4 border-b pb-2">
+                                <span className="font-semibold text-slate-700">Mã nhân viên:</span>
+                                <span className="col-span-2 text-slate-600 font-mono">#{viewingEmployee.ma_nv}</span>
+                            </div>
+                            <div className="grid grid-cols-3 items-center gap-4 border-b pb-2">
+                                <span className="font-semibold text-slate-700">Họ tên:</span>
+                                <span className="col-span-2 text-slate-600">{viewingEmployee.ho_ten}</span>
+                            </div>
+                            <div className="grid grid-cols-3 items-center gap-4 border-b pb-2">
+                                <span className="font-semibold text-slate-700">Ngày sinh:</span>
+                                <span className="col-span-2 text-slate-600">
+                                    {viewingEmployee.ngay_sinh ? new Date(viewingEmployee.ngay_sinh).toLocaleDateString('vi-VN') : "-"}
+                                </span>
+                            </div>
+                            <div className="grid grid-cols-3 items-center gap-4 border-b pb-2">
+                                <span className="font-semibold text-slate-700">Địa chỉ:</span>
+                                <span className="col-span-2 text-slate-600">{viewingEmployee.dia_chi || "-"}</span>
+                            </div>
+                            <div className="grid grid-cols-3 items-center gap-4 border-b pb-2">
+                                <span className="font-semibold text-slate-700">Số điện thoại:</span>
+                                <span className="col-span-2 text-slate-600">{viewingEmployee.so_dien_thoai}</span>
+                            </div>
+                            <div className="grid grid-cols-3 items-center gap-4 border-b pb-2">
+                                <span className="font-semibold text-slate-700">Email:</span>
+                                <span className="col-span-2 text-slate-600">{viewingEmployee.email || "-"}</span>
+                            </div>
+                            <div className="grid grid-cols-3 items-center gap-4 border-b pb-2">
+                                <span className="font-semibold text-slate-700">Chức vụ:</span>
+                                <span className="col-span-2 text-slate-600">{viewingEmployee.chuc_vu || "-"}</span>
+                            </div>
+                            {viewingEmployee.ma_tk && (
+                                <div className="grid grid-cols-3 items-center gap-4 border-b pb-2">
+                                    <span className="font-semibold text-slate-700">Mã tài khoản:</span>
+                                    <span className="col-span-2 text-slate-600 font-mono">#{viewingEmployee.ma_tk}</span>
+                                </div>
+                            )}
+                            <div className="grid grid-cols-3 items-center gap-4">
+                                <span className="font-semibold text-slate-700">Trạng thái:</span>
+                                <span className="col-span-2 text-slate-600">
+                                    <Badge
+                                        variant="secondary"
+                                        className={`rounded-md px-2 py-0.5 text-[11px] font-bold border-none whitespace-nowrap ${viewingEmployee.trang_thai === 'Còn làm'
+                                                ? 'bg-emerald-100 text-emerald-700'
+                                                : 'bg-red-100 text-red-700'
+                                            }`}
+                                    >
+                                        {viewingEmployee.trang_thai}
+                                    </Badge>
+                                </span>
+                            </div>
+                        </div>
+                    )}
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setIsViewModalOpen(false)}>Đóng</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
             <div className="flex items-center max-w-sm relative group">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
                 <Input
@@ -377,7 +449,6 @@ const Employee = () => {
                 />
             </div>
 
-            {/* TABLE */}
             <div className="rounded-xl border bg-white shadow-sm overflow-hidden">
                 <Table className="table-fixed w-full">
                     <TableHeader className="bg-slate-50/50">
@@ -427,6 +498,15 @@ const Employee = () => {
                                     </TableCell>
                                     <TableCell className="text-right pr-6">
                                         <div className="flex justify-end gap-1">
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                className="h-8 w-8 hover:bg-blue-50"
+                                                title="Xem chi tiết"
+                                                onClick={() => handleViewClick(emp)}
+                                            >
+                                                <Eye className="h-4 w-4 text-blue-500" />
+                                            </Button>
                                             <Button
                                                 variant="ghost"
                                                 size="icon"

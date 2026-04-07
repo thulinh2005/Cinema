@@ -91,7 +91,6 @@ const SeatMap = () => {
         ));
     };
 
-    // TÍNH NĂNG MỚI: Đổi loại ghế cho cả hàng
     const applyTypeToRow = (rowLabel, type) => {
         setSeats(prev => prev.map(seat =>
             seat.hang === rowLabel ? { ...seat, loai_ghe: type } : seat

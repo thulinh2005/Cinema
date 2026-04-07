@@ -50,12 +50,12 @@ const ShowtimeDetailModal = ({ showtime, open, onOpenChange }) => {
       <div className="relative w-full max-w-2xl rounded-2xl bg-white p-6 shadow-xl">
         <button
           onClick={() => onOpenChange(false)}
-          className="absolute right-4 top-4 rounded-full p-1 hover:bg-slate-100"
+          className="absolute right-4 top-4 z-50 rounded-full p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition"
         >
           <X size={24} />
         </button>
 
-        <h2 className="text-2xl font-bold text-slate-900 mb-4">
+        <h2 className="text-2xl font-bold text-slate-900 mb-4 pr-10">
           Chi tiết suất chiếu
         </h2>
 
@@ -218,6 +218,16 @@ const ShowtimeFormModal = ({ showtime, mode, open, onOpenChange, onSuccess }) =>
       toast.error("Vui lòng chọn ngày chiếu");
       return false;
     }
+
+    const now = new Date();
+    const localNow = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+    const todayStr = localNow.toISOString().split('T')[0];
+
+    if (formData.ngay_chieu < todayStr) {
+      toast.error("Không thể chọn ngày chiếu trong quá khứ");
+      return false;
+    }
+
     if (!formData.gio_chieu) {
       toast.error("Vui lòng nhập giờ bắt đầu");
       return false;
@@ -231,6 +241,19 @@ const ShowtimeFormModal = ({ showtime, mode, open, onOpenChange, onSuccess }) =>
     if (formData.gio_ket_thuc <= formData.gio_chieu) {
       toast.error("Giờ kết thúc phải lớn hơn giờ bắt đầu");
       return false;
+    }
+
+    const selectedMovie = movies.find(m => m.ma_phim.toString() === formData.ma_phim.toString());
+    if (selectedMovie && selectedMovie.thoi_luong) {
+      const start = new Date(`1970-01-01T${formData.gio_chieu}:00Z`);
+      const end = new Date(`1970-01-01T${formData.gio_ket_thuc}:00Z`);
+      let diffMins = (end - start) / 60000;
+      if (diffMins < 0) diffMins += 24 * 60;
+
+      if (diffMins < selectedMovie.thoi_luong) {
+        toast.error(`Thời lượng suất chiếu (${diffMins} phút) không được nhỏ hơn thời lượng phim (${selectedMovie.thoi_luong} phút)`);
+        return false;
+      }
     }
 
     return true;
@@ -274,12 +297,12 @@ const ShowtimeFormModal = ({ showtime, mode, open, onOpenChange, onSuccess }) =>
       <div className="relative w-full max-w-2xl rounded-2xl bg-white p-6 shadow-xl max-h-[calc(100vh-2rem)] overflow-y-auto">
         <button
           onClick={() => onOpenChange(false)}
-          className="absolute right-4 top-4 rounded-full p-1 hover:bg-slate-100 z-10"
+          className="absolute right-4 top-4 z-50 rounded-full p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition"
         >
           <X size={24} />
         </button>
 
-        <h2 className="text-2xl font-bold text-slate-900 mb-6">
+        <h2 className="text-2xl font-bold text-slate-900 mb-6 pr-10">
           {mode === "edit" ? "Chỉnh sửa suất chiếu" : "Thêm suất chiếu mới"}
         </h2>
 
@@ -292,7 +315,7 @@ const ShowtimeFormModal = ({ showtime, mode, open, onOpenChange, onSuccess }) =>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-2">
-                  Chọn phim *
+                  Chọn phim <span className="text-red-500">*</span>
                 </label>
                 <select
                   name="ma_phim"
@@ -311,7 +334,7 @@ const ShowtimeFormModal = ({ showtime, mode, open, onOpenChange, onSuccess }) =>
 
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-2">
-                  Chọn phòng chiếu *
+                  Chọn phòng chiếu <span className="text-red-500">*</span>
                 </label>
                 <select
                   name="ma_phong"
@@ -330,7 +353,7 @@ const ShowtimeFormModal = ({ showtime, mode, open, onOpenChange, onSuccess }) =>
 
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-2">
-                  Ngày chiếu *
+                  Ngày chiếu <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="date"
@@ -343,7 +366,7 @@ const ShowtimeFormModal = ({ showtime, mode, open, onOpenChange, onSuccess }) =>
 
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-2">
-                  Giờ bắt đầu *
+                  Giờ bắt đầu <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="time"
@@ -356,7 +379,7 @@ const ShowtimeFormModal = ({ showtime, mode, open, onOpenChange, onSuccess }) =>
 
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-2">
-                  Giờ kết thúc *
+                  Giờ kết thúc <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="time"
@@ -540,12 +563,9 @@ const Showtimes = () => {
       <div className="mx-auto max-w-7xl">
         <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div>
-            <h1 className="text-4xl font-bold tracking-tight text-slate-900">
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900">
               Quản lý suất chiếu
             </h1>
-            <p className="mt-2 text-[17px] text-slate-600">
-              Quản lý lịch chiếu phim, phòng chiếu và trạng thái suất chiếu
-            </p>
           </div>
 
           <button

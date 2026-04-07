@@ -1,7 +1,6 @@
 const db = require("../config/db");
 
 const Showtime = {
-  // LẤY DANH SÁCH + PAGINATION
   getAll: (page, limit, ngay_chieu, trang_thai, ma_phong, callback) => {
     let sql = `
       SELECT sc.ma_suat_chieu, sc.ma_phim, sc.ma_phong, 
@@ -42,7 +41,6 @@ const Showtime = {
     db.query(sql, params, callback);
   },
 
-  // ĐẾM TỔNG
   count: (ngay_chieu, trang_thai, ma_phong, callback) => {
     let sql = `
       SELECT COUNT(*) AS total FROM suat_chieu
@@ -68,7 +66,6 @@ const Showtime = {
     db.query(sql, params, callback);
   },
 
-  // THÊM SUẤT CHIẾU
   create: (data, callback) => {
     const sql = `
       INSERT INTO suat_chieu
@@ -90,7 +87,6 @@ const Showtime = {
     );
   },
 
-  // CẬP NHẬT SUẤT CHIẾU
   update: (id, data, callback) => {
     const sql = `
       UPDATE suat_chieu
@@ -113,13 +109,11 @@ const Showtime = {
     );
   },
 
-  // XÓA SUẤT CHIẾU
   delete: (id, callback) => {
     const sql = "DELETE FROM suat_chieu WHERE ma_suat_chieu=?";
     db.query(sql, [id], callback);
   },
 
-  // CHI TIẾT SUẤT CHIẾU
   getById: (id, callback) => {
     const sql = `
       SELECT sc.ma_suat_chieu, sc.ma_phim, sc.ma_phong, 
@@ -134,7 +128,6 @@ const Showtime = {
     db.query(sql, [id], callback);
   },
 
-  // TỰ ĐỘNG CẬP NHẬT TRẠNG THÁI
   updateStatusAuto: (callback) => {
     const sql = `
       UPDATE suat_chieu
@@ -149,7 +142,6 @@ const Showtime = {
     db.query(sql, callback);
   },
 
-  // KIỂM TRA GHẾ TRỐNG
   getAvailableSeats: (showtimeId, callback) => {
     const sql = `
       SELECT 

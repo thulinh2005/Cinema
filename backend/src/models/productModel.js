@@ -1,6 +1,5 @@
 const db = require("../config/db");
 
-// Convert callback to Promise for easier async/await handling
 const queryPromise = (sql, args) => {
     return new Promise((resolve, reject) => {
         db.query(sql, args, (err, results) => {
@@ -18,8 +17,6 @@ const productModel = {
     getAllProducts: async ({ search = "", type = "", status = "", page = 1, limit = 10 }) => {
         const offset = (page - 1) * limit;
 
-        // Cho phép search theo cả table products hoặc san_pham (tuỳ thuộc CSDL, user dùng `products` hay `san_pham`, giả định là `products` / `san_pham` = nhau)
-        // Mình sẽ dùng bảng \`san_pham\` như code cũ hoặc \`products\` tuỳ DB bạn cấu hình. Ở đây dùng \`products\` theo yêu cầu gần nhất.
         let sql = "SELECT * FROM san_pham WHERE 1=1";
         let countSql = "SELECT COUNT(*) as total FROM san_pham WHERE 1=1";
         const params = [];
@@ -68,7 +65,7 @@ const productModel = {
 
         if (product.loai_sp === "Combo") {
             const items = await queryPromise(`
-                SELECT p.ma_sp, p.ten_sp, p.loai_sp, p.gia_ban, p.anh_san_pham
+                SELECT p.ma_sp, p.ten_sp, p.loai_sp, p.gia_ban, p.anh_san_pham, ci.so_luong
                 FROM combo_items ci
                 JOIN san_pham p ON ci.ma_sp = p.ma_sp
                 WHERE ci.ma_combo = ?
@@ -90,8 +87,13 @@ const productModel = {
             const newProductId = result.insertId;
 
             if (loai_sp === 'Combo' && Array.isArray(combo_items) && combo_items.length > 0) {
-                const values = combo_items.map(itemId => [newProductId, itemId]);
-                await queryPromise("INSERT INTO combo_items (ma_combo, ma_sp) VALUES ?", [values]);
+                const values = combo_items.map(item => {
+                    if (typeof item === 'object' && item !== null) {
+                        return [newProductId, item.ma_sp, item.so_luong || 1];
+                    }
+                    return [newProductId, item, 1];
+                });
+                await queryPromise("INSERT INTO combo_items (ma_combo, ma_sp, so_luong) VALUES ?", [values]);
             }
 
             await commit();
@@ -124,8 +126,13 @@ const productModel = {
             if (loai_sp === 'Combo') {
                 await queryPromise("DELETE FROM combo_items WHERE ma_combo = ?", [id]);
                 if (Array.isArray(combo_items) && combo_items.length > 0) {
-                    const values = combo_items.map(itemId => [id, itemId]);
-                    await queryPromise("INSERT INTO combo_items (ma_combo, ma_sp) VALUES ?", [values]);
+                    const values = combo_items.map(item => {
+                        if (typeof item === 'object' && item !== null) {
+                            return [id, item.ma_sp, item.so_luong || 1];
+                        }
+                        return [id, item, 1];
+                    });
+                    await queryPromise("INSERT INTO combo_items (ma_combo, ma_sp, so_luong) VALUES ?", [values]);
                 }
             } else {
                 await queryPromise("DELETE FROM combo_items WHERE ma_combo = ?", [id]);
@@ -142,21 +149,26 @@ const productModel = {
     deleteProduct: async (id) => {
         await beginTransaction();
         try {
-            // Kiểm tra xem sản phẩm có đang nằm trong combo nào không (nếu nó là sản phẩm đơn)
-            const check = await queryPromise("SELECT count(*) as count FROM combo_items WHERE ma_sp = ?", [id]);
-            if (check && check.length > 0 && check[0].count > 0) {
-                // Nếu xóa ngang 1 món ăn đang có trong combo thì combo đó sẽ bị vô lý (vd: Combo cần 2 món nhưng bị xóa 1) -> Khóa lại
-                throw new Error("Sản phẩm này đang nằm trong một Combo. Vui lòng gỡ khỏi Combo trước khi xóa!");
-            }
+            const checkInvoice = await queryPromise("SELECT count(*) as count FROM chi_tiet_hoa_don_sp WHERE ma_sp = ?", [id]);
+            const isLinkedToInvoice = (checkInvoice && checkInvoice.length > 0 && checkInvoice[0].count > 0);
 
-            // Xóa các sản phẩm con nếu đây là 1 Combo
-            await queryPromise("DELETE FROM combo_items WHERE ma_combo = ?", [id]);
-            
-            // Xóa sản phẩm
-            await queryPromise("DELETE FROM san_pham WHERE ma_sp = ?", [id]);
-            
-            await commit();
-            return true;
+            if (isLinkedToInvoice) {
+                await queryPromise("UPDATE san_pham SET trang_thai = 'Ngừng bán' WHERE ma_sp = ?", [id]);
+                await commit();
+                return { action: 'updated', message: 'Sản phẩm đã có trong hóa đơn nên được chuyển sang trạng thái Ngừng bán' };
+            } else {
+                const check = await queryPromise("SELECT count(*) as count FROM combo_items WHERE ma_sp = ?", [id]);
+                if (check && check.length > 0 && check[0].count > 0) {
+                    throw new Error("Sản phẩm này đang nằm trong một Combo. Vui lòng gỡ khỏi Combo trước khi xóa!");
+                }
+
+                await queryPromise("DELETE FROM combo_items WHERE ma_combo = ?", [id]);
+
+                await queryPromise("DELETE FROM san_pham WHERE ma_sp = ?", [id]);
+
+                await commit();
+                return { action: 'deleted', message: 'Đã xóa sản phẩm thành công' };
+            }
         } catch (error) {
             await rollback();
             throw error;

@@ -13,6 +13,7 @@ import Customers from "./pages/Customers"
 import Invoices from "./pages/Invoices"
 import Tickets from "./pages/Tickets"
 import Products from "./pages/Products"
+import InvoiceStatistics from "./pages/InvoiceStatistics"
 
 
 function App() {
@@ -21,10 +22,8 @@ function App() {
       <Toaster richColors position="top-right" />
 
       <Routes>
-        {/* Public Route */}
         <Route path="/login" element={<Login />} />
 
-        {/* Cấu trúc Route lồng nhau (Nested Routes) */}
         <Route
           path="/"
           element={
@@ -33,7 +32,6 @@ function App() {
             </ProtectedRoute>
           }
         >
-          {/* Các trang con sẽ hiển thị tại vị trí <Outlet /> trong Homepage */}
           <Route path="admin/rooms" element={<Rooms />} />
           <Route path="admin/rooms/:id/seats" element={<SeatMap />} />
           <Route path="/admin/customers" element={<Customers />} />
@@ -42,8 +40,7 @@ function App() {
           <Route path="admin/employee/:id/seats" element={<SeatMap />} />
           <Route path="admin/tickets" element={<Tickets />} />
           <Route path="products" element={<Products />} />
-
-          {/* Em có thể thêm các trang khác ở đây sau này */}
+          <Route path="statistics" element={<InvoiceStatistics />} />
           <Route path="movies" element={<Movies />} />
           <Route path="showtimes" element={<Showtimes />} />
         </Route>
