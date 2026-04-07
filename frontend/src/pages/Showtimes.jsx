@@ -563,12 +563,9 @@ const Showtimes = () => {
       <div className="mx-auto max-w-7xl">
         <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div>
-            <h1 className="text-4xl font-bold tracking-tight text-slate-900">
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900">
               Quản lý suất chiếu
             </h1>
-            <p className="mt-2 text-[17px] text-slate-600">
-              Quản lý thông tin suất chiếu
-            </p>
           </div>
 
           <button

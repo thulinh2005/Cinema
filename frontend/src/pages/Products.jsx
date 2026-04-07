@@ -48,7 +48,7 @@ const ProductFormModal = ({ product, isOpen, onClose, isEdit, reload }) => {
                 setLoaiSp(product.loai_sp);
                 setGiaBan(product.gia_ban);
                 setTrangThai(product.trang_thai);
-                setAnhSanPham(null); 
+                setAnhSanPham(null);
                 setPreviewImage(product.anh_san_pham ? `http://localhost:5000${product.anh_san_pham}` : "");
 
                 if (product.loai_sp === "Combo") {
@@ -257,43 +257,42 @@ const ProductFormModal = ({ product, isOpen, onClose, isEdit, reload }) => {
                                             const isSelected = !!selectedObj;
 
                                             return (
-                                              <div
-                                                  key={item.ma_sp}
-                                                  className={`flex flex-col gap-2 rounded-lg border p-3 transition ${
-                                                      isSelected
-                                                          ? "border-blue-500 bg-blue-50"
-                                                          : "border-slate-200 hover:bg-slate-50"
-                                                  }`}
-                                              >
-                                                  <label className="flex cursor-pointer items-center gap-3">
-                                                      <input
-                                                          type="checkbox"
-                                                          checked={isSelected}
-                                                          onChange={() => toggleComboItem(item.ma_sp)}
-                                                          className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
-                                                      />
-                                                      <div className="flex flex-col">
-                                                          <span className="text-sm font-medium text-slate-900">{item.ten_sp}</span>
-                                                          <span className="text-xs text-slate-500">
-                                                              {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.gia_ban)}
-                                                          </span>
-                                                      </div>
-                                                  </label>
-                                                  
-                                                  {isSelected && (
-                                                      <div className="flex items-center gap-2 pl-7 mt-1">
-                                                          <span className="text-xs text-slate-600 font-medium">Số lượng:</span>
-                                                          <input 
-                                                              type="number" 
-                                                              min="1" 
-                                                              value={selectedObj.so_luong} 
-                                                              onChange={(e) => updateQuantity(item.ma_sp, e.target.value)}
-                                                              className="w-16 rounded border border-slate-300 px-2 py-1 text-sm outline-none focus:border-blue-500 bg-white"
-                                                              onClick={(e) => e.stopPropagation()}
-                                                          />
-                                                      </div>
-                                                  )}
-                                              </div>
+                                                <div
+                                                    key={item.ma_sp}
+                                                    className={`flex flex-col gap-2 rounded-lg border p-3 transition ${isSelected
+                                                        ? "border-blue-500 bg-blue-50"
+                                                        : "border-slate-200 hover:bg-slate-50"
+                                                        }`}
+                                                >
+                                                    <label className="flex cursor-pointer items-center gap-3">
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={isSelected}
+                                                            onChange={() => toggleComboItem(item.ma_sp)}
+                                                            className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                                                        />
+                                                        <div className="flex flex-col">
+                                                            <span className="text-sm font-medium text-slate-900">{item.ten_sp}</span>
+                                                            <span className="text-xs text-slate-500">
+                                                                {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.gia_ban)}
+                                                            </span>
+                                                        </div>
+                                                    </label>
+
+                                                    {isSelected && (
+                                                        <div className="flex items-center gap-2 pl-7 mt-1">
+                                                            <span className="text-xs text-slate-600 font-medium">Số lượng:</span>
+                                                            <input
+                                                                type="number"
+                                                                min="1"
+                                                                value={selectedObj.so_luong}
+                                                                onChange={(e) => updateQuantity(item.ma_sp, e.target.value)}
+                                                                className="w-16 rounded border border-slate-300 px-2 py-1 text-sm outline-none focus:border-blue-500 bg-white"
+                                                                onClick={(e) => e.stopPropagation()}
+                                                            />
+                                                        </div>
+                                                    )}
+                                                </div>
                                             );
                                         })}
                                     </div>
@@ -333,7 +332,7 @@ const ProductDeleteModal = ({ product, isOpen, onClose, onConfirm }) => {
                     <span className="font-semibold text-black">
                         {product.ten_sp}
                     </span>
-                    ? 
+                    ?
                     <br />
                     Hành động này không thể hoàn tác, và nếu đây là Combo, các thành phần bên trong cũng sẽ bị gỡ khối liên kết.
                 </p>
@@ -437,11 +436,10 @@ const Products = () => {
                 <button
                     key={i}
                     onClick={() => setPage(i)}
-                    className={`h-9 min-w-[36px] rounded-lg border px-3 text-sm font-medium transition ${
-                        page === i
-                            ? "border-blue-600 bg-blue-600 text-white"
-                            : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
-                    }`}
+                    className={`h-9 min-w-[36px] rounded-lg border px-3 text-sm font-medium transition ${page === i
+                        ? "border-blue-600 bg-blue-600 text-white"
+                        : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                        }`}
                 >
                     {i}
                 </button>
@@ -459,12 +457,9 @@ const Products = () => {
             <div className="mx-auto max-w-7xl">
                 <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                     <div>
-                        <h1 className="text-4xl font-bold tracking-tight text-slate-900">
-                            Quản lý sản phẩm (Food & Drink)
+                        <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+                            Quản lý sản phẩm
                         </h1>
-                        <p className="mt-2 text-[17px] text-slate-600">
-                            Quản lý danh sách, phân loại, giá bán và hình ảnh sản phẩm.
-                        </p>
                     </div>
 
                     <button

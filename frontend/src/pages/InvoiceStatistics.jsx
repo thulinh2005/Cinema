@@ -10,7 +10,7 @@ import {
     Tooltip,
     ResponsiveContainer,
 } from 'recharts';
-import { TrendingUp, Ticket as TicketIcon, CalendarDays } from 'lucide-react'; 
+import { TrendingUp, Ticket as TicketIcon, CalendarDays } from 'lucide-react';
 
 const formatCurrency = (amount) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
@@ -22,7 +22,7 @@ const InvoiceStatistics = () => {
     const [totalTickets, setTotalTickets] = useState(0);
     const [revenueByDay, setRevenueByDay] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [filter, setFilter] = useState('all'); 
+    const [filter, setFilter] = useState('all');
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
 
@@ -30,7 +30,7 @@ const InvoiceStatistics = () => {
         try {
             setLoading(true);
             let url = `http://localhost:5000/api/thong-ke/dashboard?filter=${filter}`;
-            
+
             // Xử lý cấp ngày cụ thể nếu lọt vào custom
             if (filter === 'custom' && startDate && endDate) {
                 if (startDate > endDate) {
@@ -43,12 +43,12 @@ const InvoiceStatistics = () => {
 
             const res = await axios.get(url);
             const data = res.data;
-            
+
             setTotalRevenue(data?.tongDoanhThu || 0);
             setTodayRevenue(data?.doanhThuHomNay || 0);
             setTotalTickets(data?.tongVe || 0);
             setRevenueByDay(data?.bieuDo || []);
-            
+
         } catch (error) {
             console.error("Lỗi lấy thống kê:", error);
             toast.error("Không thể tải thông tin thống kê!");
@@ -101,29 +101,28 @@ const InvoiceStatistics = () => {
         <div className="p-4 sm:p-6 bg-slate-50 min-h-screen">
             <div className="mb-6 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight text-slate-900">Thống kê tổng quan</h1>
-                    <p className="text-slate-600 mt-2">Cái nhìn toàn diện về hoạt động kinh doanh (doanh thu mảng vé và hóa đơn bán hàng).</p>
+                    <h1 className="text-2xl font-bold tracking-tight text-slate-900">Thống kê tổng quan</h1>
                 </div>
-                
+
                 {/* Trình đơn lọc thời gian */}
                 <div className="flex flex-col sm:flex-row items-center gap-3">
-                    
+
                     {/* Bảng nhập 2 khoảng ngày - Dựa vào thẻ type "date" của quản lý suất chiếu */}
                     {filter === 'custom' && (
-                         <div className="flex items-center space-x-2 bg-white rounded-xl p-1.5 shadow-sm border border-slate-200">
-                             <input 
-                                type="date" 
-                                value={startDate} 
-                                onChange={(e) => setStartDate(e.target.value)} 
+                        <div className="flex items-center space-x-2 bg-white rounded-xl p-1.5 shadow-sm border border-slate-200">
+                            <input
+                                type="date"
+                                value={startDate}
+                                onChange={(e) => setStartDate(e.target.value)}
                                 className="h-9 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm outline-none focus:border-blue-500 cursor-pointer"
-                             />
-                             <span className="text-slate-400 font-medium">-</span>
-                             <input 
-                                type="date" 
-                                value={endDate} 
-                                onChange={(e) => setEndDate(e.target.value)} 
+                            />
+                            <span className="text-slate-400 font-medium">-</span>
+                            <input
+                                type="date"
+                                value={endDate}
+                                onChange={(e) => setEndDate(e.target.value)}
                                 className="h-9 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm outline-none focus:border-blue-500 cursor-pointer"
-                             />
+                            />
                         </div>
                     )}
 
@@ -131,8 +130,8 @@ const InvoiceStatistics = () => {
                         <div className="pl-3 pr-2 flex items-center text-slate-400">
                             <CalendarDays size={18} />
                         </div>
-                        <select 
-                            value={filter} 
+                        <select
+                            value={filter}
                             onChange={(e) => setFilter(e.target.value)}
                             className="bg-transparent text-sm font-semibold text-slate-700 py-2 pr-6 outline-none cursor-pointer hover:bg-slate-50 transition rounded-lg"
                         >
@@ -154,7 +153,7 @@ const InvoiceStatistics = () => {
                         <p className="text-sm font-medium text-slate-500 uppercase tracking-wider mb-1">
                             {getDynamicLabel()}
                         </p>
-                        <h3 className="text-3xl font-bold text-slate-800">
+                        <h3 className="text-2xl font-bold text-slate-800">
                             {formatCurrency(totalRevenue)}
                         </h3>
                     </div>
@@ -167,7 +166,7 @@ const InvoiceStatistics = () => {
                 <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex items-center justify-between">
                     <div>
                         <p className="text-sm font-medium text-slate-500 uppercase tracking-wider mb-1">Doanh thu hôm nay</p>
-                        <h3 className="text-3xl font-bold text-slate-800">
+                        <h3 className="text-2xl font-bold text-slate-800">
                             {formatCurrency(todayRevenue)}
                         </h3>
                     </div>
@@ -182,7 +181,7 @@ const InvoiceStatistics = () => {
                         <p className="text-sm font-medium text-slate-500 uppercase tracking-wider mb-1">
                             {getTicketDynamicLabel()}
                         </p>
-                        <h3 className="text-3xl font-bold text-slate-800">
+                        <h3 className="text-2xl font-bold text-slate-800">
                             {Intl.NumberFormat('vi-VN').format(totalTickets)} <span className="text-lg font-medium text-slate-500">vé</span>
                         </h3>
                     </div>
@@ -202,22 +201,22 @@ const InvoiceStatistics = () => {
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={revenueByDay} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                                <XAxis 
-                                    dataKey="ngay" 
+                                <XAxis
+                                    dataKey="ngay"
                                     tickFormatter={(val) => {
                                         try {
-                                          if (!val || val === "Unknown") return "";
-                                          return new Date(val).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' })
+                                            if (!val || val === "Unknown") return "";
+                                            return new Date(val).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' })
                                         } catch (e) {
-                                          return val;
+                                            return val;
                                         }
-                                    }} 
+                                    }}
                                     axisLine={false}
                                     tickLine={false}
                                     tick={{ fill: '#64748b', fontSize: 12 }}
                                     dy={10}
                                 />
-                                <YAxis 
+                                <YAxis
                                     tickFormatter={(val) => val.toLocaleString('vi-VN')}
                                     axisLine={false}
                                     tickLine={false}
@@ -225,9 +224,9 @@ const InvoiceStatistics = () => {
                                     dx={-10}
                                 />
                                 <Tooltip content={<CustomTooltip />} cursor={{ fill: '#f1f5f9' }} />
-                                <Bar 
-                                    dataKey="doanh_thu" 
-                                    fill="#3b82f6" 
+                                <Bar
+                                    dataKey="doanh_thu"
+                                    fill="#3b82f6"
                                     radius={[4, 4, 0, 0]}
                                     barSize={40}
                                     animationDuration={1500}

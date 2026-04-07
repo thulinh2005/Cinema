@@ -17,7 +17,7 @@ import { Plus } from "lucide-react";
 
 const Invoices = () => {
   const [invoices, setInvoices] = useState([]);
-  
+
   // Filters
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -30,7 +30,7 @@ const Invoices = () => {
   // Modals
   const [selectedInvoice, setSelectedInvoice] = useState(null);
   const [openDetail, setOpenDetail] = useState(false);
-  
+
 
 
   const fetchInvoices = async () => {
@@ -87,11 +87,10 @@ const Invoices = () => {
         <button
           key={i}
           onClick={() => setPage(i)}
-          className={`h-9 min-w-[36px] rounded-lg border px-3 text-sm font-medium transition ${
-            page === i
+          className={`h-9 min-w-[36px] rounded-lg border px-3 text-sm font-medium transition ${page === i
               ? "border-blue-600 bg-blue-600 text-white"
               : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
-          }`}
+            }`}
         >
           {i}
         </button>
@@ -108,9 +107,6 @@ const Invoices = () => {
             <h1 className="text-2xl font-bold tracking-tight text-slate-900">
               Quản lý hóa đơn
             </h1>
-            <p className="mt-1 text-sm text-slate-500">
-              Quản lý, tìm kiếm và in hóa đơn khách hàng
-            </p>
           </div>
         </div>
 
